@@ -311,17 +311,19 @@
                     <i data-lucide="x"></i>
                 </button>
             </div>
-            <div class="hbl-card">
-                <div class="hbl-card-header">
-                    <div class="hbl-card-title">HB/L No.</div>
-                    <button id="hbl-edit-button" class="hbl-edit-btn">
-                        <i data-lucide="edit-3" class="w-4 h-4"></i>
-                    </button>
-                </div>
-                <div id="hbl-display" class="hbl-card-value">EGLV1234567890</div>
-                <div id="hbl-edit-form" class="hbl-edit-form hidden">
-                    <input type="text" id="hbl-input" class="hbl-input" value="EGLV1234567890">
-                    <button id="hbl-save-button" class="hbl-save-btn">確定</button>
+            <div id="hbl-section" class="hidden">
+                <div class="hbl-card">
+                    <div class="hbl-card-header">
+                        <div class="hbl-card-title">HB/L No.</div>
+                        <button id="hbl-edit-button" class="hbl-edit-btn">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div id="hbl-display" class="hbl-card-value">EGLV1234567890</div>
+                    <div id="hbl-edit-form" class="hbl-edit-form hidden">
+                        <input type="text" id="hbl-input" class="hbl-input" value="EGLV1234567890">
+                        <button id="hbl-save-button" class="hbl-save-btn">確定</button>
+                    </div>
                 </div>
             </div>
             <div id="gofreightmate-content" class="flex-1">
@@ -383,24 +385,30 @@
         }
 
         function showLoadingIndicator() {
-             if (!gofreightmatePanel || !gofreightmateContent) return;
-             gofreightmateContent.innerHTML = `
-                <div class="flex justify-center items-center h-full">
-                    <p class="text-center text-purple-600 flex items-center">
-                        <i data-lucide="loader-2" class="animate-spin mr-2"></i> 分析中...
-                    </p>
-                </div>`;
-             // Ensure icon is rendered immediately after adding HTML
-             // Check if lucide is available before calling
-             if (typeof lucide !== 'undefined') {
-                 try {
-                    lucide.createIcons();
-                 } catch (error) {
-                     console.error("Error creating dynamic Lucide icon (loader):", error);
-                 }
-             } else {
-                 console.error("Lucide not available when showing loading indicator.");
-             }
+            if (!gofreightmatePanel || !gofreightmateContent) return;
+            // 隱藏 HBL 區塊
+            const hblSection = document.getElementById('hbl-section');
+            if (hblSection) {
+                hblSection.classList.add('hidden');
+            }
+            
+            gofreightmateContent.innerHTML = `
+               <div class="flex justify-center items-center h-full">
+                   <p class="text-center text-purple-600 flex items-center">
+                       <i data-lucide="loader-2" class="animate-spin mr-2"></i> 分析中...
+                   </p>
+               </div>`;
+            // Ensure icon is rendered immediately after adding HTML
+            // Check if lucide is available before calling
+            if (typeof lucide !== 'undefined') {
+                try {
+                   lucide.createIcons();
+                } catch (error) {
+                    console.error("Error creating dynamic Lucide icon (loader):", error);
+                }
+            } else {
+                console.error("Lucide not available when showing loading indicator.");
+            }
         }
 
         // --- Sidebar Toggle Function ---
@@ -439,7 +447,14 @@
             isGoFreightMatePanelOpen = false;
             gofreightmatePanel.classList.add('hidden');
             gofreightmatePanel.classList.remove('flex');
-             if (analysisTimeoutId) { clearTimeout(analysisTimeoutId); analysisTimeoutId = null; }
+            
+            // 隱藏 HBL 區塊
+            const hblSection = document.getElementById('hbl-section');
+            if (hblSection) {
+                hblSection.classList.add('hidden');
+            }
+            
+            if (analysisTimeoutId) { clearTimeout(analysisTimeoutId); analysisTimeoutId = null; }
             gofreightmateContent.innerHTML = '<p class="text-center text-purple-600">請點擊上方 GoFreightMate 按鈕開始分析。</p>';
             console.log("Panel closed.");
         }
@@ -472,44 +487,50 @@
         }
 
         function populateGoFreightMateContent(email) {
-             if (!email) { 
-                 gofreightmateContent.innerHTML = '<p class="text-red-600">錯誤：無法讀取郵件內容。</p>'; 
-                 return; 
-             }
-             console.log("Populating content for email ID:", email.id);
-             gofreightmateContent.innerHTML = '';
-             
-             // 更新 HB/L No. 顯示，根據當前電子郵件更新
-             if (email.id === 2) {
-                 // 長榮船務的郵件，顯示 EGLV1234567890
-                 currentHblNo = "EGLV1234567890";
-                 document.getElementById('hbl-display').textContent = currentHblNo;
-                 document.getElementById('hbl-input').value = currentHblNo;
-                 
-                 gofreightmateContent.innerHTML += createFieldHtml('貨櫃號碼 (Container No.)', '<i>(無)</i>', 'EISU9876543');
-                 gofreightmateContent.innerHTML += createFieldHtml('船隻/航次 (Vessel/Voyage)', 'EVER ACE / 014E', 'EVER ACE V.015E');
-                 gofreightmateContent.innerHTML += createFieldHtml('預計卸貨日期 (Est. Discharge)', '2025年4月16日', '2025年4月17日');
-                 gofreightmateContent.innerHTML += createFieldHtml('免費堆存期截止日 (Last Free Day)', '2025年4月20日', '2025年4月21日');
-                 gofreightmateContent.innerHTML += createFieldHtml('卸貨港/地點 (POD/Location)', '台北港', '台北港 (TW TPE)');
-                 gofreightmateContent.innerHTML += createFieldHtml('CY/CFS 地點', 'JONES, CLAYTON AND HARRIS', 'SAMSUNG C AND T AMERICA INC.');
-             } else if (email.id === 1) {
-                 // 馬士基的郵件，顯示不同的 HB/L
-                 currentHblNo = "MSKU1234567";
-                 document.getElementById('hbl-display').textContent = currentHblNo;
-                 document.getElementById('hbl-input').value = currentHblNo;
-                 
-                 gofreightmateContent.innerHTML += createFieldHtml('貨櫃號碼 (Container No.)', 'MSKU1234567', 'MSKU1234567');
-                 gofreightmateContent.innerHTML += createFieldHtml('船隻/航次 (Vessel/Voyage)', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401');
-                 gofreightmateContent.innerHTML += createFieldHtml('預計抵達時間 (ETA)', '2025年4月18日, 08:00 PST', '2025年4月18日, 14:00 PST');
-                 gofreightmateContent.innerHTML += createFieldHtml('目的港 (Destination)', 'Los Angeles, CA', 'Port of Los Angeles (USLAX)');
-             } else {
-                 // 其他郵件
-                 currentHblNo = "N/A";
-                 document.getElementById('hbl-display').textContent = currentHblNo;
-                 document.getElementById('hbl-input').value = currentHblNo;
-                 
-                 gofreightmateContent.innerHTML = '<p class="text-purple-700">GoFreightMate AI 分析不適用於此郵件類型。</p>';
-             }
+            if (!email) { 
+                gofreightmateContent.innerHTML = '<p class="text-red-600">錯誤：無法讀取郵件內容。</p>'; 
+                return; 
+            }
+            console.log("Populating content for email ID:", email.id);
+            gofreightmateContent.innerHTML = '';
+            
+            // 顯示 HBL 區塊
+            const hblSection = document.getElementById('hbl-section');
+            if (hblSection) {
+                hblSection.classList.remove('hidden');
+            }
+            
+            // 更新 HB/L No. 顯示，根據當前電子郵件更新
+            if (email.id === 2) {
+                // 長榮船務的郵件，顯示 EGLV1234567890
+                currentHblNo = "EGLV1234567890";
+                document.getElementById('hbl-display').textContent = currentHblNo;
+                document.getElementById('hbl-input').value = currentHblNo;
+                
+                gofreightmateContent.innerHTML += createFieldHtml('貨櫃號碼 (Container No.)', '<i>(無)</i>', 'EISU9876543');
+                gofreightmateContent.innerHTML += createFieldHtml('船隻/航次 (Vessel/Voyage)', 'EVER ACE / 014E', 'EVER ACE V.015E');
+                gofreightmateContent.innerHTML += createFieldHtml('預計卸貨日期 (Est. Discharge)', '2025年4月16日', '2025年4月17日');
+                gofreightmateContent.innerHTML += createFieldHtml('免費堆存期截止日 (Last Free Day)', '2025年4月20日', '2025年4月21日');
+                gofreightmateContent.innerHTML += createFieldHtml('卸貨港/地點 (POD/Location)', '台北港', '台北港 (TW TPE)');
+                gofreightmateContent.innerHTML += createFieldHtml('CY/CFS 地點', 'JONES, CLAYTON AND HARRIS', 'SAMSUNG C AND T AMERICA INC.');
+            } else if (email.id === 1) {
+                // 馬士基的郵件，顯示不同的 HB/L
+                currentHblNo = "MSKU1234567";
+                document.getElementById('hbl-display').textContent = currentHblNo;
+                document.getElementById('hbl-input').value = currentHblNo;
+                
+                gofreightmateContent.innerHTML += createFieldHtml('貨櫃號碼 (Container No.)', 'MSKU1234567', 'MSKU1234567');
+                gofreightmateContent.innerHTML += createFieldHtml('船隻/航次 (Vessel/Voyage)', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401');
+                gofreightmateContent.innerHTML += createFieldHtml('預計抵達時間 (ETA)', '2025年4月18日, 08:00 PST', '2025年4月18日, 14:00 PST');
+                gofreightmateContent.innerHTML += createFieldHtml('目的港 (Destination)', 'Los Angeles, CA', 'Port of Los Angeles (USLAX)');
+            } else {
+                // 其他郵件
+                currentHblNo = "N/A";
+                document.getElementById('hbl-display').textContent = currentHblNo;
+                document.getElementById('hbl-input').value = currentHblNo;
+                
+                gofreightmateContent.innerHTML = '<p class="text-purple-700">GoFreightMate AI 分析不適用於此郵件類型。</p>';
+            }
         }
 
         // --- Email List and Reading Pane Functions ---
