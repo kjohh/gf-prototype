@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoFreightMate Prototype</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 自訂滾動條樣式 */
+        /* Custom scrollbar styles */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
 
-        /* SVG 圖標基礎樣式 (取代 .lucide class) */
+        /* SVG icon base styles (replace .lucide class) */
         .svg-icon {
             width: 1.1rem;
             height: 1.1rem;
@@ -20,37 +20,37 @@
             display: inline-block;
             vertical-align: middle;
             margin-right: 0.5rem;
-            fill: none; /* 大部分 Lucide 圖標不需要填充 */
-            stroke: currentColor; /* 預設使用文字顏色 */
+            fill: none; /* Most Lucide icons don't need fill */
+            stroke: currentColor; /* Default to text color */
         }
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Lucide 圖標樣式 */
+        /* Lucide icon styles */
         .lucide { width: 1.1rem; height: 1.1rem; stroke-width: 2; display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 
-        /* 選中郵件樣式 */
+        /* Selected email styles */
         .email-item.selected { background-color: #e2e8f0; border-left: 3px solid #2563eb; }
 
-        /* 未讀郵件樣式 */
+        /* Unread email styles */
         .email-item.unread .font-semibold { font-weight: 700; }
         .email-item.unread .text-gray-900 { color: #111827; }
         .email-item.unread .text-blue-600 { color: #2563eb; }
 
-        /* GoFreightMate 面板樣式 */
+        /* GoFreightMate panel styles */
         #gofreightmate-panel { z-index: 5; }
 
-        /* GoFreightMate 欄位樣式 */
+        /* GoFreightMate field styles */
         .gfm-field { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; }
         .gfm-label { font-weight: 600; color: #374151; margin-bottom: 0.25rem; display: block; }
         .gfm-data { font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; word-wrap: break-word; }
         .gfm-data.ai { color: #1d4ed8; font-weight: 500; }
         .gfm-update input { width: 100%; padding: 0.25rem 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; }
-
-        /* 新增的現代卡片式欄位樣式 */
+ 
+        /* New modern card-style field styles */
         .gfm-card {
             background-color: white;
             border-radius: 0.75rem;
@@ -120,7 +120,7 @@
             outline: none;
             box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
-        /* HB/L No. 卡片樣式 */
+        /* HB/L No. card styles */
         .hbl-card {
             background-color: white;
             border-radius: 0.75rem;
@@ -187,28 +187,28 @@
             background-color: #4338ca;
         }
 
-        /* 可收合側邊欄樣式 */
+        /* Collapsible sidebar styles */
         #sidebar {
-            transition: width 0.3s ease-in-out; /* 平滑寬度過渡 */
+            transition: width 0.3s ease-in-out; /* Smooth width transition */
         }
         #sidebar.sidebar-collapsed {
             width: 4rem; /* Tailwind w-16 */
         }
-         /* 當側邊欄收合時，隱藏可收合內容 */
+         /* Hide collapsible content when sidebar is collapsed */
         #sidebar.sidebar-collapsed #sidebar-collapsible-content {
             display: none;
         }
-         /* 當側邊欄收合時，隱藏 Outlook 文字 */
+         /* Hide Outlook text when sidebar is collapsed */
         #sidebar.sidebar-collapsed #outlook-title {
              display: none;
         }
-         /* 當側邊欄收合時，調整切換按鈕的邊距 */
+         /* Adjust toggle button margins when sidebar is collapsed */
          #sidebar.sidebar-collapsed #sidebar-toggle-button .lucide {
-              margin-right: 0; /* 移除圖標右邊距 */
+              margin-right: 0; /* Remove right margin for icon */
          }
-         /* 當側邊欄收合時，確保標題區域的 padding 合適 */
+         /* Ensure header area padding is appropriate when sidebar is collapsed */
          #sidebar.sidebar-collapsed #sidebar-header {
-              padding-left: 1rem; /* 調整左邊距以使圖標居中 */
+              padding-left: 1rem; /* Adjust left padding to center icon */
               padding-right: 1rem;
          }
 
@@ -228,24 +228,24 @@
             <div class="p-4">
                 <button class="w-full bg-[#0078D4] text-white py-2 px-4 rounded-md shadow hover:bg-[#005A9E] transition duration-150 flex items-center justify-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                    <span>新郵件</span>
+                    <span>New Email</span>
                 </button>
             </div>
             <nav class="flex-1 overflow-y-auto p-2 space-y-1">
                 <a href="#" class="flex items-center px-3 py-2 text-gray-700 font-medium bg-gray-200 rounded-md">
-                    <i data-lucide="inbox"></i> 收件匣
+                    <i data-lucide="inbox"></i> Inbox
                     <span id="inbox-count" class="ml-auto text-xs bg-blue-500 text-white rounded-full px-2 py-0.5">0</span>
                 </a>
-                <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="file-text"></i> 草稿</a>
-                <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="send"></i> 寄件備份</a>
-                <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="archive"></i> 封存</a>
-                <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="trash-2"></i> 刪除的郵件</a>
-                 <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="alert-octagon"></i> 垃圾郵件</a>
+                <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="file-text"></i> Drafts</a>
+                <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="send"></i> Sent Items</a>
+                <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="archive"></i> Archive</a>
+                <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="trash-2"></i> Deleted Items</a>
+                 <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="alert-octagon"></i> Junk Email</a>
                  <div class="pt-4">
-                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">資料夾</h3>
-                    <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md mt-1"><i data-lucide="folder"></i> 報關文件</a>
-                     <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="folder"></i> 船公司通知</a>
-                     <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="folder"></i> 客戶 A</a>
+                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Folders</h3>
+                    <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md mt-1"><i data-lucide="folder"></i> Customs Documents</a>
+                     <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="folder"></i> Carrier Notifications</a>
+                     <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-md"><i data-lucide="folder"></i> Customer A</a>
                 </div>
             </nav>
             <div class="p-3 border-t border-gray-300 flex justify-around flex-shrink-0">
@@ -262,9 +262,9 @@
 
         <section id="email-list-pane" class="w-96 bg-white border-r border-gray-300 flex flex-col h-full flex-shrink-0">
             <div class="p-4 border-b border-gray-300 flex justify-between items-center">
-                <h2 class="text-lg font-semibold text-gray-800">收件匣</h2>
+                <h2 class="text-lg font-semibold text-gray-800">Inbox</h2>
                 <div class="flex items-center space-x-2">
-                    <span class="text-sm text-gray-500">篩選</span>
+                    <span class="text-sm text-gray-500">Filter</span>
                     <i data-lucide="filter" class="text-gray-600 cursor-pointer hover:text-blue-600"></i>
                 </div>
             </div>
@@ -274,7 +274,7 @@
 
         <section id="reading-pane" class="flex-1 bg-white flex flex-col h-full overflow-y-auto border-r border-gray-300">
             <div id="reading-pane-placeholder" class="flex-1 flex items-center justify-center text-gray-500">
-                選取項目以閱讀
+                Select an item to read
             </div>
             <div id="email-content-area" class="hidden flex-1 flex flex-col">
                 <div class="p-4 border-b border-gray-300">
@@ -283,14 +283,14 @@
                         <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0" id="sender-initial"></div>
                         <div>
                             <div id="email-sender" class="font-medium text-gray-900"></div>
-                            <div class="text-sm text-gray-500">收件者: <span id="email-recipient">您</span></div>
+                            <div class="text-sm text-gray-500">To: <span id="email-recipient">You</span></div>
                         </div>
                         <div class="ml-auto text-sm text-gray-500 flex-shrink-0" id="email-timestamp"></div>
                     </div>
                      <div class="flex space-x-2 text-gray-600">
-                        <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="reply"></i> <span>回覆</span></button>
-                        <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="reply-all"></i> <span>全部回覆</span></button>
-                        <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="forward"></i> <span>轉寄</span></button>
+                        <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="reply"></i> <span>Reply</span></button>
+                        <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="reply-all"></i> <span>Reply All</span></button>
+                        <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="forward"></i> <span>Forward</span></button>
                         <button id="gofreightmate-button" class="hidden ml-4 p-1 bg-purple-600 text-white rounded hover:bg-purple-700 flex items-center space-x-1">
                             <i data-lucide="scan-line"></i> <span>GoFreightMate</span>
                         </button>
@@ -322,17 +322,17 @@
                     <div id="hbl-display" class="hbl-card-value">EGLV1234567890</div>
                     <div id="hbl-edit-form" class="hbl-edit-form hidden">
                         <input type="text" id="hbl-input" class="hbl-input" value="EGLV1234567890">
-                        <button id="hbl-save-button" class="hbl-save-btn">確定</button>
+                        <button id="hbl-save-button" class="hbl-save-btn">Confirm</button>
                     </div>
                 </div>
             </div>
             <div id="gofreightmate-content" class="flex-1">
-                <p class="text-center text-purple-600">請點擊上方 GoFreightMate 按鈕開始分析。</p>
+                <p class="text-center text-purple-600">Click the GoFreightMate button above to start analysis.</p>
             </div>
              <div class="mt-auto pt-4 border-t border-purple-200 flex-shrink-0">
                  <button class="w-full bg-purple-600 text-white py-2 px-4 rounded-md shadow hover:bg-purple-700 transition duration-150 flex items-center justify-center space-x-2">
                      <i data-lucide="save"></i>
-                     <span>更新 GoFreight (模擬)</span>
+                     <span>Update GoFreight (Simulation)</span>
                  </button>
             </div>
         </aside>
@@ -340,16 +340,16 @@
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
-        // 模擬海運進口操作員的電子郵件數據
+        // Simulated email data for ocean import operator
         const emails = [
-             { id: 1, sender: 'Maersk Line', senderInitial: 'M', subject: 'ETA 更新 - 船隻 MAERSK HONG KONG V.2401 - 貨櫃 MSKU1234567', snippet: '請注意，MAERSK HONG KONG V.2401 於洛杉磯港的更新 ETA 現在是...', timestamp: '上午 9:45', unread: true, body: `<p>親愛的客戶,</p><p>請注意，船隻 <strong>MAERSK HONG KONG V.2401</strong> 在洛杉磯港 (USLAX) 的更新預計抵達時間 (ETA) 現為 <strong>2025年4月18日, 14:00 PST</strong>。</p><p>貨櫃號碼: <strong>MSKU1234567</strong></p><p>訂艙參考號: <strong>AE123987</strong></p><p>對於此船期變更可能造成的不便，我們深表歉意。您可以在我們的網站上追踪船隻的最新狀態。</p><p>順頌商祺,<br>馬士基客戶服務</p>` },
-             { id: 2, sender: 'Evergreen Shipping Agency', senderInitial: 'E', subject: '到貨通知 - EVER ACE V.015E - 提單號 EGLV1234567890', snippet: '您在 EVER ACE V.015E 上的貨物預計於 4月17日 卸貨。請安排...', timestamp: '昨天', unread: true, body: `<p><strong>到貨通知</strong></p><p>親愛的客戶,</p><p>謹此通知，您提單號 <strong>EGLV1234567890</strong> 的貨物預計將通過船隻 <strong>EVER ACE V.015E</strong> 抵達台北港 (TW TPE)。</p><ul><li>預計卸貨日期: 2025年4月17日</li><li>貨櫃號碼: EISU9876543</li><li>免費堆存期截止日: 2025年4月21日</li></ul><p>請確保及時安排清關和提貨，以避免可能產生的滯箱費。</p><p>放行所需文件已附上。</p><p>此致,<br>長榮船務代理（美國）公司</p>` },
-             { id: 3, sender: 'Apex Logistics', senderInitial: 'A', subject: '緊急：海關查驗 - 貨物參考號 APX55678 - 貨櫃 TCNU1122334', snippet: '需要採取行動：美國海關已對貨物 APX55678 進行查驗。需要額外文件...', timestamp: '昨天', unread: false, body: `<p>團隊夥伴們,</p><p><strong>緊急行動通知</strong></p><p>美國海關與邊境保護局 (CBP) 已對以下貨物進行查驗（儀檢）：</p><ul><li>我方參考號: <strong>APX55678</strong></li><li>收貨人: Global Imports Inc.</li><li>貨櫃: <strong>TCNU1122334</strong></li><li>船隻/航次: OOCL TOKYO / 088W</li><li>預計抵達長灘港時間: 2025年4月16日</li></ul><p>CBP 要求在 48 小時內提交商業發票、裝箱單以及特定的產品材料成分詳細信息。</p><p>請立即與進口商協調，收集所需文件和信息。告知客戶可能的延誤和查驗費用。</p><p>謝謝,<br>合規部門<br>Apex Logistics</p>` },
-             { id: 4, sender: 'Port Authority NY/NJ', senderInitial: 'P', subject: '碼頭擁堵更新 - APM Terminals Elizabeth', snippet: 'APM Terminals Elizabeth 堆場利用率高。預計卡車周轉時間可能延遲...', timestamp: '4月 14日', unread: false, body: `<p><strong>營運警報</strong></p><p>致所有港口用戶,</p><p>請注意，由於進口量增加，APM Terminals Elizabeth 目前堆場利用率很高。</p><p>卡車司機可能會遇到比平時更長的周轉時間。我們鼓勵通過碼頭系統提前預約，並查看實時更新。</p><p>我們正與碼頭營運商密切合作，以緩解擁堵並提高流動性。</p><p>感謝您的合作,<br>紐約與新澤西港務局</p>` },
-             { id: 5, sender: 'CMA CGM Group', senderInitial: 'C', subject: '訂艙確認 - 參考號: CC100987 - 起運港: 上海 / 目的港: 休斯頓', snippet: '您從上海到休斯頓的 1x40\'HC 訂艙 CC100987 已在 CMA CGM J. MADISON 上確認...', timestamp: '4月 14日', unread: true, body: `<p>尊敬的合作夥伴,</p><p>此郵件確認您的訂艙請求:</p><ul><li>訂艙參考號: <strong>CC100987</strong></li><li>櫃型: 1 x 40' High Cube (HC)</li><li>起運港 (POL): 中國上海 (CNSHA)</li><li>目的港 (POD): 美國德州休斯頓 (USHOU)</li><li>船隻/航次: <strong>CMA CGM J. MADISON / 0TXAKE1MA</strong></li><li>預計離港時間 (ETD) 上海: 2025年4月25日</li><li>預計抵港時間 (ETA) 休斯頓: 2025年5月20日</li></ul><p>請確保按照訂艙確認詳情中規定的貨櫃截關和文件截止日期操作。</p><p>順頌商祺,<br>達飛輪船電子商務團隊</p>` },
-             { id: 6, sender: 'Flexport', senderInitial: 'F', subject: '預報通知：貨物 FLX98765 即將抵達奧克蘭', snippet: '貨物 FLX98765（收貨人：Tech Gadgets Co）即將由 ONE OLYMPUS 運抵奧克蘭的預報...', timestamp: '4月 13日', unread: false, body: `<p>合作夥伴您好,</p><p>請查收以下貨物的預報詳情：</p><ul><li>Flexport 參考號: <strong>FLX98765</strong></li><li>收貨人: Tech Gadgets Co</li><li>分提單號 (HBL): FLXSHAOAK123</li><li>主提單號 (MBL): ONEXYZOAK987</li><li>貨櫃號碼: OOLU5554443 (1x40'HQ)</li><li>船隻/航次: ONE OLYMPUS / 050E</li><li>預計離港時間 (ETD) 上海: 2025年3月30日</li><li>預計抵港時間 (ETA) 奧克蘭: 2025年4月19日</li></ul><p>附件為分提單副本、商業發票和裝箱單，供您參考及準備清關。</p><p>請確認收到並告知 ISF 是否已提交。</p><p>謝謝,<br>Flexport Operations</p>` },
-             { id: 7, sender: 'Hapag-Lloyd', senderInitial: 'H', subject: '報價請求 - 台北至漢堡', snippet: '關於您查詢台北到漢堡 2x20\'GP 費率的回覆。請見附件報價...', timestamp: '4月 12日', unread: true, body: `<p>親愛的客戶,</p><p>關於您最近的費率請求，請查收我們為以下貨物提供的報價附件：</p><ul><li>起運地: 台灣台北 (TW TPE)</li><li>目的地: 德國漢堡 (DE HAM)</li><li>貨物種類: 普通貨物 (FAK)</li><li>櫃型: 2 x 20呎普通櫃 (GP)</li></ul><p>報價包含海運費、標準的起運港/目的港費用以及有效期詳情。</p><p>請查閱，如果您希望繼續訂艙，請告知我們。</p><p>順頌商祺,<br>赫伯羅特銷售團隊</p>` },
-             { id: 8, sender: '內部營運團隊', senderInitial: '內', subject: '提醒：今日下午 2 點 CST 海運進口狀態週會', snippet: '溫馨提醒，我們將召開每週同步會議，檢視貨物狀態、挑戰和優先事項...', timestamp: '上午 8:30', unread: true, body: `<p>團隊夥伴們好,</p><p>溫馨提醒，我們今天的海運進口狀態週會安排如下：</p><p><strong>時間:</strong> 下午 2:00 - 3:00 CST</p><p><strong>議程:</strong></p><ul><li>檢視關鍵貨物的 ETA 和潛在延誤</li><li>討論清關問題/查驗</li><li>處理船公司表現和艙位問題</li><li>客戶升級問題</li><li>自由提問/更新</li></ul><p>請準備好討論您負責的主要客戶和任何緊急事項。</p><p>會議連結: [會議連結]</p><p>會議上見！</p>` }
+             { id: 1, sender: 'Maersk Line', senderInitial: 'M', subject: 'ETA Update - Vessel MAERSK HONG KONG V.2401 - Container MSKU1234567', snippet: 'Please note that the updated ETA for MAERSK HONG KONG V.2401 at Los Angeles port is now...', timestamp: '9:45 AM', unread: true, body: `<p>Dear Customer,</p><p>Please be advised that the vessel <strong>MAERSK HONG KONG V.2401</strong> has an updated estimated time of arrival (ETA) at Los Angeles Port (USLAX) of <strong>April 18, 2025, 14:00 PST</strong>.</p><p>Container Number: <strong>MSKU1234567</strong></p><p>Booking Reference: <strong>AE123987</strong></p><p>We apologize for any inconvenience this schedule change may cause. You can track the latest status of the vessel on our website.</p><p>Best regards,<br>Maersk Customer Service</p>` },
+             { id: 2, sender: 'Evergreen Shipping Agency', senderInitial: 'E', subject: 'Arrival Notice - EVER ACE V.015E - B/L No. EGLV1234567890', snippet: 'Your cargo on EVER ACE V.015E is scheduled to discharge on April 17. Please arrange...', timestamp: 'Yesterday', unread: true, body: `<p><strong>Arrival Notice</strong></p><p>Dear Customer,</p><p>This is to inform you that your cargo under Bill of Lading <strong>EGLV1234567890</strong> is expected to arrive at Taipei Port (TW TPE) on the vessel <strong>EVER ACE V.015E</strong>.</p><ul><li>Estimated Discharge Date: April 17, 2025</li><li>Container Number: EISU9876543</li><li>Last Free Day: April 21, 2025</li></ul><p>Please ensure timely arrangements for customs clearance and cargo collection to avoid potential demurrage charges.</p><p>Required release documents are attached.</p><p>Sincerely,<br>Evergreen Shipping Agency (America) Inc.</p>` },
+             { id: 3, sender: 'Apex Logistics', senderInitial: 'A', subject: 'URGENT: Customs Examination - Cargo Ref APX55678 - Container TCNU1122334', snippet: 'Action Required: US Customs has selected shipment APX55678 for examination. Additional documents...', timestamp: 'Yesterday', unread: false, body: `<p>Team Partners,</p><p><strong>Urgent Action Notice</strong></p><p>US Customs and Border Protection (CBP) has selected the following shipment for examination (X-Ray):</p><ul><li>Our Reference: <strong>APX55678</strong></li><li>Consignee: Global Imports Inc.</li><li>Container: <strong>TCNU1122334</strong></li><li>Vessel/Voyage: OOCL TOKYO / 088W</li><li>ETA Long Beach: April 16, 2025</li></ul><p>CBP is requesting commercial invoice, packing list, and detailed product material composition information within 48 hours.</p><p>Please coordinate with the importer immediately to collect the required documents and information. Advise the client of potential delays and examination fees.</p><p>Thank you,<br>Compliance Department<br>Apex Logistics</p>` },
+             { id: 4, sender: 'Port Authority NY/NJ', senderInitial: 'P', subject: 'Terminal Congestion Update - APM Terminals Elizabeth', snippet: 'APM Terminals Elizabeth yard utilization is high. Expect extended truck turn times...', timestamp: 'Apr 14', unread: false, body: `<p><strong>Operational Alert</strong></p><p>To All Port Users,</p><p>Please be advised that APM Terminals Elizabeth is currently experiencing high yard utilization due to increased import volumes.</p><p>Truck drivers may experience longer than normal turn times. We encourage advanced appointments through the terminal system and to check for real-time updates.</p><p>We are working closely with terminal operators to alleviate congestion and improve fluidity.</p><p>Thank you for your cooperation,<br>Port Authority of New York & New Jersey</p>` },
+             { id: 5, sender: 'CMA CGM Group', senderInitial: 'C', subject: 'Booking Confirmation - Reference: CC100987 - POL: Shanghai / POD: Houston', snippet: 'Your booking CC100987 for 1x40\'HC from Shanghai to Houston has been confirmed on CMA CGM J. MADISON...', timestamp: 'Apr 14', unread: true, body: `<p>Dear Partner,</p><p>This email confirms your booking request:</p><ul><li>Booking Reference: <strong>CC100987</strong></li><li>Container Type: 1 x 40' High Cube (HC)</li><li>Port of Loading (POL): Shanghai, China (CNSHA)</li><li>Port of Discharge (POD): Houston, TX, USA (USHOU)</li><li>Vessel/Voyage: <strong>CMA CGM J. MADISON / 0TXAKE1MA</strong></li><li>Estimated Time of Departure (ETD) Shanghai: April 25, 2025</li><li>Estimated Time of Arrival (ETA) Houston: May 20, 2025</li></ul><p>Please ensure operations according to the container cutoff and documentation deadline specified in the booking confirmation details.</p><p>Best regards,<br>CMA CGM E-Commerce Team</p>` },
+             { id: 6, sender: 'Flexport', senderInitial: 'F', subject: 'Pre-Alert: Shipment FLX98765 Arriving in Oakland', snippet: 'Pre-alert for shipment FLX98765 (Consignee: Tech Gadgets Co) arriving in Oakland on ONE OLYMPUS...', timestamp: 'Apr 13', unread: false, body: `<p>Hello Partner,</p><p>Please find the pre-alert details for the following shipment:</p><ul><li>Flexport Reference: <strong>FLX98765</strong></li><li>Consignee: Tech Gadgets Co</li><li>House B/L (HBL): FLXSHAOAK123</li><li>Master B/L (MBL): ONEXYZOAK987</li><li>Container Number: OOLU5554443 (1x40'HQ)</li><li>Vessel/Voyage: ONE OLYMPUS / 050E</li><li>ETD Shanghai: March 30, 2025</li><li>ETA Oakland: April 19, 2025</li></ul><p>Attached is a copy of the HBL, commercial invoice, and packing list for your reference and customs clearance preparation.</p><p>Please confirm receipt and advise if ISF has been filed.</p><p>Thanks,<br>Flexport Operations</p>` },
+             { id: 7, sender: 'Hapag-Lloyd', senderInitial: 'H', subject: 'Rate Request - Taipei to Hamburg', snippet: 'Regarding your inquiry for rates from Taipei to Hamburg for 2x20\'GP. Please find attached quote...', timestamp: 'Apr 12', unread: true, body: `<p>Dear Customer,</p><p>Regarding your recent rate request, please find our quote attached for the following cargo:</p><ul><li>Origin: Taipei, Taiwan (TW TPE)</li><li>Destination: Hamburg, Germany (DE HAM)</li><li>Commodity: FAK (Freight All Kinds)</li><li>Container Type: 2 x 20' General Purpose (GP)</li></ul><p>The quote includes ocean freight, standard origin/destination charges, and validity details.</p><p>Please review and let us know if you wish to proceed with booking.</p><p>Best regards,<br>Hapag-Lloyd Sales Team</p>` },
+             { id: 8, sender: 'Internal Operations Team', senderInitial: 'I', subject: 'Reminder: Ocean Import Status Call Today at 2 PM CST', snippet: 'Reminder that we will be holding our weekly sync to review shipment status, challenges, and priorities...', timestamp: '8:30 AM', unread: true, body: `<p>Hello Team Members,</p><p>Friendly reminder of our Ocean Import Status Call scheduled for today:</p><p><strong>Time:</strong> 2:00 - 3:00 PM CST</p><p><strong>Agenda:</strong></p><ul><li>Review of key shipments' ETAs and potential delays</li><li>Discussion of clearance issues/examinations</li><li>Handling of carrier performance and space issues</li><li>Customer escalations</li><li>Open floor/updates</li></ul><p>Please be prepared to discuss your key accounts and any urgent matters.</p><p>Meeting Link: [Meeting Link]</p><p>See you at the meeting!</p>` }
         ];
 
         // DOM Element References
@@ -376,7 +376,7 @@
         let analysisTimeoutId = null;
         let lucideCheckInterval = null; // Interval timer for Lucide check
         let lucideCheckTimeout = null; // Timeout for Lucide check
-        let currentHblNo = "EGLV1234567890"; // 新增: 當前的 HB/L No.
+        let currentHblNo = "EGLV1234567890"; // Added: current HB/L No.
 
         // --- Helper Functions ---
         function updateUnreadCount() {
@@ -385,30 +385,30 @@
         }
 
         function showLoadingIndicator() {
-            if (!gofreightmatePanel || !gofreightmateContent) return;
-            // 隱藏 HBL 區塊
-            const hblSection = document.getElementById('hbl-section');
-            if (hblSection) {
-                hblSection.classList.add('hidden');
-            }
-            
-            gofreightmateContent.innerHTML = `
-               <div class="flex justify-center items-center h-full">
-                   <p class="text-center text-purple-600 flex items-center">
-                       <i data-lucide="loader-2" class="animate-spin mr-2"></i> 分析中...
-                   </p>
-               </div>`;
-            // Ensure icon is rendered immediately after adding HTML
-            // Check if lucide is available before calling
-            if (typeof lucide !== 'undefined') {
-                try {
-                   lucide.createIcons();
-                } catch (error) {
-                    console.error("Error creating dynamic Lucide icon (loader):", error);
-                }
-            } else {
-                console.error("Lucide not available when showing loading indicator.");
-            }
+             if (!gofreightmatePanel || !gofreightmateContent) return;
+             // Hide HBL section
+             const hblSection = document.getElementById('hbl-section');
+             if (hblSection) {
+                 hblSection.classList.add('hidden');
+             }
+             
+             gofreightmateContent.innerHTML = `
+                <div class="flex justify-center items-center h-full">
+                    <p class="text-center text-purple-600 flex items-center">
+                        <i data-lucide="loader-2" class="animate-spin mr-2"></i> Analyzing...
+                    </p>
+                </div>`;
+             // Ensure icon is rendered immediately after adding HTML
+             // Check if lucide is available before calling
+             if (typeof lucide !== 'undefined') {
+                 try {
+                    lucide.createIcons();
+                 } catch (error) {
+                     console.error("Error creating dynamic Lucide icon (loader):", error);
+                 }
+             } else {
+                 console.error("Lucide not available when showing loading indicator.");
+             }
         }
 
         // --- Sidebar Toggle Function ---
@@ -448,14 +448,14 @@
             gofreightmatePanel.classList.add('hidden');
             gofreightmatePanel.classList.remove('flex');
             
-            // 隱藏 HBL 區塊
+            // Hide HBL section
             const hblSection = document.getElementById('hbl-section');
             if (hblSection) {
                 hblSection.classList.add('hidden');
             }
             
             if (analysisTimeoutId) { clearTimeout(analysisTimeoutId); analysisTimeoutId = null; }
-            gofreightmateContent.innerHTML = '<p class="text-center text-purple-600">請點擊上方 GoFreightMate 按鈕開始分析。</p>';
+            gofreightmateContent.innerHTML = '<p class="text-center text-purple-600">Click the GoFreightMate button above to start analysis.</p>';
             console.log("Panel closed.");
         }
 
@@ -470,15 +470,15 @@
                     </div>
                     <div class="gfm-card-content">
                         <div class="gfm-card-row">
-                            <div class="gfm-card-label">GoFreight 現有資料:</div>
-                            <div class="gfm-card-value current">${currentData || '<i>(無)</i>'}</div>
+                            <div class="gfm-card-label">GoFreight Current Data:</div>
+                            <div class="gfm-card-value current">${currentData || '<i>(None)</i>'}</div>
                         </div>
                         <div class="gfm-card-row">
-                            <div class="gfm-card-label">AI 提取資料:</div>
-                            <div class="gfm-card-value ai">${aiData || '<i>(未能提取)</i>'}</div>
+                            <div class="gfm-card-label">AI Extracted Data:</div>
+                            <div class="gfm-card-value ai">${aiData || '<i>(Not extracted)</i>'}</div>
                         </div>
                         <div class="gfm-card-row">
-                            <div class="gfm-card-label">更新資料:</div>
+                            <div class="gfm-card-label">Update Data:</div>
                             <input type="text" class="gfm-card-input" value="${aiData || ''}" />
                         </div>
                     </div>
@@ -488,48 +488,48 @@
 
         function populateGoFreightMateContent(email) {
             if (!email) { 
-                gofreightmateContent.innerHTML = '<p class="text-red-600">錯誤：無法讀取郵件內容。</p>'; 
+                gofreightmateContent.innerHTML = '<p class="text-red-600">Error: Unable to read email content.</p>'; 
                 return; 
             }
             console.log("Populating content for email ID:", email.id);
             gofreightmateContent.innerHTML = '';
             
-            // 顯示 HBL 區塊
+            // Show HBL section
             const hblSection = document.getElementById('hbl-section');
             if (hblSection) {
                 hblSection.classList.remove('hidden');
             }
             
-            // 更新 HB/L No. 顯示，根據當前電子郵件更新
+            // Update HB/L No. display based on current email
             if (email.id === 2) {
-                // 長榮船務的郵件，顯示 EGLV1234567890
+                // Evergreen email, show EGLV1234567890
                 currentHblNo = "EGLV1234567890";
                 document.getElementById('hbl-display').textContent = currentHblNo;
                 document.getElementById('hbl-input').value = currentHblNo;
                 
-                gofreightmateContent.innerHTML += createFieldHtml('貨櫃號碼 (Container No.)', '<i>(無)</i>', 'EISU9876543');
-                gofreightmateContent.innerHTML += createFieldHtml('船隻/航次 (Vessel/Voyage)', 'EVER ACE / 014E', 'EVER ACE V.015E');
-                gofreightmateContent.innerHTML += createFieldHtml('預計卸貨日期 (Est. Discharge)', '2025年4月16日', '2025年4月17日');
-                gofreightmateContent.innerHTML += createFieldHtml('免費堆存期截止日 (Last Free Day)', '2025年4月20日', '2025年4月21日');
-                gofreightmateContent.innerHTML += createFieldHtml('卸貨港/地點 (POD/Location)', '台北港', '台北港 (TW TPE)');
-                gofreightmateContent.innerHTML += createFieldHtml('CY/CFS 地點', 'JONES, CLAYTON AND HARRIS', 'SAMSUNG C AND T AMERICA INC.');
+                gofreightmateContent.innerHTML += createFieldHtml('Container No.', '<i>(None)</i>', 'EISU9876543');
+                gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', 'EVER ACE / 014E', 'EVER ACE V.015E');
+                gofreightmateContent.innerHTML += createFieldHtml('Est. Discharge Date', 'April 16, 2025', 'April 17, 2025');
+                gofreightmateContent.innerHTML += createFieldHtml('Last Free Day', 'April 20, 2025', 'April 21, 2025');
+                gofreightmateContent.innerHTML += createFieldHtml('POD/Location', 'Taipei Port', 'Taipei Port (TW TPE)');
+                gofreightmateContent.innerHTML += createFieldHtml('CY/CFS Location', 'JONES, CLAYTON AND HARRIS', 'SAMSUNG C AND T AMERICA INC.');
             } else if (email.id === 1) {
-                // 馬士基的郵件，顯示不同的 HB/L
+                // Maersk email, show different HB/L
                 currentHblNo = "MSKU1234567";
                 document.getElementById('hbl-display').textContent = currentHblNo;
                 document.getElementById('hbl-input').value = currentHblNo;
                 
-                gofreightmateContent.innerHTML += createFieldHtml('貨櫃號碼 (Container No.)', 'MSKU1234567', 'MSKU1234567');
-                gofreightmateContent.innerHTML += createFieldHtml('船隻/航次 (Vessel/Voyage)', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401');
-                gofreightmateContent.innerHTML += createFieldHtml('預計抵達時間 (ETA)', '2025年4月18日, 08:00 PST', '2025年4月18日, 14:00 PST');
-                gofreightmateContent.innerHTML += createFieldHtml('目的港 (Destination)', 'Los Angeles, CA', 'Port of Los Angeles (USLAX)');
+                gofreightmateContent.innerHTML += createFieldHtml('Container No.', 'MSKU1234567', 'MSKU1234567');
+                gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401');
+                gofreightmateContent.innerHTML += createFieldHtml('ETA', 'April 18, 2025, 08:00 PST', 'April 18, 2025, 14:00 PST');
+                gofreightmateContent.innerHTML += createFieldHtml('Destination', 'Los Angeles, CA', 'Port of Los Angeles (USLAX)');
             } else {
-                // 其他郵件
+                // Other emails
                 currentHblNo = "N/A";
                 document.getElementById('hbl-display').textContent = currentHblNo;
                 document.getElementById('hbl-input').value = currentHblNo;
                 
-                gofreightmateContent.innerHTML = '<p class="text-purple-700">GoFreightMate AI 分析不適用於此郵件類型。</p>';
+                gofreightmateContent.innerHTML = '<p class="text-purple-700">GoFreightMate AI analysis is not applicable to this email type.</p>';
             }
         }
 
@@ -647,45 +647,45 @@
              if (gofreightmateButton) { gofreightmateButton.classList.add('hidden'); }
              if (gofreightmatePanel) { gofreightmatePanel.classList.add('hidden'); gofreightmatePanel.classList.remove('flex'); }
 
-             // 初始化 HB/L 編輯功能
-             const hblEditButton = document.getElementById('hbl-edit-button');
-             const hblSaveButton = document.getElementById('hbl-save-button');
-             const hblDisplay = document.getElementById('hbl-display');
-             const hblEditForm = document.getElementById('hbl-edit-form');
-             const hblInput = document.getElementById('hbl-input');
+            // Initialize HB/L editing functionality
+            const hblEditButton = document.getElementById('hbl-edit-button');
+            const hblSaveButton = document.getElementById('hbl-save-button');
+            const hblDisplay = document.getElementById('hbl-display');
+            const hblEditForm = document.getElementById('hbl-edit-form');
+            const hblInput = document.getElementById('hbl-input');
 
-             if (hblEditButton) {
-                 hblEditButton.addEventListener('click', () => {
-                     hblDisplay.classList.add('hidden');
-                     hblEditForm.classList.remove('hidden');
-                     hblInput.focus();
-                     hblInput.select();
-                 });
-             }
+            if (hblEditButton) {
+                hblEditButton.addEventListener('click', () => {
+                    hblDisplay.classList.add('hidden');
+                    hblEditForm.classList.remove('hidden');
+                    hblInput.focus();
+                    hblInput.select();
+                });
+            }
 
-             if (hblSaveButton) {
-                 hblSaveButton.addEventListener('click', () => {
-                     const newHblNo = hblInput.value.trim();
-                     if (newHblNo !== currentHblNo) {
-                         currentHblNo = newHblNo;
-                         hblDisplay.textContent = currentHblNo;
-                         
-                         // 如果有打開的電子郵件，重新觸發分析
-                         if (currentOpenEmail) {
-                             showLoadingIndicator();
-                             if (analysisTimeoutId) { 
-                                 clearTimeout(analysisTimeoutId); 
-                             }
-                             analysisTimeoutId = setTimeout(() => {
-                                 populateGoFreightMateContent(currentOpenEmail);
-                                 analysisTimeoutId = null;
-                             }, 1000);
-                         }
-                     }
-                     hblEditForm.classList.add('hidden');
-                     hblDisplay.classList.remove('hidden');
-                 });
-             }
+            if (hblSaveButton) {
+                hblSaveButton.addEventListener('click', () => {
+                    const newHblNo = hblInput.value.trim();
+                    if (newHblNo !== currentHblNo) {
+                        currentHblNo = newHblNo;
+                        hblDisplay.textContent = currentHblNo;
+                        
+                        // If there's an open email, re-trigger analysis
+                        if (currentOpenEmail) {
+                            showLoadingIndicator();
+                            if (analysisTimeoutId) { 
+                                clearTimeout(analysisTimeoutId); 
+                            }
+                            analysisTimeoutId = setTimeout(() => {
+                                populateGoFreightMateContent(currentOpenEmail);
+                                analysisTimeoutId = null;
+                            }, 1000);
+                        }
+                    }
+                    hblEditForm.classList.add('hidden');
+                    hblDisplay.classList.remove('hidden');
+                });
+            }
 
         });
     </script>
