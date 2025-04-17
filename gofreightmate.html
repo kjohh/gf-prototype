@@ -174,6 +174,23 @@
                     <i data-lucide="x"></i>
                 </button>
             </div>
+            <div class="mb-4 pb-3 border-b border-purple-200">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-medium text-purple-800">HB/L No.</h4>
+                    <div id="hbl-edit-buttons">
+                        <button id="hbl-edit-button" class="p-1 text-purple-500 hover:text-purple-700 hover:bg-purple-100 rounded">
+                            <i data-lucide="edit-3" class="w-4 h-4 !mr-0"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="hbl-display" class="text-purple-700 font-medium text-lg">EGLV1234567890</div>
+                <div id="hbl-edit-form" class="hidden mt-2">
+                    <div class="flex">
+                        <input type="text" id="hbl-input" class="flex-1 border border-purple-300 rounded p-1 text-sm" value="EGLV1234567890">
+                        <button id="hbl-save-button" class="ml-2 bg-purple-600 text-white px-2 py-1 rounded text-sm">確定</button>
+                    </div>
+                </div>
+            </div>
             <div id="gofreightmate-content" class="flex-1">
                 <p class="text-center text-purple-600">請點擊上方 GoFreightMate 按鈕開始分析。</p>
             </div>
@@ -224,6 +241,7 @@
         let analysisTimeoutId = null;
         let lucideCheckInterval = null; // Interval timer for Lucide check
         let lucideCheckTimeout = null; // Timeout for Lucide check
+        let currentHblNo = "EGLV1234567890"; // 新增: 當前的 HB/L No.
 
         // --- Helper Functions ---
         function updateUnreadCount() {
@@ -308,10 +326,20 @@
         }
 
         function populateGoFreightMateContent(email) {
-             if (!email) { gofreightmateContent.innerHTML = '<p class="text-red-600">錯誤：無法讀取郵件內容。</p>'; return; }
+             if (!email) { 
+                 gofreightmateContent.innerHTML = '<p class="text-red-600">錯誤：無法讀取郵件內容。</p>'; 
+                 return; 
+             }
              console.log("Populating content for email ID:", email.id);
              gofreightmateContent.innerHTML = '';
+             
+             // 更新 HB/L No. 顯示，根據當前電子郵件更新
              if (email.id === 2) {
+                 // 長榮船務的郵件，顯示 EGLV1234567890
+                 currentHblNo = "EGLV1234567890";
+                 document.getElementById('hbl-display').textContent = currentHblNo;
+                 document.getElementById('hbl-input').value = currentHblNo;
+                 
                  gofreightmateContent.innerHTML += createFieldHtml('貨櫃號碼 (Container No.)', '<i>(無)</i>', 'EISU9876543');
                  gofreightmateContent.innerHTML += createFieldHtml('船隻/航次 (Vessel/Voyage)', 'EVER ACE / 014E', 'EVER ACE V.015E');
                  gofreightmateContent.innerHTML += createFieldHtml('預計卸貨日期 (Est. Discharge)', '2025年4月16日', '2025年4月17日');
@@ -319,11 +347,21 @@
                  gofreightmateContent.innerHTML += createFieldHtml('卸貨港/地點 (POD/Location)', '台北港', '台北港 (TW TPE)');
                  gofreightmateContent.innerHTML += createFieldHtml('CY/CFS 地點', 'JONES, CLAYTON AND HARRIS', 'SAMSUNG C AND T AMERICA INC.');
              } else if (email.id === 1) {
+                 // 馬士基的郵件，顯示不同的 HB/L
+                 currentHblNo = "MSKU1234567";
+                 document.getElementById('hbl-display').textContent = currentHblNo;
+                 document.getElementById('hbl-input').value = currentHblNo;
+                 
                  gofreightmateContent.innerHTML += createFieldHtml('貨櫃號碼 (Container No.)', 'MSKU1234567', 'MSKU1234567');
                  gofreightmateContent.innerHTML += createFieldHtml('船隻/航次 (Vessel/Voyage)', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401');
                  gofreightmateContent.innerHTML += createFieldHtml('預計抵達時間 (ETA)', '2025年4月18日, 08:00 PST', '2025年4月18日, 14:00 PST');
                  gofreightmateContent.innerHTML += createFieldHtml('目的港 (Destination)', 'Los Angeles, CA', 'Port of Los Angeles (USLAX)');
              } else {
+                 // 其他郵件
+                 currentHblNo = "N/A";
+                 document.getElementById('hbl-display').textContent = currentHblNo;
+                 document.getElementById('hbl-input').value = currentHblNo;
+                 
                  gofreightmateContent.innerHTML = '<p class="text-purple-700">GoFreightMate AI 分析不適用於此郵件類型。</p>';
              }
         }
@@ -441,6 +479,46 @@
              // Initial state setup
              if (gofreightmateButton) { gofreightmateButton.classList.add('hidden'); }
              if (gofreightmatePanel) { gofreightmatePanel.classList.add('hidden'); gofreightmatePanel.classList.remove('flex'); }
+
+             // 初始化 HB/L 編輯功能
+             const hblEditButton = document.getElementById('hbl-edit-button');
+             const hblSaveButton = document.getElementById('hbl-save-button');
+             const hblDisplay = document.getElementById('hbl-display');
+             const hblEditForm = document.getElementById('hbl-edit-form');
+             const hblInput = document.getElementById('hbl-input');
+
+             if (hblEditButton) {
+                 hblEditButton.addEventListener('click', () => {
+                     hblDisplay.classList.add('hidden');
+                     hblEditForm.classList.remove('hidden');
+                     hblInput.focus();
+                     hblInput.select();
+                 });
+             }
+
+             if (hblSaveButton) {
+                 hblSaveButton.addEventListener('click', () => {
+                     const newHblNo = hblInput.value.trim();
+                     if (newHblNo !== currentHblNo) {
+                         currentHblNo = newHblNo;
+                         hblDisplay.textContent = currentHblNo;
+                         
+                         // 如果有打開的電子郵件，重新觸發分析
+                         if (currentOpenEmail) {
+                             showLoadingIndicator();
+                             if (analysisTimeoutId) { 
+                                 clearTimeout(analysisTimeoutId); 
+                             }
+                             analysisTimeoutId = setTimeout(() => {
+                                 populateGoFreightMateContent(currentOpenEmail);
+                                 analysisTimeoutId = null;
+                             }, 1000);
+                         }
+                     }
+                     hblEditForm.classList.add('hidden');
+                     hblDisplay.classList.remove('hidden');
+                 });
+             }
 
         });
     </script>
