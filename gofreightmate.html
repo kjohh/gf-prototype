@@ -137,11 +137,28 @@
             background-size: 1.2rem;
             padding-right: 2rem;
         }
-        .gfm-date-picker:focus {
-            border-color: #6366f1;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        
+        /* 添加禁用輸入欄位的樣式 */
+        .gfm-card-input:disabled,
+        .gfm-date-picker:disabled,
+        .gfm-select:disabled,
+        .gfm-autocomplete-input:disabled {
+            background-color: #f9fafb;
+            color: #6b7280;
+            cursor: not-allowed;
+            border-color: #e5e7eb;
+            opacity: 0.75;
         }
+        
+        /* 禁用時增加淡色邊框指示更新過的欄位 */
+        .gfm-card.updated .gfm-card-input:disabled,
+        .gfm-card.updated .gfm-date-picker:disabled,
+        .gfm-card.updated .gfm-select:disabled,
+        .gfm-card.updated .gfm-autocomplete-input:disabled {
+            border-color: #aeaeae;
+            background-color: #aeaeae;
+        }
+
         .gfm-select-wrapper {
             margin-top: 0.5rem;
             position: relative;
@@ -736,6 +753,11 @@
                 // 已經更新過，顯示標籤並隱藏按鈕
                 if (hblUpdatedBadge) hblUpdatedBadge.classList.remove('hidden');
                 if (updateGofreightBtn) updateGofreightBtn.style.display = 'none';
+                
+                // 在填充內容之後禁用所有欄位
+                setTimeout(() => {
+                    disableAllInputFields();
+                }, 100);
             } else {
                 // 未更新過，隱藏標籤並顯示按鈕
                 if (hblUpdatedBadge) hblUpdatedBadge.classList.add('hidden');
@@ -1071,6 +1093,9 @@
                             
                             // 記錄這個 email 已經更新
                             updatedEmailIds.add(currentOpenEmail.id);
+                            
+                            // 禁用所有輸入欄位
+                            disableAllInputFields();
                         } else {
                             // 失敗狀態
                             statusMessage.innerHTML = `<i data-lucide="alert-circle"></i> Failed to update GoFreight. Please try again later.`;
@@ -1091,6 +1116,35 @@
             }
 
         });
+
+        // 新增禁用所有輸入欄位的函數
+        function disableAllInputFields() {
+            // 禁用文本輸入框
+            const textInputs = document.querySelectorAll('.gfm-card-input, .gfm-date-picker, .gfm-autocomplete-input');
+            textInputs.forEach(input => {
+                input.disabled = true;
+            });
+            
+            // 禁用下拉選單
+            const selectInputs = document.querySelectorAll('.gfm-select');
+            selectInputs.forEach(select => {
+                select.disabled = true;
+            });
+            
+            // 為所有卡片添加 updated 類，應用已更新的樣式
+            const cards = document.querySelectorAll('.gfm-card');
+            cards.forEach(card => {
+                card.classList.add('updated');
+            });
+            
+            // 禁用 HB/L 編輯按鈕
+            const hblEditButton = document.getElementById('hbl-edit-button');
+            if (hblEditButton) {
+                hblEditButton.disabled = true;
+                hblEditButton.style.opacity = '0.5';
+                hblEditButton.style.cursor = 'not-allowed';
+            }
+        }
     </script>
 </body>
 </html>
