@@ -520,14 +520,29 @@
     <script>
         // Simulated email data for ocean import operator
         const emails = [
-             { id: 1, sender: 'Maersk Line', senderInitial: 'M', subject: 'ETA Update - Vessel MAERSK HONG KONG V.2401 - Container MSKU1234567', snippet: 'Please note that the updated ETA for MAERSK HONG KONG V.2401 at Los Angeles port is now...', timestamp: '9:45 AM', unread: true, body: `<p>Dear Customer,</p><p>Please be advised that the vessel <strong>MAERSK HONG KONG V.2401</strong> has an updated estimated time of arrival (ETA) at Los Angeles Port (USLAX) of <strong>April 18, 2025, 14:00 PST</strong>.</p><p>Container Number: <strong>MSKU1234567</strong></p><p>Booking Reference: <strong>AE123987</strong></p><p>We apologize for any inconvenience this schedule change may cause. You can track the latest status of the vessel on our website.</p><p>Best regards,<br>Maersk Customer Service</p>` },
-             { id: 2, sender: 'Evergreen Shipping Agency', senderInitial: 'E', subject: 'Arrival Notice - EVER ACE V.015E - B/L No. EGLV1234567890', snippet: 'Your cargo on EVER ACE V.015E is scheduled to discharge on April 17. Please arrange...', timestamp: 'Yesterday', unread: true, body: `<p><strong>Arrival Notice</strong></p><p>Dear Customer,</p><p>This is to inform you that your cargo under Bill of Lading <strong>EGLV1234567890</strong> is expected to arrive at Taipei Port (TW TPE) on the vessel <strong>EVER ACE V.015E</strong>.</p><ul><li>Estimated Discharge Date: April 17, 2025</li><li>Container Number: EISU9876543</li><li>Last Free Day: April 21, 2025</li></ul><p>Please ensure timely arrangements for customs clearance and cargo collection to avoid potential demurrage charges.</p><p>Required release documents are attached.</p><p>Sincerely,<br>Evergreen Shipping Agency (America) Inc.</p>` },
-             { id: 3, sender: 'Apex Logistics', senderInitial: 'A', subject: 'URGENT: Customs Examination - Cargo Ref APX55678 - Container TCNU1122334', snippet: 'Action Required: US Customs has selected shipment APX55678 for examination. Additional documents...', timestamp: 'Yesterday', unread: false, body: `<p>Team Partners,</p><p><strong>Urgent Action Notice</strong></p><p>US Customs and Border Protection (CBP) has selected the following shipment for examination (X-Ray):</p><ul><li>Our Reference: <strong>APX55678</strong></li><li>Consignee: Global Imports Inc.</li><li>Container: <strong>TCNU1122334</strong></li><li>Vessel/Voyage: OOCL TOKYO / 088W</li><li>ETA Long Beach: April 16, 2025</li></ul><p>CBP is requesting commercial invoice, packing list, and detailed product material composition information within 48 hours.</p><p>Please coordinate with the importer immediately to collect the required documents and information. Advise the client of potential delays and examination fees.</p><p>Thank you,<br>Compliance Department<br>Apex Logistics</p>` },
-             { id: 4, sender: 'Port Authority NY/NJ', senderInitial: 'P', subject: 'Terminal Congestion Update - APM Terminals Elizabeth', snippet: 'APM Terminals Elizabeth yard utilization is high. Expect extended truck turn times...', timestamp: 'Apr 14', unread: false, body: `<p><strong>Operational Alert</strong></p><p>To All Port Users,</p><p>Please be advised that APM Terminals Elizabeth is currently experiencing high yard utilization due to increased import volumes.</p><p>Truck drivers may experience longer than normal turn times. We encourage advanced appointments through the terminal system and to check for real-time updates.</p><p>We are working closely with terminal operators to alleviate congestion and improve fluidity.</p><p>Thank you for your cooperation,<br>Port Authority of New York & New Jersey</p>` },
-             { id: 5, sender: 'CMA CGM Group', senderInitial: 'C', subject: 'Booking Confirmation - Reference: CC100987 - POL: Shanghai / POD: Houston', snippet: 'Your booking CC100987 for 1x40\'HC from Shanghai to Houston has been confirmed on CMA CGM J. MADISON...', timestamp: 'Apr 14', unread: true, body: `<p>Dear Partner,</p><p>This email confirms your booking request:</p><ul><li>Booking Reference: <strong>CC100987</strong></li><li>Container Type: 1 x 40' High Cube (HC)</li><li>Port of Loading (POL): Shanghai, China (CNSHA)</li><li>Port of Discharge (POD): Houston, TX, USA (USHOU)</li><li>Vessel/Voyage: <strong>CMA CGM J. MADISON / 0TXAKE1MA</strong></li><li>Estimated Time of Departure (ETD) Shanghai: April 25, 2025</li><li>Estimated Time of Arrival (ETA) Houston: May 20, 2025</li></ul><p>Please ensure operations according to the container cutoff and documentation deadline specified in the booking confirmation details.</p><p>Best regards,<br>CMA CGM E-Commerce Team</p>` },
-             { id: 6, sender: 'Flexport', senderInitial: 'F', subject: 'Pre-Alert: Shipment FLX98765 Arriving in Oakland', snippet: 'Pre-alert for shipment FLX98765 (Consignee: Tech Gadgets Co) arriving in Oakland on ONE OLYMPUS...', timestamp: 'Apr 13', unread: false, body: `<p>Hello Partner,</p><p>Please find the pre-alert details for the following shipment:</p><ul><li>Flexport Reference: <strong>FLX98765</strong></li><li>Consignee: Tech Gadgets Co</li><li>House B/L (HBL): FLXSHAOAK123</li><li>Master B/L (MBL): ONEXYZOAK987</li><li>Container Number: OOLU5554443 (1x40'HQ)</li><li>Vessel/Voyage: ONE OLYMPUS / 050E</li><li>ETD Shanghai: March 30, 2025</li><li>ETA Oakland: April 19, 2025</li></ul><p>Attached is a copy of the HBL, commercial invoice, and packing list for your reference and customs clearance preparation.</p><p>Please confirm receipt and advise if ISF has been filed.</p><p>Thanks,<br>Flexport Operations</p>` },
-             { id: 7, sender: 'Hapag-Lloyd', senderInitial: 'H', subject: 'Rate Request - Taipei to Hamburg', snippet: 'Regarding your inquiry for rates from Taipei to Hamburg for 2x20\'GP. Please find attached quote...', timestamp: 'Apr 12', unread: true, body: `<p>Dear Customer,</p><p>Regarding your recent rate request, please find our quote attached for the following cargo:</p><ul><li>Origin: Taipei, Taiwan (TW TPE)</li><li>Destination: Hamburg, Germany (DE HAM)</li><li>Commodity: FAK (Freight All Kinds)</li><li>Container Type: 2 x 20' General Purpose (GP)</li></ul><p>The quote includes ocean freight, standard origin/destination charges, and validity details.</p><p>Please review and let us know if you wish to proceed with booking.</p><p>Best regards,<br>Hapag-Lloyd Sales Team</p>` },
-             { id: 8, sender: 'Internal Operations Team', senderInitial: 'I', subject: 'Reminder: Ocean Import Status Call Today at 2 PM CST', snippet: 'Reminder that we will be holding our weekly sync to review shipment status, challenges, and priorities...', timestamp: '8:30 AM', unread: true, body: `<p>Hello Team Members,</p><p>Friendly reminder of our Ocean Import Status Call scheduled for today:</p><p><strong>Time:</strong> 2:00 - 3:00 PM CST</p><p><strong>Agenda:</strong></p><ul><li>Review of key shipments' ETAs and potential delays</li><li>Discussion of clearance issues/examinations</li><li>Handling of carrier performance and space issues</li><li>Customer escalations</li><li>Open floor/updates</li></ul><p>Please be prepared to discuss your key accounts and any urgent matters.</p><p>Meeting Link: [Meeting Link]</p><p>See you at the meeting!</p>` }
+            // 1. 可以分析並能成功更新的信件
+            { id: 1, sender: 'Maersk Line', senderInitial: 'M', subject: 'ETA Update - Vessel MAERSK HONG KONG V.2401 - Container MSKU1234567', snippet: 'Please note that the updated ETA for MAERSK HONG KONG V.2401 at Los Angeles port is now...', timestamp: '9:45 AM', unread: true, body: `<p>Dear Customer,</p><p>Please be advised that the vessel <strong>MAERSK HONG KONG V.2401</strong> has an updated estimated time of arrival (ETA) at Los Angeles Port (USLAX) of <strong>April 18, 2025, 14:00 PST</strong>.</p><p>Container Number: <strong>MSKU1234567</strong></p><p>Booking Reference: <strong>AE123987</strong></p><p>We apologize for any inconvenience this schedule change may cause. You can track the latest status of the vessel on our website.</p><p>Best regards,<br>Maersk Customer Service</p>` },
+            
+            // 2. 可以分析但不能成功更新的信件
+            { id: 2, sender: 'Evergreen Shipping Agency', senderInitial: 'E', subject: 'Arrival Notice - EVER ACE V.015E - B/L No. EGLV1234567890', snippet: 'Your cargo on EVER ACE V.015E is scheduled to discharge on April 17. Please arrange...', timestamp: 'Yesterday', unread: true, body: `<p><strong>Arrival Notice</strong></p><p>Dear Customer,</p><p>This is to inform you that your cargo under Bill of Lading <strong>EGLV1234567890</strong> is expected to arrive at Taipei Port (TW TPE) on the vessel <strong>EVER ACE V.015E</strong>.</p><ul><li>Estimated Discharge Date: April 17, 2025</li><li>Container Number: EISU9876543</li><li>Last Free Day: April 21, 2025</li></ul><p>Please ensure timely arrangements for customs clearance and cargo collection to avoid potential demurrage charges.</p><p>Required release documents are attached.</p><p>Sincerely,<br>Evergreen Shipping Agency (America) Inc.</p>` },
+            
+            // 3. 可以分析的海關檢查通知
+            { id: 3, sender: 'US Customs and Border Protection', senderInitial: 'C', subject: 'URGENT: Examination Notice for Shipment CB552789 - Entry# 235-98754611', snippet: 'Your shipment CB552789 has been selected for examination. Please arrange for the following...', timestamp: 'Yesterday', unread: false, body: `<p>FORMAL NOTICE OF EXAMINATION</p><p>Dear Freight Forwarder,</p><p>US Customs and Border Protection (CBP) has selected the following shipment for examination:</p><ul><li>Entry Number: <strong>235-98754611</strong></li><li>Container Number: <strong>MSDU4456789</strong></li><li>Bill of Lading: <strong>MEDU0098765432</strong></li><li>Vessel/Voyage: MSC ANTONIA / 445E</li><li>Port of Entry: Los Angeles/Long Beach</li><li>Current Location: CES Facility LAX</li></ul><p>The examination has been scheduled for April 18, 2025. Please have a representative available to facilitate the inspection process. All documentation must be submitted electronically through the CBP portal by April 16, 2025.</p><p>For further assistance, please contact the Examination Coordination Center.</p><p>Regards,<br>Customs Examination Team<br>US Customs and Border Protection</p>` },
+            
+            // 4. 可以分析的空櫃通知  
+            { id: 4, sender: 'ONE Line', senderInitial: 'O', subject: 'Empty Container Return Instructions - ONEHAN220500123', snippet: 'Please find return instructions for empty containers from shipment ONEHAN220500123...', timestamp: 'Apr 14', unread: false, body: `<p><strong>Empty Container Return Notice</strong></p><p>Dear Valued Customer,</p><p>Please note the return instructions for the following empty containers:</p><ul><li>Booking Reference: <strong>ONEHAN220500123</strong></li><li>Bill of Lading: <strong>ONEA12354697</strong></li><li>Container Numbers: <strong>ONEY6754321, ONEY9988765</strong></li><li>Last Free Day: April 20, 2025</li><li>Return Location: ONE Terminal Oakland (2500 7th Street, Oakland, CA 94607)</li></ul><p>Operating Hours: Mon-Fri 08:00-16:30</p><p>Please ensure all containers are clean and free of debris, labels, and hazardous material residue. Any containers returned in unsatisfactory condition will be subject to cleaning fees.</p><p>Best regards,<br>Equipment Management Department<br>Ocean Network Express (ONE)</p>` },
+            
+            // 5. 普通辦公室郵件 - IT部門的通知
+            { id: 5, sender: 'IT Department', senderInitial: 'I', subject: 'Scheduled System Maintenance - April 16', snippet: 'Please be advised that our systems will be undergoing scheduled maintenance on April 16...', timestamp: 'Apr 14', unread: true, body: `<p>Dear Colleagues,</p><p>Please be advised that our IT systems will be undergoing scheduled maintenance this weekend:</p><ul><li><strong>Date:</strong> Saturday, April 16, 2025</li><li><strong>Time:</strong> 22:00 - 02:00 (GMT-7)</li><li><strong>Affected Systems:</strong> Email server, VPN connections, and document management system</li></ul><p>During this time, you may experience intermittent connectivity issues or service disruptions. Please ensure you save all important work before the maintenance window begins.</p><p>If you have any urgent tasks that require system access during this time, please contact the IT helpdesk to discuss alternative arrangements.</p><p>We apologize for any inconvenience this may cause and appreciate your understanding.</p><p>Best regards,<br>IT Support Team</p>` },
+            
+            // 6. 普通辦公室郵件 - 客戶詢問
+            { id: 6, sender: 'Global Electronics Inc.', senderInitial: 'G', subject: 'Quote Request for Monthly Shipments from Shenzhen to Chicago', snippet: 'We are looking for a freight forwarder to handle our monthly shipments from Shenzhen to Chicago...', timestamp: 'Apr 13', unread: false, body: `<p>Dear Freight Services Team,</p><p>Our company, Global Electronics Inc., is seeking quotations for regular monthly shipments from our manufacturing facility in Shenzhen, China to our distribution center in Chicago, IL.</p><p><strong>Shipment Details:</strong></p><ul><li>Product: Consumer electronics (non-hazardous)</li><li>Volume: 2 x 40'HC containers per month</li><li>Schedule: First shipment needed by mid-May</li><li>Special Requirements: Cargo insurance, customs clearance</li><li>Incoterms: FOB Shenzhen</li></ul><p>We are currently evaluating several logistics providers and would appreciate receiving your best rates and transit times for both ocean and air options.</p><p>Could you also provide information about your tracking capabilities and customer service standards?</p><p>Thank you for your assistance. We look forward to your response.</p><p>Best regards,<br>Sarah Johnson<br>Logistics Manager<br>Global Electronics Inc.</p>` },
+            
+            // 7. 普通辦公室郵件 - 人力資源部門通知
+            { id: 7, sender: 'HR Department', senderInitial: 'H', subject: 'Reminder: Quarterly Performance Reviews Due April 20', snippet: 'This is a reminder that all Q1 performance reviews must be completed by April 20...', timestamp: 'Apr 12', unread: true, body: `<p>Dear Team Managers,</p><p>This is a friendly reminder that all Q1 2025 performance reviews must be completed and submitted by <strong>April 20, 2025</strong>.</p><p>Please ensure you:</p><ul><li>Schedule review meetings with all team members</li><li>Complete the standardized evaluation form</li><li>Submit signed forms to the HR portal</li><li>Provide copies to your team members</li></ul><p>To access the performance review forms, please visit the HR portal at [intranet link].</p><p>If you need assistance with the review process or have questions about the forms, please contact the HR team by email or at extension 4455.</p><p>Thank you for your cooperation in completing this important process on time.</p><p>Best regards,<br>Human Resources Department</p>` },
+            
+            // 8. 可以分析的日程邀請
+            { id: 8, sender: 'Operations Manager', senderInitial: 'O', subject: 'Import Shipment Review - ONE OPAL V.236E - Containers NYKU7654321, NYKU7654322', snippet: 'Meeting to review status of critical import shipment arriving on ONE OPAL V.236E...', timestamp: '8:30 AM', unread: true, body: `<p>Hi Team,</p><p>I'd like to schedule a meeting to review the status of the following critical import shipment:</p><ul><li><strong>Vessel:</strong> ONE OPAL V.236E</li><li><strong>ETA:</strong> April 19, 2025</li><li><strong>Containers:</strong> NYKU7654321, NYKU7654322</li><li><strong>Bill of Lading:</strong> ONEABC123456</li><li><strong>Customer:</strong> Premium Electronics Inc.</li></ul><p>We need to ensure all documentation is in order and customs clearance is prepared ahead of arrival. This is a high-priority customer and we need to ensure a smooth delivery process.</p><p><strong>Meeting Details:</strong></p><p>Date: Tomorrow, April 16, 2025<br>Time: 10:00 AM - 10:30 AM<br>Location: Conference Room B / Zoom Link: [Meeting Link]</p><p>Please come prepared with updates on documentation status, customs clearance preparations, and last mile delivery arrangements.</p><p>Thanks,<br>Operations Manager</p>` }
         ];
 
         // DOM Element References
@@ -765,8 +780,19 @@
             }
             
             // Update HB/L No. display based on current email
-            if (email.id === 2) {
-                // Evergreen email, show EGLV1234567890
+            if (email.id === 1) {
+                // Maersk 更新信件，可分析可更新
+                currentHblNo = "MSKU1234567";
+                document.getElementById('hbl-display').textContent = currentHblNo;
+                document.getElementById('hbl-input').value = currentHblNo;
+                
+                gofreightmateContent.innerHTML += createFieldHtml('Container No.', 'MSKU1234567', 'MSKU1234567', 'container');
+                gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401', 'vessel');
+                gofreightmateContent.innerHTML += createFieldHtml('ETA', 'April 18, 2025, 08:00 PST', 'April 18, 2025, 14:00 PST', 'date');
+                gofreightmateContent.innerHTML += createFieldHtml('Destination', 'Los Angeles, CA', 'Port of Los Angeles (USLAX)', 'port');
+            } 
+            else if (email.id === 2) {
+                // Evergreen 到達通知，可分析但不可更新
                 currentHblNo = "EGLV1234567890";
                 document.getElementById('hbl-display').textContent = currentHblNo;
                 document.getElementById('hbl-input').value = currentHblNo;
@@ -777,23 +803,59 @@
                 gofreightmateContent.innerHTML += createFieldHtml('Last Free Day', 'April 20, 2025', 'April 21, 2025', 'date');
                 gofreightmateContent.innerHTML += createFieldHtml('POD/Location', 'Taipei Port', 'Taipei Port (TW TPE)', 'port');
                 gofreightmateContent.innerHTML += createFieldHtml('CY/CFS Location', 'JONES, CLAYTON AND HARRIS', 'SAMSUNG C AND T AMERICA INC.', 'location');
-            } else if (email.id === 1) {
-                // Maersk email, show different HB/L
-                currentHblNo = "MSKU1234567";
+            }
+            else if (email.id === 3) {
+                // 海關檢查通知，可分析
+                currentHblNo = "MEDU0098765432";
                 document.getElementById('hbl-display').textContent = currentHblNo;
                 document.getElementById('hbl-input').value = currentHblNo;
                 
-                gofreightmateContent.innerHTML += createFieldHtml('Container No.', 'MSKU1234567', 'MSKU1234567', 'container');
-                gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401', 'vessel');
-                gofreightmateContent.innerHTML += createFieldHtml('ETA', 'April 18, 2025, 08:00 PST', 'April 18, 2025, 14:00 PST', 'date');
-                gofreightmateContent.innerHTML += createFieldHtml('Destination', 'Los Angeles, CA', 'Port of Los Angeles (USLAX)', 'port');
-            } else {
-                // Other emails
+                gofreightmateContent.innerHTML += createFieldHtml('Container No.', '<i>(None)</i>', 'MSDU4456789', 'container');
+                gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', '<i>(None)</i>', 'MSC ANTONIA / 445E', 'vessel');
+                gofreightmateContent.innerHTML += createFieldHtml('Entry Number', '<i>(None)</i>', '235-98754611', 'text');
+                gofreightmateContent.innerHTML += createFieldHtml('Exam Date', '<i>(None)</i>', 'April 18, 2025', 'date');
+                gofreightmateContent.innerHTML += createFieldHtml('Exam Location', '<i>(None)</i>', 'CES Facility LAX', 'location');
+                gofreightmateContent.innerHTML += createFieldHtml('Port of Entry', 'Los Angeles', 'Los Angeles/Long Beach', 'port');
+            }
+            else if (email.id === 4) {
+                // 空櫃歸還通知，可分析
+                currentHblNo = "ONEA12354697";
+                document.getElementById('hbl-display').textContent = currentHblNo;
+                document.getElementById('hbl-input').value = currentHblNo;
+                
+                gofreightmateContent.innerHTML += createFieldHtml('Container No.', '<i>(None)</i>', 'ONEY6754321, ONEY9988765', 'container');
+                gofreightmateContent.innerHTML += createFieldHtml('Booking Reference', '<i>(None)</i>', 'ONEHAN220500123', 'text');
+                gofreightmateContent.innerHTML += createFieldHtml('Last Free Day', 'April 21, 2025', 'April 20, 2025', 'date');
+                gofreightmateContent.innerHTML += createFieldHtml('Return Location', '<i>(None)</i>', 'ONE Terminal Oakland', 'location');
+            }
+            else if (email.id === 8) {
+                // 進口貨物審查會議，可分析
+                currentHblNo = "ONEABC123456";
+                document.getElementById('hbl-display').textContent = currentHblNo;
+                document.getElementById('hbl-input').value = currentHblNo;
+                
+                gofreightmateContent.innerHTML += createFieldHtml('Container No.', '<i>(None)</i>', 'NYKU7654321, NYKU7654322', 'container');
+                gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', '<i>(None)</i>', 'ONE OPAL V.236E', 'vessel');
+                gofreightmateContent.innerHTML += createFieldHtml('ETA', '<i>(None)</i>', 'April 19, 2025', 'date');
+                gofreightmateContent.innerHTML += createFieldHtml('Customer', '<i>(None)</i>', 'Premium Electronics Inc.', 'text');
+            }
+            else {
+                // 其他普通郵件，不可分析
                 currentHblNo = "N/A";
                 document.getElementById('hbl-display').textContent = currentHblNo;
                 document.getElementById('hbl-input').value = currentHblNo;
                 
-                gofreightmateContent.innerHTML = '<p class="text-purple-700">GoFreightMate AI analysis is not applicable to this email type.</p>';
+                gofreightmateContent.innerHTML = '<p class="text-purple-700 text-center">This email does not contain shipment data that can be analyzed by GoFreightMate.</p>';
+                
+                // 隱藏 HBL 區域，因為這不是可分析的郵件
+                if (hblSection) {
+                    hblSection.classList.add('hidden');
+                }
+                
+                // 隱藏更新按鈕
+                if (updateGofreightBtn) {
+                    updateGofreightBtn.style.display = 'none';
+                }
             }
             
             // 初始化自動完成下拉選單功能
@@ -1078,8 +1140,8 @@
                         this.disabled = false;
                         
                         // 根據郵件 ID 決定成功或失敗
-                        // Email ID 1 (Maersk) 會成功，其他會失敗
-                        if (currentOpenEmail.id === 1) {
+                        // Email ID 1, 3, 4 會成功，其他會失敗
+                        if (currentOpenEmail.id === 1 || currentOpenEmail.id === 3 || currentOpenEmail.id === 4) {
                             // 成功狀態
                             statusMessage.innerHTML = `<i data-lucide="check-circle"></i> Successfully updated shipment data in GoFreight.`;
                             statusMessage.classList.add('success');
