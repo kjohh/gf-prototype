@@ -679,29 +679,29 @@
             <!-- 入口頁面 -->
             <div id="gfm-home-page" class="flex-1">
                 <div class="mb-6">
-                    <h2 class="text-xl font-bold text-purple-900 mb-2">智能郵件助手</h2>
-                    <p class="text-gray-600 text-sm">GoFreightMate AI 幫助您從郵件中快速提取信息並與 GoFreight 系統整合，提高工作效率。</p>
+                    <h2 class="text-xl font-bold text-purple-900 mb-2">Smart Email Assistant</h2>
+                    <p class="text-gray-600 text-sm">GoFreightMate AI helps you extract information from emails and integrate with GoFreight system to improve efficiency.</p>
                 </div>
                 
                 <div class="feature-card" id="data-extraction-card">
-                    <h3>數據掃描</h3>
-                    <p>從郵件中自動識別和提取運輸相關數據，輕鬆更新 GoFreight 系統中的記錄。</p>
+                    <h3>Data Scanning</h3>
+                    <p>Automatically identify and extract shipping-related data from emails, easily update records in GoFreight system.</p>
                 </div>
                 
                 <div class="feature-card" id="file-upload-card">
-                    <h3>上傳郵件和附件</h3>
-                    <p>輕鬆將整封郵件或郵件附件上傳至 GoFreight 系統中的相應 Shipment 記錄。</p>
+                    <h3>Upload Email & Attachments</h3>
+                    <p>Easily upload the entire email or email attachments to the corresponding Shipment record in GoFreight system.</p>
                 </div>
                 
                 <div class="mt-6 text-xs text-gray-500">
-                    <p>提示：點擊功能卡片以繼續操作。切換郵件時，GoFreightMate 會保持在當前功能頁面。</p>
+                    <p>Tip: Click on a feature card to continue. When switching emails, GoFreightMate will maintain the current feature page.</p>
                 </div>
             </div>
             
             <!-- 數據掃描頁面 -->
             <div id="gfm-data-extraction-page" class="flex-1 hidden">
                 <button class="back-button">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
                 </button>
                 
                 <div id="hbl-section" class="hidden">
@@ -720,24 +720,24 @@
                         <div id="hbl-display" class="hbl-card-value">EGLV1234567890</div>
                         <div id="hbl-edit-form" class="hbl-edit-form hidden">
                             <input type="text" id="hbl-input" class="hbl-input" value="EGLV1234567890">
-                            <button id="hbl-save-button" class="hbl-save-btn">確認</button>
+                            <button id="hbl-save-button" class="hbl-save-btn">Confirm</button>
                         </div>
                     </div>
                 </div>
                 
                 <div id="gofreightmate-content" class="flex-1">
-                    <p class="text-center text-purple-600">點擊 GoFreightMate 按鈕開始分析。</p>
+                    <p class="text-center text-purple-600">Click the GoFreightMate button to start analysis.</p>
                 </div>
             </div>
             
             <!-- 上傳郵件和附件頁面 -->
             <div id="gfm-upload-page" class="flex-1 hidden">
                 <button class="back-button">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
                 </button>
                 
                 <div class="mb-6">
-                    <h2 class="text-lg font-semibold text-purple-800 mb-3">上傳郵件和附件</h2>
+                    <h2 class="text-lg font-semibold text-purple-800 mb-3">Upload Email & Attachments</h2>
                     
                     <div class="hbl-card">
                         <div class="hbl-card-header">
@@ -751,11 +751,11 @@
                         <div id="mbl-display" class="hbl-card-value">KIOR294757356</div>
                         <div id="mbl-edit-form" class="hbl-edit-form hidden">
                             <input type="text" id="mbl-input" class="hbl-input" value="KIOR294757356">
-                            <button id="mbl-save-button" class="hbl-save-btn">確認</button>
+                            <button id="mbl-save-button" class="hbl-save-btn">Confirm</button>
                         </div>
                         <div class="previously-uploaded hidden" id="previously-uploaded-indicator">
                             <i data-lucide="info" class="text-gray-500"></i>
-                            <span>已於 2024-04-15 15:30 上傳過附件</span>
+                            <span>Attachments previously uploaded on 2024-04-15 15:30</span>
                         </div>
                     </div>
                     
@@ -763,20 +763,20 @@
                         <div class="upload-option" data-option="full">
                             <div class="upload-option-header">
                                 <input type="radio" id="upload-full" name="upload-type" checked>
-                                <label for="upload-full">上傳郵件和附件</label>
+                                <label for="upload-full">Upload Email & Attachments</label>
                             </div>
                             <div class="upload-option-desc">
-                                將整封郵件內容及所有附件上傳至 GoFreight
+                                Upload the entire email content and all attachments to GoFreight
                             </div>
                         </div>
                         
                         <div class="upload-option" data-option="attachment-only">
                             <div class="upload-option-header">
                                 <input type="radio" id="upload-attachment" name="upload-type">
-                                <label for="upload-attachment">僅上傳附件</label>
+                                <label for="upload-attachment">Upload Attachments Only</label>
                             </div>
                             <div class="upload-option-desc">
-                                僅將郵件中的附件上傳至 GoFreight
+                                Only upload the attachments from the email to GoFreight
                             </div>
                         </div>
                     </div>
@@ -801,21 +801,21 @@
                     <div class="no-attachment-alert hidden" id="no-attachment-alert">
                         <i data-lucide="alert-triangle" class="w-5 h-5"></i>
                         <div>
-                            <p class="font-medium">沒有可上傳的附件</p>
-                            <p class="text-sm">此郵件中沒有附件，無法進行上傳操作。</p>
+                            <p class="font-medium">No attachments to upload</p>
+                            <p class="text-sm">There are no attachments in this email that can be uploaded.</p>
                         </div>
                     </div>
                     
                     <div class="upload-success hidden" id="upload-success">
                         <div class="upload-success-header">
                             <i data-lucide="check-circle" class="w-5 h-5"></i>
-                            <span>上傳成功</span>
+                            <span>Upload Successful</span>
                         </div>
                         <div class="upload-success-details">
                             <p><strong>MB/L No.:</strong> <span id="success-mbl-no">KIOR294757356</span></p>
-                            <p><strong>上傳內容:</strong> <span id="success-content-type">郵件和附件 (2 個文件)</span></p>
-                            <p><strong>上傳時間:</strong> <span id="success-time">2024-04-16 11:42</span></p>
-                            <a href="#" class="shipment-link">前往 GoFreight 查看 Shipment</a>
+                            <p><strong>Uploaded Content:</strong> <span id="success-content-type">Email & Attachments (2 files)</span></p>
+                            <p><strong>Upload Time:</strong> <span id="success-time">2024-04-16 11:42</span></p>
+                            <a href="#" class="shipment-link">Go to GoFreight to view Shipment</a>
                         </div>
                     </div>
                 </div>
@@ -825,11 +825,11 @@
                 <div id="status-message" class="status-message hidden mb-3"></div>
                 <button id="update-gofreight-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md shadow hover:bg-purple-700 transition duration-150 flex items-center justify-center space-x-2">
                      <i data-lucide="save"></i>
-                     <span>更新 GoFreight (模擬)</span>
+                     <span>Update GoFreight (Simulation)</span>
                 </button>
                 <button id="upload-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md shadow hover:bg-purple-700 transition duration-150 flex items-center justify-center space-x-2 hidden">
                      <i data-lucide="upload"></i>
-                     <span>上傳</span>
+                     <span>Upload</span>
                 </button>
             </div>
         </aside>
@@ -911,7 +911,7 @@
              gofreightmateContent.innerHTML = `
                 <div class="flex justify-center items-center h-full">
                     <p class="text-center text-purple-600 flex items-center">
-                        <i data-lucide="loader-2" class="animate-spin mr-2"></i> 分析中...
+                        <i data-lucide="loader-2" class="animate-spin mr-2"></i> Analyzing...
                     </p>
                 </div>`;
              // Ensure icon is rendered immediately after adding HTML
@@ -925,6 +925,80 @@
              } else {
                  console.error("Lucide not available when showing loading indicator.");
              }
+        }
+
+        // 添加上傳頁面的讀取指示器
+        function showUploadLoadingIndicator() {
+            if (!gofreightmatePanel) return;
+            
+            // 獲取上傳頁面元素
+            const uploadPage = document.getElementById('gfm-upload-page');
+            if (!uploadPage) return;
+            
+            // 確保上傳頁面可見
+            uploadPage.classList.remove('hidden');
+            
+            // 獲取頁面中需要臨時隱藏的元素
+            const mblCard = uploadPage.querySelector('.hbl-card');
+            const uploadOptions = uploadPage.querySelector('.upload-options');
+            const attachmentList = document.getElementById('attachment-list');
+            const uploadBtn = document.getElementById('upload-btn');
+            
+            // 臨時隱藏這些元素
+            if (mblCard) mblCard.style.opacity = '0.5';
+            if (uploadOptions) uploadOptions.style.opacity = '0.5';
+            if (attachmentList) attachmentList.style.opacity = '0.5';
+            if (uploadBtn) uploadBtn.classList.add('hidden');
+            
+            // 添加讀取指示器
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.id = 'upload-loading-indicator';
+            loadingIndicator.classList.add('flex', 'justify-center', 'items-center', 'my-4');
+            loadingIndicator.innerHTML = `
+                <p class="text-center text-purple-600 flex items-center">
+                    <i data-lucide="loader-2" class="animate-spin mr-2"></i> Loading attachment information...
+                </p>
+            `;
+            
+            // 將讀取指示器添加到頁面
+            uploadPage.insertBefore(loadingIndicator, uploadOptions);
+            
+            // 確保圖標被渲染
+            if (typeof lucide !== 'undefined') {
+                try {
+                    lucide.createIcons();
+                } catch (error) {
+                    console.error("Error creating upload loading icons:", error);
+                }
+            }
+        }
+
+        // 移除上傳頁面的讀取指示器
+        function removeUploadLoadingIndicator() {
+            const loadingIndicator = document.getElementById('upload-loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+            
+            // 恢復頁面元素的可見性
+            const uploadPage = document.getElementById('gfm-upload-page');
+            if (!uploadPage) return;
+            
+            const mblCard = uploadPage.querySelector('.hbl-card');
+            const uploadOptions = uploadPage.querySelector('.upload-options');
+            const attachmentList = document.getElementById('attachment-list');
+            const uploadBtn = document.getElementById('upload-btn');
+            const noAttachmentAlert = document.getElementById('no-attachment-alert');
+            
+            if (mblCard) mblCard.style.opacity = '1';
+            if (uploadOptions) uploadOptions.style.opacity = '1';
+            if (attachmentList) attachmentList.style.opacity = '1';
+            
+            // 根據當前郵件是否已上傳決定顯示上傳按鈕
+            if (uploadBtn && currentOpenEmail && !uploadedEmailIds.has(currentOpenEmail.id)) {
+                uploadBtn.classList.remove('hidden');
+                uploadBtn.style.display = 'flex';
+            }
         }
 
         // --- Sidebar Toggle Function ---
@@ -1042,15 +1116,18 @@
                 const uploadSuccess = document.getElementById('upload-success');
                 if (uploadSuccess) uploadSuccess.classList.add('hidden');
                 
+                // 移除讀取指示器
+                removeUploadLoadingIndicator();
+                
                 // 更新附件顯示
                 updateAttachmentDisplay();
                 
                 // 更新已上傳狀態
                 updateUploadedStatus();
                 
-                // 如果郵件已上傳過，隱藏上傳按鈕
-                if (currentOpenEmail && uploadedEmailIds.has(currentOpenEmail.id)) {
-                    if (uploadBtn) uploadBtn.style.display = 'none';
+                // 恢復上傳按鈕，允許重新上傳
+                if (uploadBtn) {
+                    uploadBtn.style.display = 'flex';
                 }
             }
         }
@@ -1061,24 +1138,188 @@
             const noAttachmentAlert = document.getElementById('no-attachment-alert');
             const uploadBtn = document.getElementById('upload-btn');
             
-            // 檢查當前郵件是否有附件
-            let hasAttachments = false;
-            
-            if (currentOpenEmail) {
-                if (currentOpenEmail.id === 1 || currentOpenEmail.id === 2 || 
-                    currentOpenEmail.id === 3 || currentOpenEmail.id === 4) {
-                    hasAttachments = true;
-                }
-            }
+            // 所有郵件現在都有附件
+            let hasAttachments = true;
             
             if (hasAttachments) {
                 attachmentList.classList.remove('hidden');
                 noAttachmentAlert.classList.add('hidden');
                 uploadBtn.disabled = false;
-            } else {
-                attachmentList.classList.add('hidden');
-                noAttachmentAlert.classList.remove('hidden');
-                uploadBtn.disabled = true;
+                
+                // 清空之前的附件
+                attachmentList.innerHTML = '';
+                
+                // 根據郵件ID添加不同的附件
+                if (currentOpenEmail) {
+                    if (currentOpenEmail.id === 1) {
+                        // Maersk ETA更新
+                        attachmentList.innerHTML += `
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">ETA_Update_MSKU1234567.pdf</div>
+                                <div class="attachment-size">156 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Delivery_Instructions.pdf</div>
+                                <div class="attachment-size">245 KB</div>
+                            </div>
+                        `;
+                    } else if (currentOpenEmail.id === 2) {
+                        // Evergreen 到達通知
+                        attachmentList.innerHTML += `
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Arrival_Notice_EGLV1234567890.pdf</div>
+                                <div class="attachment-size">189 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Customs_Clearance_Form.pdf</div>
+                                <div class="attachment-size">134 KB</div>
+                            </div>
+                        `;
+                    } else if (currentOpenEmail.id === 3) {
+                        // 海關檢查通知
+                        attachmentList.innerHTML += `
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">CBP_Examination_Notice.pdf</div>
+                                <div class="attachment-size">167 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Required_Documents.pdf</div>
+                                <div class="attachment-size">210 KB</div>
+                            </div>
+                        `;
+                    } else if (currentOpenEmail.id === 4) {
+                        // 空櫃通知
+                        attachmentList.innerHTML += `
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Empty_Container_Return.pdf</div>
+                                <div class="attachment-size">142 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Terminal_Map.pdf</div>
+                                <div class="attachment-size">325 KB</div>
+                            </div>
+                        `;
+                    } else if (currentOpenEmail.id === 5) {
+                        // IT系統維護通知
+                        attachmentList.innerHTML += `
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">System_Maintenance_Schedule.pdf</div>
+                                <div class="attachment-size">135 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">IT_Contact_List.xlsx</div>
+                                <div class="attachment-size">95 KB</div>
+                            </div>
+                        `;
+                    } else if (currentOpenEmail.id === 6) {
+                        // 客戶詢問
+                        attachmentList.innerHTML += `
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Shipping_Requirements.pdf</div>
+                                <div class="attachment-size">205 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Company_Profile.pdf</div>
+                                <div class="attachment-size">350 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Product_Specifications.xlsx</div>
+                                <div class="attachment-size">128 KB</div>
+                            </div>
+                        `;
+                    } else if (currentOpenEmail.id === 7) {
+                        // HR部門通知
+                        attachmentList.innerHTML += `
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Performance_Review_Form.docx</div>
+                                <div class="attachment-size">87 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Q1_Review_Guidelines.pdf</div>
+                                <div class="attachment-size">145 KB</div>
+                            </div>
+                        `;
+                    } else if (currentOpenEmail.id === 8) {
+                        // 進口貨物審查會議
+                        attachmentList.innerHTML += `
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Shipment_Details_ONEABC123456.pdf</div>
+                                <div class="attachment-size">178 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Meeting_Agenda.docx</div>
+                                <div class="attachment-size">65 KB</div>
+                            </div>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                                </div>
+                                <div class="attachment-name">Delivery_Timeline.xlsx</div>
+                                <div class="attachment-size">120 KB</div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // 確保圖標被渲染
+                if (typeof lucide !== 'undefined') {
+                    try {
+                        lucide.createIcons();
+                    } catch (error) {
+                        console.error("Error creating attachment icons:", error);
+                    }
+                }
             }
         }
         
@@ -1099,25 +1340,13 @@
         // 新增函數：處理附件上傳
         function handleAttachmentUpload() {
             const uploadBtn = document.getElementById('upload-btn');
-            const noAttachmentAlert = document.getElementById('no-attachment-alert');
             const uploadSuccess = document.getElementById('upload-success');
             const successMblNo = document.getElementById('success-mbl-no');
             const successContentType = document.getElementById('success-content-type');
             const successTime = document.getElementById('success-time');
             
-            // 檢查是否有附件
-            let hasAttachments = false;
-            if (currentOpenEmail) {
-                if (currentOpenEmail.id === 1 || currentOpenEmail.id === 2 || 
-                    currentOpenEmail.id === 3 || currentOpenEmail.id === 4) {
-                    hasAttachments = true;
-                }
-            }
-            
-            if (!hasAttachments) {
-                noAttachmentAlert.classList.remove('hidden');
-                return;
-            }
+            // 所有郵件都有附件
+            let hasAttachments = true;
             
             // 顯示上傳中狀態
             uploadBtn.classList.add('btn-loading');
@@ -1138,8 +1367,19 @@
                 
                 // 設置成功訊息內容
                 successMblNo.textContent = currentMblNo;
+                
+                // 根據郵件類型設置不同的上傳內容描述
+                let fileCount = 2; // 默認為2個文件
+                if (currentOpenEmail) {
+                    if (currentOpenEmail.id === 6) {
+                        fileCount = 3; // 客戶詢問有3個附件
+                    } else if (currentOpenEmail.id === 8) {
+                        fileCount = 3; // 進口貨物審查會議有3個附件
+                    }
+                }
+                
                 successContentType.textContent = isFullUpload ? 
-                    '郵件和附件 (2 個文件)' : '僅附件 (2 個文件)';
+                    `Email & Attachments (${fileCount} files)` : `Attachments Only (${fileCount} files)`;
                 
                 // 獲取當前時間作為上傳時間
                 const now = new Date();
@@ -1495,23 +1735,52 @@
                     const clickedEmail = emails.find(e => e.id === clickedEmailId);
                     if (!clickedEmail) return;
                     currentOpenEmail = clickedEmail;
+                    
+                    // 標記郵件為已讀
+                    if (clickedEmail.unread) {
+                        clickedEmail.unread = false;
+                        emailItem.classList.remove('unread');
+                        const blueIndicatorDot = emailItem.querySelector('.absolute.left-1');
+                        if (blueIndicatorDot) blueIndicatorDot.style.display = 'none';
+                        emailItem.querySelectorAll('.font-semibold').forEach(el => el.classList.replace('font-semibold','font-normal'));
+                        emailItem.querySelectorAll('.text-gray-900').forEach(el => el.classList.replace('text-gray-900','text-gray-700'));
+                        emailItem.querySelectorAll('.text-blue-600').forEach(el => el.classList.replace('text-blue-600','text-gray-500'));
+                        updateUnreadCount();
+                    }
+                    
                     displayEmailContent(clickedEmail);
-                    if (selectedEmailItem && selectedEmailItem !== emailItem) { selectedEmailItem.classList.remove('selected'); }
-                    if (emailItem.classList.contains('unread')) {
-                         emailItem.classList.remove('unread');
-                         const blueIndicatorDot = emailItem.querySelector('.absolute.left-1');
-                         if (blueIndicatorDot) blueIndicatorDot.style.display = 'none';
-                         emailItem.querySelectorAll('.font-semibold').forEach(el => el.classList.replace('font-semibold','font-normal'));
-                         emailItem.querySelectorAll('.text-gray-900').forEach(el => el.classList.replace('text-gray-900','text-gray-700'));
-                         emailItem.querySelectorAll('.text-blue-600').forEach(el => el.classList.replace('text-blue-600','text-gray-500'));
-                         clickedEmail.unread = false;
-                         updateUnreadCount();
+                    
+                    // 更新選中狀態
+                    if (selectedEmailItem && selectedEmailItem !== emailItem) {
+                        selectedEmailItem.classList.remove('selected');
                     }
                     emailItem.classList.add('selected');
                     selectedEmailItem = emailItem;
+                    
+                    // 如果面板已開啟，根據當前頁面重新觸發相應功能
                     if (isGoFreightMatePanelOpen) {
                         console.log("Panel is open, auto-triggering analysis for new email.");
-                        triggerGoFreightMateAnalysis(currentOpenEmail);
+                        
+                        // 根據當前頁面重新處理
+                        if (currentGfmPage === 'data-extraction') {
+                            showLoadingIndicator();
+                            if (analysisTimeoutId) { 
+                                clearTimeout(analysisTimeoutId); 
+                            }
+                            analysisTimeoutId = setTimeout(() => {
+                                populateGoFreightMateContent(currentOpenEmail);
+                                analysisTimeoutId = null;
+                            }, 1000);
+                        } else if (currentGfmPage === 'upload') {
+                            // 顯示上傳頁面的讀取狀態
+                            showUploadLoadingIndicator();
+                            setTimeout(() => {
+                                showGfmPage('upload');
+                            }, 800);
+                        } else {
+                            // 入口頁面
+                            showGfmPage('home');
+                        }
                     }
                 });
                 emailListContainer.appendChild(emailItem);
@@ -1529,38 +1798,51 @@
             emailTimestamp.textContent = email.timestamp;
             emailBody.innerHTML = email.body;
             
-            // 顯示附件區域 (根據郵件ID模擬是否有附件)
+            // 顯示附件區域 (所有郵件都顯示附件)
             const emailAttachments = document.getElementById('email-attachments');
             const attachmentList = document.querySelector('.email-attachment-list');
             
-            if (email.id === 1 || email.id === 2 || email.id === 3 || email.id === 4) {
-                // 這些郵件有附件
-                emailAttachments.classList.remove('hidden');
-                
-                // 清空之前的附件
-                attachmentList.innerHTML = '';
-                
-                // 根據郵件ID添加不同的附件
-                if (email.id === 1) {
-                    // Maersk ETA更新
-                    attachmentList.innerHTML += createAttachmentItem('ETA_Update_MSKU1234567.pdf', '156 KB');
-                    attachmentList.innerHTML += createAttachmentItem('Delivery_Instructions.pdf', '245 KB');
-                } else if (email.id === 2) {
-                    // Evergreen 到達通知
-                    attachmentList.innerHTML += createAttachmentItem('Arrival_Notice_EGLV1234567890.pdf', '189 KB');
-                    attachmentList.innerHTML += createAttachmentItem('Customs_Clearance_Form.pdf', '134 KB');
-                } else if (email.id === 3) {
-                    // 海關檢查通知
-                    attachmentList.innerHTML += createAttachmentItem('CBP_Examination_Notice.pdf', '167 KB');
-                    attachmentList.innerHTML += createAttachmentItem('Required_Documents.pdf', '210 KB');
-                } else if (email.id === 4) {
-                    // 空櫃通知
-                    attachmentList.innerHTML += createAttachmentItem('Empty_Container_Return.pdf', '142 KB');
-                    attachmentList.innerHTML += createAttachmentItem('Terminal_Map.pdf', '325 KB');
-                }
-            } else {
-                // 其他郵件沒有附件
-                emailAttachments.classList.add('hidden');
+            // 顯示附件區域
+            emailAttachments.classList.remove('hidden');
+            
+            // 清空之前的附件
+            attachmentList.innerHTML = '';
+            
+            // 根據郵件ID添加不同的附件
+            if (email.id === 1) {
+                // Maersk ETA更新
+                attachmentList.innerHTML += createAttachmentItem('ETA_Update_MSKU1234567.pdf', '156 KB');
+                attachmentList.innerHTML += createAttachmentItem('Delivery_Instructions.pdf', '245 KB');
+            } else if (email.id === 2) {
+                // Evergreen 到達通知
+                attachmentList.innerHTML += createAttachmentItem('Arrival_Notice_EGLV1234567890.pdf', '189 KB');
+                attachmentList.innerHTML += createAttachmentItem('Customs_Clearance_Form.pdf', '134 KB');
+            } else if (email.id === 3) {
+                // 海關檢查通知
+                attachmentList.innerHTML += createAttachmentItem('CBP_Examination_Notice.pdf', '167 KB');
+                attachmentList.innerHTML += createAttachmentItem('Required_Documents.pdf', '210 KB');
+            } else if (email.id === 4) {
+                // 空櫃通知
+                attachmentList.innerHTML += createAttachmentItem('Empty_Container_Return.pdf', '142 KB');
+                attachmentList.innerHTML += createAttachmentItem('Terminal_Map.pdf', '325 KB');
+            } else if (email.id === 5) {
+                // IT系統維護通知
+                attachmentList.innerHTML += createAttachmentItem('System_Maintenance_Schedule.pdf', '135 KB');
+                attachmentList.innerHTML += createAttachmentItem('IT_Contact_List.xlsx', '95 KB');
+            } else if (email.id === 6) {
+                // 客戶詢問
+                attachmentList.innerHTML += createAttachmentItem('Shipping_Requirements.pdf', '205 KB');
+                attachmentList.innerHTML += createAttachmentItem('Company_Profile.pdf', '350 KB');
+                attachmentList.innerHTML += createAttachmentItem('Product_Specifications.xlsx', '128 KB');
+            } else if (email.id === 7) {
+                // HR部門通知
+                attachmentList.innerHTML += createAttachmentItem('Performance_Review_Form.docx', '87 KB');
+                attachmentList.innerHTML += createAttachmentItem('Q1_Review_Guidelines.pdf', '145 KB');
+            } else if (email.id === 8) {
+                // 進口貨物審查會議
+                attachmentList.innerHTML += createAttachmentItem('Shipment_Details_ONEABC123456.pdf', '178 KB');
+                attachmentList.innerHTML += createAttachmentItem('Meeting_Agenda.docx', '65 KB');
+                attachmentList.innerHTML += createAttachmentItem('Delivery_Timeline.xlsx', '120 KB');
             }
             
             // 清除之前的狀態訊息
