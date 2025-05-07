@@ -658,7 +658,7 @@
                     
                     <!-- 郵件附件部分 -->
                     <div id="email-attachments" class="mt-6 pt-4 border-t border-gray-200 hidden">
-                        <h4 class="text-sm font-medium text-gray-700 mb-2">附件</h4>
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">Attachments</h4>
                         <div class="email-attachment-list flex flex-col gap-2">
                             <!-- 附件項目將在這裡動態添加 -->
                         </div>
@@ -1072,9 +1072,15 @@
             if (dataExtractionPage) dataExtractionPage.classList.add('hidden');
             if (uploadPage) uploadPage.classList.add('hidden');
             
-            // 隱藏所有按鈕
-            if (updateGofreightBtn) updateGofreightBtn.classList.add('hidden');
-            if (uploadBtn) uploadBtn.classList.add('hidden');
+            // 首先確保所有按鈕都隱藏
+            if (updateGofreightBtn) {
+                updateGofreightBtn.classList.add('hidden');
+                updateGofreightBtn.style.display = 'none';
+            }
+            if (uploadBtn) {
+                uploadBtn.classList.add('hidden');
+                uploadBtn.style.display = 'none';
+            }
             
             // 根據頁面名稱顯示對應頁面和按鈕
             if (pageName === 'home') {
@@ -1082,24 +1088,26 @@
             }
             else if (pageName === 'data-extraction') {
                 if (dataExtractionPage) dataExtractionPage.classList.remove('hidden');
-                if (updateGofreightBtn) updateGofreightBtn.classList.remove('hidden');
-                
-                // 檢查郵件是否已更新並更新UI
-                if (currentOpenEmail && updatedEmailIds && updatedEmailIds.has(currentOpenEmail.id)) {
-                    // 已經更新過，隱藏按鈕
-                    if (updateGofreightBtn) updateGofreightBtn.style.display = 'none';
+                if (updateGofreightBtn) {
+                    updateGofreightBtn.classList.remove('hidden');
                     
-                    // 顯示已更新標籤
-                    const hblUpdatedBadge = document.getElementById('hbl-updated-badge');
-                    if (hblUpdatedBadge) hblUpdatedBadge.classList.remove('hidden');
-                    
-                    // 禁用所有輸入欄位
-                    setTimeout(() => {
-                        disableAllInputFields();
-                    }, 100);
-                } else {
-                    // 未更新過，顯示按鈕
-                    if (updateGofreightBtn) updateGofreightBtn.style.display = 'flex';
+                    // 檢查郵件是否已更新並更新UI
+                    if (currentOpenEmail && updatedEmailIds && updatedEmailIds.has(currentOpenEmail.id)) {
+                        // 已經更新過，隱藏按鈕
+                        updateGofreightBtn.style.display = 'none';
+                        
+                        // 顯示已更新標籤
+                        const hblUpdatedBadge = document.getElementById('hbl-updated-badge');
+                        if (hblUpdatedBadge) hblUpdatedBadge.classList.remove('hidden');
+                        
+                        // 禁用所有輸入欄位
+                        setTimeout(() => {
+                            disableAllInputFields();
+                        }, 100);
+                    } else {
+                        // 未更新過，顯示按鈕
+                        updateGofreightBtn.style.display = 'flex';
+                    }
                 }
                 
                 // 載入資料
@@ -1109,7 +1117,15 @@
                 if (uploadPage) uploadPage.classList.remove('hidden');
                 if (uploadBtn) {
                     uploadBtn.classList.remove('hidden');
-                    uploadBtn.style.display = 'flex';
+                    
+                    // 檢查郵件是否已上傳
+                    if (currentOpenEmail && uploadedEmailIds && uploadedEmailIds.has(currentOpenEmail.id)) {
+                        // 已上傳過，隱藏按鈕
+                        uploadBtn.style.display = 'none';
+                    } else {
+                        // 未上傳過，顯示按鈕
+                        uploadBtn.style.display = 'flex';
+                    }
                 }
                 
                 // 清除之前的上傳成功訊息
@@ -1124,11 +1140,6 @@
                 
                 // 更新已上傳狀態
                 updateUploadedStatus();
-                
-                // 恢復上傳按鈕，允許重新上傳
-                if (uploadBtn) {
-                    uploadBtn.style.display = 'flex';
-                }
             }
         }
         
@@ -1142,173 +1153,189 @@
             let hasAttachments = true;
             
             if (hasAttachments) {
-                attachmentList.classList.remove('hidden');
-                noAttachmentAlert.classList.add('hidden');
-                uploadBtn.disabled = false;
+                if (attachmentList) attachmentList.classList.remove('hidden');
+                if (noAttachmentAlert) noAttachmentAlert.classList.add('hidden');
+                if (uploadBtn) uploadBtn.disabled = false;
                 
                 // 清空之前的附件
-                attachmentList.innerHTML = '';
+                if (attachmentList) attachmentList.innerHTML = '';
                 
                 // 根據郵件ID添加不同的附件
                 if (currentOpenEmail) {
                     if (currentOpenEmail.id === 1) {
                         // Maersk ETA更新
-                        attachmentList.innerHTML += `
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                        if (attachmentList) {
+                            attachmentList.innerHTML += `
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">ETA_Update_MSKU1234567.pdf</div>
+                                    <div class="attachment-size">156 KB</div>
                                 </div>
-                                <div class="attachment-name">ETA_Update_MSKU1234567.pdf</div>
-                                <div class="attachment-size">156 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Delivery_Instructions.pdf</div>
+                                    <div class="attachment-size">245 KB</div>
                                 </div>
-                                <div class="attachment-name">Delivery_Instructions.pdf</div>
-                                <div class="attachment-size">245 KB</div>
-                            </div>
-                        `;
+                            `;
+                        }
                     } else if (currentOpenEmail.id === 2) {
                         // Evergreen 到達通知
-                        attachmentList.innerHTML += `
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                        if (attachmentList) {
+                            attachmentList.innerHTML += `
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Arrival_Notice_EGLV1234567890.pdf</div>
+                                    <div class="attachment-size">189 KB</div>
                                 </div>
-                                <div class="attachment-name">Arrival_Notice_EGLV1234567890.pdf</div>
-                                <div class="attachment-size">189 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Customs_Clearance_Form.pdf</div>
+                                    <div class="attachment-size">134 KB</div>
                                 </div>
-                                <div class="attachment-name">Customs_Clearance_Form.pdf</div>
-                                <div class="attachment-size">134 KB</div>
-                            </div>
-                        `;
+                            `;
+                        }
                     } else if (currentOpenEmail.id === 3) {
                         // 海關檢查通知
-                        attachmentList.innerHTML += `
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                        if (attachmentList) {
+                            attachmentList.innerHTML += `
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">CBP_Examination_Notice.pdf</div>
+                                    <div class="attachment-size">167 KB</div>
                                 </div>
-                                <div class="attachment-name">CBP_Examination_Notice.pdf</div>
-                                <div class="attachment-size">167 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Required_Documents.pdf</div>
+                                    <div class="attachment-size">210 KB</div>
                                 </div>
-                                <div class="attachment-name">Required_Documents.pdf</div>
-                                <div class="attachment-size">210 KB</div>
-                            </div>
-                        `;
+                            `;
+                        }
                     } else if (currentOpenEmail.id === 4) {
                         // 空櫃通知
-                        attachmentList.innerHTML += `
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                        if (attachmentList) {
+                            attachmentList.innerHTML += `
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Empty_Container_Return.pdf</div>
+                                    <div class="attachment-size">142 KB</div>
                                 </div>
-                                <div class="attachment-name">Empty_Container_Return.pdf</div>
-                                <div class="attachment-size">142 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Terminal_Map.pdf</div>
+                                    <div class="attachment-size">325 KB</div>
                                 </div>
-                                <div class="attachment-name">Terminal_Map.pdf</div>
-                                <div class="attachment-size">325 KB</div>
-                            </div>
-                        `;
+                            `;
+                        }
                     } else if (currentOpenEmail.id === 5) {
                         // IT系統維護通知
-                        attachmentList.innerHTML += `
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                        if (attachmentList) {
+                            attachmentList.innerHTML += `
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">System_Maintenance_Schedule.pdf</div>
+                                    <div class="attachment-size">135 KB</div>
                                 </div>
-                                <div class="attachment-name">System_Maintenance_Schedule.pdf</div>
-                                <div class="attachment-size">135 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-spreadsheet" class="w-5 h-5 text-green-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">IT_Contact_List.xlsx</div>
+                                    <div class="attachment-size">95 KB</div>
                                 </div>
-                                <div class="attachment-name">IT_Contact_List.xlsx</div>
-                                <div class="attachment-size">95 KB</div>
-                            </div>
-                        `;
+                            `;
+                        }
                     } else if (currentOpenEmail.id === 6) {
                         // 客戶詢問
-                        attachmentList.innerHTML += `
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                        if (attachmentList) {
+                            attachmentList.innerHTML += `
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Shipping_Requirements.pdf</div>
+                                    <div class="attachment-size">205 KB</div>
                                 </div>
-                                <div class="attachment-name">Shipping_Requirements.pdf</div>
-                                <div class="attachment-size">205 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Company_Profile.pdf</div>
+                                    <div class="attachment-size">350 KB</div>
                                 </div>
-                                <div class="attachment-name">Company_Profile.pdf</div>
-                                <div class="attachment-size">350 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-spreadsheet" class="w-5 h-5 text-green-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Product_Specifications.xlsx</div>
+                                    <div class="attachment-size">128 KB</div>
                                 </div>
-                                <div class="attachment-name">Product_Specifications.xlsx</div>
-                                <div class="attachment-size">128 KB</div>
-                            </div>
-                        `;
+                            `;
+                        }
                     } else if (currentOpenEmail.id === 7) {
                         // HR部門通知
-                        attachmentList.innerHTML += `
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                        if (attachmentList) {
+                            attachmentList.innerHTML += `
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Performance_Review_Form.docx</div>
+                                    <div class="attachment-size">87 KB</div>
                                 </div>
-                                <div class="attachment-name">Performance_Review_Form.docx</div>
-                                <div class="attachment-size">87 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Q1_Review_Guidelines.pdf</div>
+                                    <div class="attachment-size">145 KB</div>
                                 </div>
-                                <div class="attachment-name">Q1_Review_Guidelines.pdf</div>
-                                <div class="attachment-size">145 KB</div>
-                            </div>
-                        `;
+                            `;
+                        }
                     } else if (currentOpenEmail.id === 8) {
                         // 進口貨物審查會議
-                        attachmentList.innerHTML += `
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                        if (attachmentList) {
+                            attachmentList.innerHTML += `
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Shipment_Details_ONEABC123456.pdf</div>
+                                    <div class="attachment-size">178 KB</div>
                                 </div>
-                                <div class="attachment-name">Shipment_Details_ONEABC123456.pdf</div>
-                                <div class="attachment-size">178 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Meeting_Agenda.docx</div>
+                                    <div class="attachment-size">65 KB</div>
                                 </div>
-                                <div class="attachment-name">Meeting_Agenda.docx</div>
-                                <div class="attachment-size">65 KB</div>
-                            </div>
-                            <div class="attachment-item">
-                                <div class="attachment-icon">
-                                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                                <div class="attachment-item p-3 bg-gray-50 rounded-md">
+                                    <div class="attachment-icon">
+                                        <i data-lucide="file-spreadsheet" class="w-5 h-5 text-green-600"></i>
+                                    </div>
+                                    <div class="attachment-name font-medium">Delivery_Timeline.xlsx</div>
+                                    <div class="attachment-size">120 KB</div>
                                 </div>
-                                <div class="attachment-name">Delivery_Timeline.xlsx</div>
-                                <div class="attachment-size">120 KB</div>
-                            </div>
-                        `;
+                            `;
+                        }
                     }
                 }
                 
@@ -1541,38 +1568,43 @@
             // 更新上傳頁面的MB/L No.顯示
             if (currentGfmPage === 'upload') {
                 // 根據不同的郵件設置不同的MB/L No.
-                if (email.id === 1) {
-                    currentMblNo = "KIOR294757356";
-                } else if (email.id === 2) {
-                    currentMblNo = "EGLV1234567890";
-                } else if (email.id === 3) {
-                    currentMblNo = "MEDU0098765432";
-                } else if (email.id === 4) {
-                    currentMblNo = "ONEA12354697";
-                } else {
-                    currentMblNo = "N/A";
-                }
-                
-                // 更新MB/L No.顯示
-                document.getElementById('mbl-display').textContent = currentMblNo;
-                document.getElementById('mbl-input').value = currentMblNo;
-                
-                // 更新已上傳狀態
-                updateUploadedStatus();
+                updateMblNoForEmail(email);
                 
                 // 更新附件列表
                 updateAttachmentDisplay();
+                
+                // 更新已上傳狀態
+                updateUploadedStatus();
                 
                 return; // 不需要繼續執行數據掃描頁面的內容
             }
             
             // 以下是數據掃描頁面的內容處理
             // Update HB/L No. display based on current email
+            updateHblNoForEmail(email);
+            
+            // 確保圖標被渲染
+            if (typeof lucide !== 'undefined') {
+                try {
+                    lucide.createIcons();
+                } catch (error) {
+                    console.error("Error creating icons after populating content:", error);
+                }
+            }
+        }
+
+        // 新增函數：根據郵件更新HBL號碼
+        function updateHblNoForEmail(email) {
+            if (!email) return;
+            
+            const hblDisplay = document.getElementById('hbl-display');
+            const hblInput = document.getElementById('hbl-input');
+            
             if (email.id === 1) {
                 // Maersk 更新信件，可分析可更新
                 currentHblNo = "MSKU1234567";
-                document.getElementById('hbl-display').textContent = currentHblNo;
-                document.getElementById('hbl-input').value = currentHblNo;
+                if (hblDisplay) hblDisplay.textContent = currentHblNo;
+                if (hblInput) hblInput.value = currentHblNo;
                 
                 gofreightmateContent.innerHTML += createFieldHtml('Container No.', 'MSKU1234567', 'MSKU1234567', 'container');
                 gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401', 'vessel');
@@ -1582,8 +1614,8 @@
             else if (email.id === 2) {
                 // Evergreen 到達通知，可分析但不可更新
                 currentHblNo = "EGLV1234567890";
-                document.getElementById('hbl-display').textContent = currentHblNo;
-                document.getElementById('hbl-input').value = currentHblNo;
+                if (hblDisplay) hblDisplay.textContent = currentHblNo;
+                if (hblInput) hblInput.value = currentHblNo;
                 
                 gofreightmateContent.innerHTML += createFieldHtml('Container No.', '<i>(None)</i>', 'EISU9876543', 'container');
                 gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', 'EVER ACE / 014E', 'EVER ACE V.015E', 'vessel');
@@ -1595,8 +1627,8 @@
             else if (email.id === 3) {
                 // 海關檢查通知，可分析
                 currentHblNo = "MEDU0098765432";
-                document.getElementById('hbl-display').textContent = currentHblNo;
-                document.getElementById('hbl-input').value = currentHblNo;
+                if (hblDisplay) hblDisplay.textContent = currentHblNo;
+                if (hblInput) hblInput.value = currentHblNo;
                 
                 gofreightmateContent.innerHTML += createFieldHtml('Container No.', '<i>(None)</i>', 'MSDU4456789', 'container');
                 gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', '<i>(None)</i>', 'MSC ANTONIA / 445E', 'vessel');
@@ -1608,8 +1640,8 @@
             else if (email.id === 4) {
                 // 空櫃歸還通知，可分析
                 currentHblNo = "ONEA12354697";
-                document.getElementById('hbl-display').textContent = currentHblNo;
-                document.getElementById('hbl-input').value = currentHblNo;
+                if (hblDisplay) hblDisplay.textContent = currentHblNo;
+                if (hblInput) hblInput.value = currentHblNo;
                 
                 gofreightmateContent.innerHTML += createFieldHtml('Container No.', '<i>(None)</i>', 'ONEY6754321, ONEY9988765', 'container');
                 gofreightmateContent.innerHTML += createFieldHtml('Booking Reference', '<i>(None)</i>', 'ONEHAN220500123', 'text');
@@ -1619,8 +1651,8 @@
             else if (email.id === 8) {
                 // 進口貨物審查會議，可分析
                 currentHblNo = "ONEABC123456";
-                document.getElementById('hbl-display').textContent = currentHblNo;
-                document.getElementById('hbl-input').value = currentHblNo;
+                if (hblDisplay) hblDisplay.textContent = currentHblNo;
+                if (hblInput) hblInput.value = currentHblNo;
                 
                 gofreightmateContent.innerHTML += createFieldHtml('Container No.', '<i>(None)</i>', 'NYKU7654321, NYKU7654322', 'container');
                 gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', '<i>(None)</i>', 'ONE OPAL V.236E', 'vessel');
@@ -1630,17 +1662,19 @@
             else {
                 // 其他普通郵件，不可分析
                 currentHblNo = "N/A";
-                document.getElementById('hbl-display').textContent = currentHblNo;
-                document.getElementById('hbl-input').value = currentHblNo;
+                if (hblDisplay) hblDisplay.textContent = currentHblNo;
+                if (hblInput) hblInput.value = currentHblNo;
                 
                 gofreightmateContent.innerHTML = '<p class="text-purple-700 text-center">此郵件不含可被 GoFreightMate 分析的運輸數據。</p>';
                 
                 // 隱藏 HBL 區域，因為這不是可分析的郵件
+                const hblSection = document.getElementById('hbl-section');
                 if (hblSection) {
                     hblSection.classList.add('hidden');
                 }
                 
                 // 隱藏更新按鈕
+                const updateGofreightBtn = document.getElementById('update-gofreight-btn');
                 if (updateGofreightBtn) {
                     updateGofreightBtn.style.display = 'none';
                 }
@@ -1648,15 +1682,30 @@
             
             // 初始化自動完成下拉選單功能
             initializeAutoComplete();
+        }
+
+        // 新增函數：根據郵件更新MBL號碼和相關顯示
+        function updateMblNoForEmail(email) {
+            if (!email) return;
             
-            // 確保圖標被渲染
-            if (typeof lucide !== 'undefined') {
-                try {
-                    lucide.createIcons();
-                } catch (error) {
-                    console.error("Error creating icons after populating content:", error);
-                }
+            // 根據不同的郵件設置不同的MB/L No.
+            if (email.id === 1) {
+                currentMblNo = "KIOR294757356";
+            } else if (email.id === 2) {
+                currentMblNo = "EGLV1234567890";
+            } else if (email.id === 3) {
+                currentMblNo = "MEDU0098765432";
+            } else if (email.id === 4) {
+                currentMblNo = "ONEA12354697";
+            } else {
+                currentMblNo = "N/A";
             }
+            
+            // 更新MB/L No.顯示
+            const mblDisplay = document.getElementById('mbl-display');
+            const mblInput = document.getElementById('mbl-input');
+            if (mblDisplay) mblDisplay.textContent = currentMblNo;
+            if (mblInput) mblInput.value = currentMblNo;
         }
 
         // 新增自動完成下拉選單的初始化函數
@@ -1803,46 +1852,62 @@
             const attachmentList = document.querySelector('.email-attachment-list');
             
             // 顯示附件區域
-            emailAttachments.classList.remove('hidden');
+            if (emailAttachments) emailAttachments.classList.remove('hidden');
             
             // 清空之前的附件
-            attachmentList.innerHTML = '';
+            if (attachmentList) attachmentList.innerHTML = '';
             
-            // 根據郵件ID添加不同的附件
+            // 調用更新的附件顯示函數來顯示電子郵件中的附件
             if (email.id === 1) {
                 // Maersk ETA更新
-                attachmentList.innerHTML += createAttachmentItem('ETA_Update_MSKU1234567.pdf', '156 KB');
-                attachmentList.innerHTML += createAttachmentItem('Delivery_Instructions.pdf', '245 KB');
+                if (attachmentList) {
+                    attachmentList.innerHTML += createAttachmentItem('ETA_Update_MSKU1234567.pdf', '156 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Delivery_Instructions.pdf', '245 KB');
+                }
             } else if (email.id === 2) {
                 // Evergreen 到達通知
-                attachmentList.innerHTML += createAttachmentItem('Arrival_Notice_EGLV1234567890.pdf', '189 KB');
-                attachmentList.innerHTML += createAttachmentItem('Customs_Clearance_Form.pdf', '134 KB');
+                if (attachmentList) {
+                    attachmentList.innerHTML += createAttachmentItem('Arrival_Notice_EGLV1234567890.pdf', '189 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Customs_Clearance_Form.pdf', '134 KB');
+                }
             } else if (email.id === 3) {
                 // 海關檢查通知
-                attachmentList.innerHTML += createAttachmentItem('CBP_Examination_Notice.pdf', '167 KB');
-                attachmentList.innerHTML += createAttachmentItem('Required_Documents.pdf', '210 KB');
+                if (attachmentList) {
+                    attachmentList.innerHTML += createAttachmentItem('CBP_Examination_Notice.pdf', '167 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Required_Documents.pdf', '210 KB');
+                }
             } else if (email.id === 4) {
                 // 空櫃通知
-                attachmentList.innerHTML += createAttachmentItem('Empty_Container_Return.pdf', '142 KB');
-                attachmentList.innerHTML += createAttachmentItem('Terminal_Map.pdf', '325 KB');
+                if (attachmentList) {
+                    attachmentList.innerHTML += createAttachmentItem('Empty_Container_Return.pdf', '142 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Terminal_Map.pdf', '325 KB');
+                }
             } else if (email.id === 5) {
                 // IT系統維護通知
-                attachmentList.innerHTML += createAttachmentItem('System_Maintenance_Schedule.pdf', '135 KB');
-                attachmentList.innerHTML += createAttachmentItem('IT_Contact_List.xlsx', '95 KB');
+                if (attachmentList) {
+                    attachmentList.innerHTML += createAttachmentItem('System_Maintenance_Schedule.pdf', '135 KB');
+                    attachmentList.innerHTML += createAttachmentItem('IT_Contact_List.xlsx', '95 KB');
+                }
             } else if (email.id === 6) {
                 // 客戶詢問
-                attachmentList.innerHTML += createAttachmentItem('Shipping_Requirements.pdf', '205 KB');
-                attachmentList.innerHTML += createAttachmentItem('Company_Profile.pdf', '350 KB');
-                attachmentList.innerHTML += createAttachmentItem('Product_Specifications.xlsx', '128 KB');
+                if (attachmentList) {
+                    attachmentList.innerHTML += createAttachmentItem('Shipping_Requirements.pdf', '205 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Company_Profile.pdf', '350 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Product_Specifications.xlsx', '128 KB');
+                }
             } else if (email.id === 7) {
                 // HR部門通知
-                attachmentList.innerHTML += createAttachmentItem('Performance_Review_Form.docx', '87 KB');
-                attachmentList.innerHTML += createAttachmentItem('Q1_Review_Guidelines.pdf', '145 KB');
+                if (attachmentList) {
+                    attachmentList.innerHTML += createAttachmentItem('Performance_Review_Form.docx', '87 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Q1_Review_Guidelines.pdf', '145 KB');
+                }
             } else if (email.id === 8) {
                 // 進口貨物審查會議
-                attachmentList.innerHTML += createAttachmentItem('Shipment_Details_ONEABC123456.pdf', '178 KB');
-                attachmentList.innerHTML += createAttachmentItem('Meeting_Agenda.docx', '65 KB');
-                attachmentList.innerHTML += createAttachmentItem('Delivery_Timeline.xlsx', '120 KB');
+                if (attachmentList) {
+                    attachmentList.innerHTML += createAttachmentItem('Shipment_Details_ONEABC123456.pdf', '178 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Meeting_Agenda.docx', '65 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Delivery_Timeline.xlsx', '120 KB');
+                }
             }
             
             // 清除之前的狀態訊息
@@ -1897,10 +1962,13 @@
             }
             
             return `
-                <div class="flex items-center gap-2 p-1 hover:bg-gray-100 rounded cursor-pointer">
-                    <i data-lucide="${fileIcon}" class="w-4 h-4 text-gray-500"></i>
-                    <span class="text-sm text-gray-800">${fileName}</span>
+                <div class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer border border-gray-200 my-1">
+                    <i data-lucide="${fileIcon}" class="w-5 h-5 text-gray-500"></i>
+                    <span class="text-sm text-gray-800 font-medium">${fileName}</span>
                     <span class="text-xs text-gray-500 ml-auto">${fileSize}</span>
+                    <button class="p-1 hover:bg-gray-200 rounded">
+                        <i data-lucide="download" class="w-4 h-4 text-gray-500"></i>
+                    </button>
                 </div>
             `;
         }
