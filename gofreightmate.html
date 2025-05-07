@@ -384,6 +384,188 @@
               padding-right: 1rem;
          }
 
+        /* 添加入口頁面卡片樣式 */
+        .feature-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .feature-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            border-color: #c7d2fe;
+        }
+        .feature-card h3 {
+            font-weight: 600;
+            color: #4f46e5;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        .feature-card p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        /* 上傳功能樣式 */
+        .upload-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .upload-option {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .upload-option:hover {
+            background-color: #f5f3ff;
+            border-color: #c7d2fe;
+        }
+        .upload-option.selected {
+            background-color: #ede9fe;
+            border-color: #a78bfa;
+        }
+        .upload-option-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .upload-option-header input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+        .upload-option-header label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+        .upload-option-desc {
+            padding-left: 1.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .attachment-list {
+            margin-top: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            background-color: white;
+        }
+        .attachment-item:last-child {
+            border-bottom: none;
+        }
+        .attachment-icon {
+            margin-right: 0.75rem;
+            color: #6b7280;
+        }
+        .attachment-name {
+            flex: 1;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        .attachment-size {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-left: 0.5rem;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            transition: background-color 0.2s;
+        }
+        .back-button:hover {
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+        .back-button i {
+            margin-right: 0.25rem;
+        }
+
+        /* No attachment alert */
+        .no-attachment-alert {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .no-attachment-alert i {
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        /* Upload success message */
+        .upload-success {
+            background-color: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .upload-success-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .upload-success-header i {
+            margin-right: 0.5rem;
+        }
+        .upload-success-details {
+            margin-top: 0.5rem;
+            padding-left: 1.5rem;
+        }
+        .upload-success-details p {
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .shipment-link {
+            display: inline-block;
+            color: #4f46e5;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            text-decoration: underline;
+        }
+        
+        /* Previously uploaded indicator */
+        .previously-uploaded {
+            display: flex;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        .previously-uploaded i {
+            margin-right: 0.25rem;
+            width: 0.875rem;
+            height: 0.875rem;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 font-sans flex h-screen overflow-hidden">
@@ -463,7 +645,7 @@
                         <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="reply"></i> <span>Reply</span></button>
                         <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="reply-all"></i> <span>Reply All</span></button>
                         <button class="p-1 hover:bg-gray-200 rounded flex items-center space-x-1"><i data-lucide="forward"></i> <span>Forward</span></button>
-                        <button id="gofreightmate-button" class="hidden ml-4 p-1 bg-purple-600 text-white rounded hover:bg-purple-700 flex items-center space-x-1">
+                        <button id="gofreightmate-button" class="ml-4 p-1 bg-purple-600 text-white rounded hover:bg-purple-700 flex items-center space-x-1">
                             <i data-lucide="scan-line"></i> <span>GoFreightMate</span>
                         </button>
                         <button class="ml-auto p-1 hover:bg-gray-200 rounded"><i data-lucide="archive"></i></button>
@@ -472,46 +654,183 @@
                     </div>
                 </div>
                 <div id="email-body" class="p-6 flex-1 overflow-y-auto text-gray-800 leading-relaxed">
+                    <!-- 郵件內容將在這裡動態添加 -->
+                    
+                    <!-- 郵件附件部分 -->
+                    <div id="email-attachments" class="mt-6 pt-4 border-t border-gray-200 hidden">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">附件</h4>
+                        <div class="email-attachment-list flex flex-col gap-2">
+                            <!-- 附件項目將在這裡動態添加 -->
+                        </div>
                     </div>
+                </div>
             </div>
         </section>
 
-         <aside id="gofreightmate-panel" class="w-96 h-full bg-gray-50 border-l-2 border-purple-200 shadow-lg p-4 flex-col overflow-y-auto flex-shrink-0 hidden"> <div class="flex justify-between items-center mb-4 pb-2 border-b border-purple-200 flex-shrink-0">
+         <aside id="gofreightmate-panel" class="w-96 h-full bg-gray-50 border-l-2 border-purple-200 shadow-lg p-4 flex-col overflow-y-auto flex-shrink-0 hidden"> 
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-purple-200 flex-shrink-0">
                 <h3 class="text-lg font-semibold text-purple-800 flex items-center">
                     <i data-lucide="scan-line" class="text-purple-600"></i> GoFreightMate AI</h3>
                 <button id="gofreightmate-close-button" class="p-1 text-purple-500 hover:text-purple-700 hover:bg-purple-100 rounded">
                     <i data-lucide="x"></i>
                 </button>
             </div>
-            <div id="hbl-section" class="hidden">
-                <div class="hbl-card">
-                    <div class="hbl-card-header">
-                        <div class="hbl-card-title">
-                            HB/L No.
-                            <span id="hbl-updated-badge" class="hbl-updated-badge hidden">
-                                <i data-lucide="check-circle"></i> Updated
-                            </span>
+            
+            <!-- 入口頁面 -->
+            <div id="gfm-home-page" class="flex-1">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-purple-900 mb-2">智能郵件助手</h2>
+                    <p class="text-gray-600 text-sm">GoFreightMate AI 幫助您從郵件中快速提取信息並與 GoFreight 系統整合，提高工作效率。</p>
+                </div>
+                
+                <div class="feature-card" id="data-extraction-card">
+                    <h3>數據掃描</h3>
+                    <p>從郵件中自動識別和提取運輸相關數據，輕鬆更新 GoFreight 系統中的記錄。</p>
+                </div>
+                
+                <div class="feature-card" id="file-upload-card">
+                    <h3>上傳郵件和附件</h3>
+                    <p>輕鬆將整封郵件或郵件附件上傳至 GoFreight 系統中的相應 Shipment 記錄。</p>
+                </div>
+                
+                <div class="mt-6 text-xs text-gray-500">
+                    <p>提示：點擊功能卡片以繼續操作。切換郵件時，GoFreightMate 會保持在當前功能頁面。</p>
+                </div>
+            </div>
+            
+            <!-- 數據掃描頁面 -->
+            <div id="gfm-data-extraction-page" class="flex-1 hidden">
+                <button class="back-button">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回
+                </button>
+                
+                <div id="hbl-section" class="hidden">
+                    <div class="hbl-card">
+                        <div class="hbl-card-header">
+                            <div class="hbl-card-title">
+                                HB/L No.
+                                <span id="hbl-updated-badge" class="hbl-updated-badge hidden">
+                                    <i data-lucide="check-circle"></i> Updated
+                                </span>
+                            </div>
+                            <button id="hbl-edit-button" class="hbl-edit-btn">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
                         </div>
-                        <button id="hbl-edit-button" class="hbl-edit-btn">
-                            <i data-lucide="edit-3" class="w-4 h-4"></i>
-                        </button>
+                        <div id="hbl-display" class="hbl-card-value">EGLV1234567890</div>
+                        <div id="hbl-edit-form" class="hbl-edit-form hidden">
+                            <input type="text" id="hbl-input" class="hbl-input" value="EGLV1234567890">
+                            <button id="hbl-save-button" class="hbl-save-btn">確認</button>
+                        </div>
                     </div>
-                    <div id="hbl-display" class="hbl-card-value">EGLV1234567890</div>
-                    <div id="hbl-edit-form" class="hbl-edit-form hidden">
-                        <input type="text" id="hbl-input" class="hbl-input" value="EGLV1234567890">
-                        <button id="hbl-save-button" class="hbl-save-btn">Confirm</button>
+                </div>
+                
+                <div id="gofreightmate-content" class="flex-1">
+                    <p class="text-center text-purple-600">點擊 GoFreightMate 按鈕開始分析。</p>
+                </div>
+            </div>
+            
+            <!-- 上傳郵件和附件頁面 -->
+            <div id="gfm-upload-page" class="flex-1 hidden">
+                <button class="back-button">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回
+                </button>
+                
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-purple-800 mb-3">上傳郵件和附件</h2>
+                    
+                    <div class="hbl-card">
+                        <div class="hbl-card-header">
+                            <div class="hbl-card-title">
+                                MB/L No.
+                            </div>
+                            <button id="mbl-edit-button" class="hbl-edit-btn">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div id="mbl-display" class="hbl-card-value">KIOR294757356</div>
+                        <div id="mbl-edit-form" class="hbl-edit-form hidden">
+                            <input type="text" id="mbl-input" class="hbl-input" value="KIOR294757356">
+                            <button id="mbl-save-button" class="hbl-save-btn">確認</button>
+                        </div>
+                        <div class="previously-uploaded hidden" id="previously-uploaded-indicator">
+                            <i data-lucide="info" class="text-gray-500"></i>
+                            <span>已於 2024-04-15 15:30 上傳過附件</span>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-options mt-4">
+                        <div class="upload-option" data-option="full">
+                            <div class="upload-option-header">
+                                <input type="radio" id="upload-full" name="upload-type" checked>
+                                <label for="upload-full">上傳郵件和附件</label>
+                            </div>
+                            <div class="upload-option-desc">
+                                將整封郵件內容及所有附件上傳至 GoFreight
+                            </div>
+                        </div>
+                        
+                        <div class="upload-option" data-option="attachment-only">
+                            <div class="upload-option-header">
+                                <input type="radio" id="upload-attachment" name="upload-type">
+                                <label for="upload-attachment">僅上傳附件</label>
+                            </div>
+                            <div class="upload-option-desc">
+                                僅將郵件中的附件上傳至 GoFreight
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="attachment-list mt-4" id="attachment-list">
+                        <div class="attachment-item">
+                            <div class="attachment-icon">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                            </div>
+                            <div class="attachment-name">Invoice_KIOR294757356.pdf</div>
+                            <div class="attachment-size">215 KB</div>
+                        </div>
+                        <div class="attachment-item">
+                            <div class="attachment-icon">
+                                <i data-lucide="file-text" class="w-5 h-5"></i>
+                            </div>
+                            <div class="attachment-name">Packing_List_KIOR294757356.pdf</div>
+                            <div class="attachment-size">187 KB</div>
+                        </div>
+                    </div>
+                    
+                    <div class="no-attachment-alert hidden" id="no-attachment-alert">
+                        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                        <div>
+                            <p class="font-medium">沒有可上傳的附件</p>
+                            <p class="text-sm">此郵件中沒有附件，無法進行上傳操作。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-success hidden" id="upload-success">
+                        <div class="upload-success-header">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            <span>上傳成功</span>
+                        </div>
+                        <div class="upload-success-details">
+                            <p><strong>MB/L No.:</strong> <span id="success-mbl-no">KIOR294757356</span></p>
+                            <p><strong>上傳內容:</strong> <span id="success-content-type">郵件和附件 (2 個文件)</span></p>
+                            <p><strong>上傳時間:</strong> <span id="success-time">2024-04-16 11:42</span></p>
+                            <a href="#" class="shipment-link">前往 GoFreight 查看 Shipment</a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="gofreightmate-content" class="flex-1">
-                <p class="text-center text-purple-600">Click the GoFreightMate button above to start analysis.</p>
-            </div>
-             <div class="mt-auto pt-4 border-t border-purple-200 flex-shrink-0">
+            
+            <div class="mt-auto pt-4 border-t border-purple-200 flex-shrink-0">
                 <div id="status-message" class="status-message hidden mb-3"></div>
                 <button id="update-gofreight-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md shadow hover:bg-purple-700 transition duration-150 flex items-center justify-center space-x-2">
                      <i data-lucide="save"></i>
-                     <span>Update GoFreight (Simulation)</span>
-                 </button>
+                     <span>更新 GoFreight (模擬)</span>
+                </button>
+                <button id="upload-btn" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md shadow hover:bg-purple-700 transition duration-150 flex items-center justify-center space-x-2 hidden">
+                     <i data-lucide="upload"></i>
+                     <span>上傳</span>
+                </button>
             </div>
         </aside>
     </main>
@@ -570,7 +889,10 @@
         let lucideCheckInterval = null; // Interval timer for Lucide check
         let lucideCheckTimeout = null; // Timeout for Lucide check
         let currentHblNo = "EGLV1234567890"; // Added: current HB/L No.
+        let currentMblNo = "KIOR294757356"; // Added: current MB/L No.
         let updatedEmailIds = new Set(); // 追踪哪些 email 已經更新過
+        let uploadedEmailIds = new Set(); // 追踪哪些 email 已經上傳過附件
+        let currentGfmPage = "home"; // 當前GoFreightMate頁面: home, data-extraction, upload
 
         // --- Helper Functions ---
         function updateUnreadCount() {
@@ -589,7 +911,7 @@
              gofreightmateContent.innerHTML = `
                 <div class="flex justify-center items-center h-full">
                     <p class="text-center text-purple-600 flex items-center">
-                        <i data-lucide="loader-2" class="animate-spin mr-2"></i> Analyzing...
+                        <i data-lucide="loader-2" class="animate-spin mr-2"></i> 分析中...
                     </p>
                 </div>`;
              // Ensure icon is rendered immediately after adding HTML
@@ -619,7 +941,7 @@
         function triggerGoFreightMateAnalysis(email) {
             if (!email) return;
             console.log("Triggering analysis for email ID:", email.id);
-             if (analysisTimeoutId) { clearTimeout(analysisTimeoutId); analysisTimeoutId = null; }
+            if (analysisTimeoutId) { clearTimeout(analysisTimeoutId); analysisTimeoutId = null; }
             showLoadingIndicator();
             analysisTimeoutId = setTimeout(() => {
                 populateGoFreightMateContent(email);
@@ -634,7 +956,9 @@
             gofreightmatePanel.classList.remove('hidden');
             gofreightmatePanel.classList.add('flex');
             console.log("Panel should be visible now.");
-            triggerGoFreightMateAnalysis(currentOpenEmail);
+            
+            // 顯示入口頁面
+            showGfmPage('home');
         }
 
         function closeGoFreightMatePanel() {
@@ -642,15 +966,207 @@
             gofreightmatePanel.classList.add('hidden');
             gofreightmatePanel.classList.remove('flex');
             
-            // Hide HBL section
+            // 重置當前頁面為入口頁面
+            currentGfmPage = 'home';
+            
+            // 隱藏所有頁面內容
             const hblSection = document.getElementById('hbl-section');
             if (hblSection) {
                 hblSection.classList.add('hidden');
             }
             
             if (analysisTimeoutId) { clearTimeout(analysisTimeoutId); analysisTimeoutId = null; }
-            gofreightmateContent.innerHTML = '<p class="text-center text-purple-600">Click the GoFreightMate button above to start analysis.</p>';
+            gofreightmateContent.innerHTML = '<p class="text-center text-purple-600">點擊 GoFreightMate 按鈕開始分析。</p>';
             console.log("Panel closed.");
+        }
+        
+        // 添加頁面切換功能
+        function showGfmPage(pageName) {
+            // 更新當前頁面追踪
+            currentGfmPage = pageName;
+            console.log("Switching to GFM page:", pageName);
+            
+            // 獲取所有頁面元素
+            const homePage = document.getElementById('gfm-home-page');
+            const dataExtractionPage = document.getElementById('gfm-data-extraction-page');
+            const uploadPage = document.getElementById('gfm-upload-page');
+            const updateGofreightBtn = document.getElementById('update-gofreight-btn');
+            const uploadBtn = document.getElementById('upload-btn');
+            
+            // 隱藏所有頁面
+            if (homePage) homePage.classList.add('hidden');
+            if (dataExtractionPage) dataExtractionPage.classList.add('hidden');
+            if (uploadPage) uploadPage.classList.add('hidden');
+            
+            // 隱藏所有按鈕
+            if (updateGofreightBtn) updateGofreightBtn.classList.add('hidden');
+            if (uploadBtn) uploadBtn.classList.add('hidden');
+            
+            // 根據頁面名稱顯示對應頁面和按鈕
+            if (pageName === 'home') {
+                if (homePage) homePage.classList.remove('hidden');
+            }
+            else if (pageName === 'data-extraction') {
+                if (dataExtractionPage) dataExtractionPage.classList.remove('hidden');
+                if (updateGofreightBtn) updateGofreightBtn.classList.remove('hidden');
+                
+                // 檢查郵件是否已更新並更新UI
+                if (currentOpenEmail && updatedEmailIds && updatedEmailIds.has(currentOpenEmail.id)) {
+                    // 已經更新過，隱藏按鈕
+                    if (updateGofreightBtn) updateGofreightBtn.style.display = 'none';
+                    
+                    // 顯示已更新標籤
+                    const hblUpdatedBadge = document.getElementById('hbl-updated-badge');
+                    if (hblUpdatedBadge) hblUpdatedBadge.classList.remove('hidden');
+                    
+                    // 禁用所有輸入欄位
+                    setTimeout(() => {
+                        disableAllInputFields();
+                    }, 100);
+                } else {
+                    // 未更新過，顯示按鈕
+                    if (updateGofreightBtn) updateGofreightBtn.style.display = 'flex';
+                }
+                
+                // 載入資料
+                triggerGoFreightMateAnalysis(currentOpenEmail);
+            }
+            else if (pageName === 'upload') {
+                if (uploadPage) uploadPage.classList.remove('hidden');
+                if (uploadBtn) {
+                    uploadBtn.classList.remove('hidden');
+                    uploadBtn.style.display = 'flex';
+                }
+                
+                // 清除之前的上傳成功訊息
+                const uploadSuccess = document.getElementById('upload-success');
+                if (uploadSuccess) uploadSuccess.classList.add('hidden');
+                
+                // 更新附件顯示
+                updateAttachmentDisplay();
+                
+                // 更新已上傳狀態
+                updateUploadedStatus();
+                
+                // 如果郵件已上傳過，隱藏上傳按鈕
+                if (currentOpenEmail && uploadedEmailIds.has(currentOpenEmail.id)) {
+                    if (uploadBtn) uploadBtn.style.display = 'none';
+                }
+            }
+        }
+        
+        // 新增函數：更新附件顯示
+        function updateAttachmentDisplay() {
+            const attachmentList = document.getElementById('attachment-list');
+            const noAttachmentAlert = document.getElementById('no-attachment-alert');
+            const uploadBtn = document.getElementById('upload-btn');
+            
+            // 檢查當前郵件是否有附件
+            let hasAttachments = false;
+            
+            if (currentOpenEmail) {
+                if (currentOpenEmail.id === 1 || currentOpenEmail.id === 2 || 
+                    currentOpenEmail.id === 3 || currentOpenEmail.id === 4) {
+                    hasAttachments = true;
+                }
+            }
+            
+            if (hasAttachments) {
+                attachmentList.classList.remove('hidden');
+                noAttachmentAlert.classList.add('hidden');
+                uploadBtn.disabled = false;
+            } else {
+                attachmentList.classList.add('hidden');
+                noAttachmentAlert.classList.remove('hidden');
+                uploadBtn.disabled = true;
+            }
+        }
+        
+        // 新增函數：更新已上傳狀態
+        function updateUploadedStatus() {
+            const previouslyUploadedIndicator = document.getElementById('previously-uploaded-indicator');
+            const uploadBtn = document.getElementById('upload-btn');
+            
+            if (currentOpenEmail && uploadedEmailIds.has(currentOpenEmail.id)) {
+                // 已上傳過
+                previouslyUploadedIndicator.classList.remove('hidden');
+            } else {
+                // 未上傳過
+                previouslyUploadedIndicator.classList.add('hidden');
+            }
+        }
+        
+        // 新增函數：處理附件上傳
+        function handleAttachmentUpload() {
+            const uploadBtn = document.getElementById('upload-btn');
+            const noAttachmentAlert = document.getElementById('no-attachment-alert');
+            const uploadSuccess = document.getElementById('upload-success');
+            const successMblNo = document.getElementById('success-mbl-no');
+            const successContentType = document.getElementById('success-content-type');
+            const successTime = document.getElementById('success-time');
+            
+            // 檢查是否有附件
+            let hasAttachments = false;
+            if (currentOpenEmail) {
+                if (currentOpenEmail.id === 1 || currentOpenEmail.id === 2 || 
+                    currentOpenEmail.id === 3 || currentOpenEmail.id === 4) {
+                    hasAttachments = true;
+                }
+            }
+            
+            if (!hasAttachments) {
+                noAttachmentAlert.classList.remove('hidden');
+                return;
+            }
+            
+            // 顯示上傳中狀態
+            uploadBtn.classList.add('btn-loading');
+            uploadBtn.disabled = true;
+            
+            // 獲取選擇的上傳選項
+            const uploadFullOption = document.getElementById('upload-full');
+            const isFullUpload = uploadFullOption.checked;
+            
+            // 模擬上傳延遲
+            setTimeout(() => {
+                // 移除上傳中狀態
+                uploadBtn.classList.remove('btn-loading');
+                uploadBtn.disabled = false;
+                
+                // 顯示上傳成功訊息
+                uploadSuccess.classList.remove('hidden');
+                
+                // 設置成功訊息內容
+                successMblNo.textContent = currentMblNo;
+                successContentType.textContent = isFullUpload ? 
+                    '郵件和附件 (2 個文件)' : '僅附件 (2 個文件)';
+                
+                // 獲取當前時間作為上傳時間
+                const now = new Date();
+                const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                successTime.textContent = `${dateStr} ${timeStr}`;
+                
+                // 記錄此郵件已上傳過附件
+                if (currentOpenEmail) {
+                    uploadedEmailIds.add(currentOpenEmail.id);
+                }
+                
+                // 隱藏上傳按鈕
+                uploadBtn.style.display = 'none';
+                
+                // 更新已上傳狀態指示器
+                updateUploadedStatus();
+                
+                // 確保圖標被渲染
+                if (typeof lucide !== 'undefined') {
+                    try {
+                        lucide.createIcons();
+                    } catch (error) {
+                        console.error("Error creating icons after upload success:", error);
+                    }
+                }
+            }, 1500);
         }
 
         function createFieldHtml(label, currentData, aiData, fieldType = 'text') {
@@ -748,37 +1264,69 @@
 
         function populateGoFreightMateContent(email) {
             if (!email) { 
-                gofreightmateContent.innerHTML = '<p class="text-red-600">Error: Unable to read email content.</p>'; 
+                gofreightmateContent.innerHTML = '<p class="text-red-600">錯誤: 無法讀取郵件內容。</p>'; 
                 return; 
             }
             console.log("Populating content for email ID:", email.id);
             gofreightmateContent.innerHTML = '';
             
-            // Show HBL section
-            const hblSection = document.getElementById('hbl-section');
-            if (hblSection) {
-                hblSection.classList.remove('hidden');
-            }
-            
-            // 檢查此郵件是否已更新並更新 UI
-            const hblUpdatedBadge = document.getElementById('hbl-updated-badge');
-            const updateGofreightBtn = document.getElementById('update-gofreight-btn');
-            
-            if (updatedEmailIds && updatedEmailIds.has(email.id)) {
-                // 已經更新過，顯示標籤並隱藏按鈕
-                if (hblUpdatedBadge) hblUpdatedBadge.classList.remove('hidden');
-                if (updateGofreightBtn) updateGofreightBtn.style.display = 'none';
+            // 只有在數據分析頁面顯示HBL部分
+            if (currentGfmPage === 'data-extraction') {
+                // Show HBL section
+                const hblSection = document.getElementById('hbl-section');
+                if (hblSection) {
+                    hblSection.classList.remove('hidden');
+                }
                 
-                // 在填充內容之後禁用所有欄位
-                setTimeout(() => {
-                    disableAllInputFields();
-                }, 100);
-            } else {
-                // 未更新過，隱藏標籤並顯示按鈕
-                if (hblUpdatedBadge) hblUpdatedBadge.classList.add('hidden');
-                if (updateGofreightBtn) updateGofreightBtn.style.display = 'flex';
+                // 檢查此郵件是否已更新並更新 UI
+                const hblUpdatedBadge = document.getElementById('hbl-updated-badge');
+                const updateGofreightBtn = document.getElementById('update-gofreight-btn');
+                
+                if (updatedEmailIds && updatedEmailIds.has(email.id)) {
+                    // 已經更新過，顯示標籤並隱藏按鈕
+                    if (hblUpdatedBadge) hblUpdatedBadge.classList.remove('hidden');
+                    if (updateGofreightBtn) updateGofreightBtn.style.display = 'none';
+                    
+                    // 在填充內容之後禁用所有欄位
+                    setTimeout(() => {
+                        disableAllInputFields();
+                    }, 100);
+                } else {
+                    // 未更新過，隱藏標籤並顯示按鈕
+                    if (hblUpdatedBadge) hblUpdatedBadge.classList.add('hidden');
+                    if (updateGofreightBtn) updateGofreightBtn.style.display = 'flex';
+                }
             }
             
+            // 更新上傳頁面的MB/L No.顯示
+            if (currentGfmPage === 'upload') {
+                // 根據不同的郵件設置不同的MB/L No.
+                if (email.id === 1) {
+                    currentMblNo = "KIOR294757356";
+                } else if (email.id === 2) {
+                    currentMblNo = "EGLV1234567890";
+                } else if (email.id === 3) {
+                    currentMblNo = "MEDU0098765432";
+                } else if (email.id === 4) {
+                    currentMblNo = "ONEA12354697";
+                } else {
+                    currentMblNo = "N/A";
+                }
+                
+                // 更新MB/L No.顯示
+                document.getElementById('mbl-display').textContent = currentMblNo;
+                document.getElementById('mbl-input').value = currentMblNo;
+                
+                // 更新已上傳狀態
+                updateUploadedStatus();
+                
+                // 更新附件列表
+                updateAttachmentDisplay();
+                
+                return; // 不需要繼續執行數據掃描頁面的內容
+            }
+            
+            // 以下是數據掃描頁面的內容處理
             // Update HB/L No. display based on current email
             if (email.id === 1) {
                 // Maersk 更新信件，可分析可更新
@@ -845,7 +1393,7 @@
                 document.getElementById('hbl-display').textContent = currentHblNo;
                 document.getElementById('hbl-input').value = currentHblNo;
                 
-                gofreightmateContent.innerHTML = '<p class="text-purple-700 text-center">This email does not contain shipment data that can be analyzed by GoFreightMate.</p>';
+                gofreightmateContent.innerHTML = '<p class="text-purple-700 text-center">此郵件不含可被 GoFreightMate 分析的運輸數據。</p>';
                 
                 // 隱藏 HBL 區域，因為這不是可分析的郵件
                 if (hblSection) {
@@ -981,11 +1529,38 @@
             emailTimestamp.textContent = email.timestamp;
             emailBody.innerHTML = email.body;
             
-            // 顯示 GoFreightMate 按鈕
-            if (gofreightmateButton) { 
-                gofreightmateButton.classList.remove('hidden'); 
-            } else { 
-                console.error("Cannot show GoFreightMate button - not found!"); 
+            // 顯示附件區域 (根據郵件ID模擬是否有附件)
+            const emailAttachments = document.getElementById('email-attachments');
+            const attachmentList = document.querySelector('.email-attachment-list');
+            
+            if (email.id === 1 || email.id === 2 || email.id === 3 || email.id === 4) {
+                // 這些郵件有附件
+                emailAttachments.classList.remove('hidden');
+                
+                // 清空之前的附件
+                attachmentList.innerHTML = '';
+                
+                // 根據郵件ID添加不同的附件
+                if (email.id === 1) {
+                    // Maersk ETA更新
+                    attachmentList.innerHTML += createAttachmentItem('ETA_Update_MSKU1234567.pdf', '156 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Delivery_Instructions.pdf', '245 KB');
+                } else if (email.id === 2) {
+                    // Evergreen 到達通知
+                    attachmentList.innerHTML += createAttachmentItem('Arrival_Notice_EGLV1234567890.pdf', '189 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Customs_Clearance_Form.pdf', '134 KB');
+                } else if (email.id === 3) {
+                    // 海關檢查通知
+                    attachmentList.innerHTML += createAttachmentItem('CBP_Examination_Notice.pdf', '167 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Required_Documents.pdf', '210 KB');
+                } else if (email.id === 4) {
+                    // 空櫃通知
+                    attachmentList.innerHTML += createAttachmentItem('Empty_Container_Return.pdf', '142 KB');
+                    attachmentList.innerHTML += createAttachmentItem('Terminal_Map.pdf', '325 KB');
+                }
+            } else {
+                // 其他郵件沒有附件
+                emailAttachments.classList.add('hidden');
             }
             
             // 清除之前的狀態訊息
@@ -996,23 +1571,88 @@
                 statusMessage.innerHTML = '';
             }
             
-            // 如果 GoFreightMate 面板已開啟，確保根據 email 的更新狀態更新 UI
-            if (isGoFreightMatePanelOpen && currentOpenEmail) {
-                const hblUpdatedBadge = document.getElementById('hbl-updated-badge');
-                const updateGofreightBtn = document.getElementById('update-gofreight-btn');
-                
-                if (updatedEmailIds && updatedEmailIds.has(email.id)) {
-                    // 已經更新過，顯示標籤並隱藏按鈕
-                    if (hblUpdatedBadge) hblUpdatedBadge.classList.remove('hidden');
-                    if (updateGofreightBtn) updateGofreightBtn.style.display = 'none';
-                } else {
-                    // 未更新過，隱藏標籤並顯示按鈕
-                    if (hblUpdatedBadge) hblUpdatedBadge.classList.add('hidden');
-                    if (updateGofreightBtn) updateGofreightBtn.style.display = 'flex';
+            // 如果 GoFreightMate 面板已開啟，根據當前頁面更新UI
+            if (isGoFreightMatePanelOpen) {
+                if (currentGfmPage === 'home') {
+                    // 入口頁面，不需要特殊處理
+                    showGfmPage('home');
+                }
+                else if (currentGfmPage === 'data-extraction') {
+                    // 更新數據掃描頁面
+                    showGfmPage('data-extraction');
+                }
+                else if (currentGfmPage === 'upload') {
+                    // 更新上傳頁面
+                    showGfmPage('upload');
+                }
+            }
+            
+            // 確保新添加的圖標被渲染
+            if (typeof lucide !== 'undefined') {
+                try {
+                    lucide.createIcons();
+                } catch (error) {
+                    console.error("Error creating icons after displaying email content:", error);
                 }
             }
         }
+        
+        // 創建附件項目HTML
+        function createAttachmentItem(fileName, fileSize) {
+            let fileIcon = 'file-text';
+            
+            // 根據副檔名決定圖標類型
+            if (fileName.endsWith('.pdf')) {
+                fileIcon = 'file-text';
+            } else if (fileName.endsWith('.jpg') || fileName.endsWith('.png') || fileName.endsWith('.gif')) {
+                fileIcon = 'image';
+            } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                fileIcon = 'file-spreadsheet';
+            } else if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
+                fileIcon = 'file-text';
+            } else if (fileName.endsWith('.zip') || fileName.endsWith('.rar')) {
+                fileIcon = 'archive';
+            }
+            
+            return `
+                <div class="flex items-center gap-2 p-1 hover:bg-gray-100 rounded cursor-pointer">
+                    <i data-lucide="${fileIcon}" class="w-4 h-4 text-gray-500"></i>
+                    <span class="text-sm text-gray-800">${fileName}</span>
+                    <span class="text-xs text-gray-500 ml-auto">${fileSize}</span>
+                </div>
+            `;
+        }
 
+        // ... rest of the code ...
+
+        function disableAllInputFields() {
+            // 禁用文本輸入框
+            const textInputs = document.querySelectorAll('.gfm-card-input, .gfm-date-picker, .gfm-autocomplete-input');
+            textInputs.forEach(input => {
+                input.disabled = true;
+            });
+            
+            // 禁用下拉選單
+            const selectInputs = document.querySelectorAll('.gfm-select');
+            selectInputs.forEach(select => {
+                select.disabled = true;
+            });
+            
+            // 為所有卡片添加 updated 類，應用已更新的樣式
+            const cards = document.querySelectorAll('.gfm-card');
+            cards.forEach(card => {
+                card.classList.add('updated');
+            });
+            
+            // 禁用 HB/L 編輯按鈕
+            const hblEditButton = document.getElementById('hbl-edit-button');
+            if (hblEditButton) {
+                hblEditButton.disabled = true;
+                hblEditButton.style.opacity = '0.5';
+                hblEditButton.style.cursor = 'not-allowed';
+            }
+        }
+        
         // --- Initial Setup ---
         document.addEventListener('DOMContentLoaded', (event) => {
             console.log("DOMContentLoaded event fired.");
@@ -1024,7 +1664,6 @@
 
             lucideCheckInterval = setInterval(() => {
                 elapsedTime += checkInterval;
-                // console.log("Checking for Lucide..."); // Optional: noisy log
 
                 if (typeof lucide !== 'undefined') {
                     console.log("Lucide object found after", elapsedTime, "ms.");
@@ -1051,9 +1690,10 @@
                  }
             }, maxWaitTime + 50); // Add a small buffer to timeout
 
-
-            displayEmails(); // Populate email list
-
+            displayEmails(); // 填充郵件列表
+            
+            // 移除自動選擇第一封郵件的功能，恢復原本的點擊行為
+            
             // --- Attach Sidebar Toggle Listener ---
             if (sidebarToggleButton && sidebar) {
                  sidebarToggleButton.addEventListener('click', toggleSidebar);
@@ -1067,8 +1707,83 @@
             if (gofreightmateCloseButton) { gofreightmateCloseButton.addEventListener('click', closeGoFreightMatePanel); console.log("GoFreightMate close button listener attached."); }
             else { console.error("GoFreightMate close button not found!"); }
 
+            // 入口頁面功能卡片監聽
+            const dataExtractionCard = document.getElementById('data-extraction-card');
+            const fileUploadCard = document.getElementById('file-upload-card');
+            
+            if (dataExtractionCard) {
+                dataExtractionCard.addEventListener('click', () => {
+                    showGfmPage('data-extraction');
+                });
+            }
+            
+            if (fileUploadCard) {
+                fileUploadCard.addEventListener('click', () => {
+                    showGfmPage('upload');
+                });
+            }
+            
+            // 返回按鈕監聽
+            const backButtons = document.querySelectorAll('.back-button');
+            backButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    showGfmPage('home');
+                });
+            });
+            
+            // 上傳選項切換監聽
+            const uploadOptions = document.querySelectorAll('.upload-option');
+            uploadOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有選項的選中狀態
+                    uploadOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // 給當前點擊的選項添加選中狀態
+                    this.classList.add('selected');
+                    
+                    // 選中對應的radio按鈕
+                    const radioBtn = this.querySelector('input[type="radio"]');
+                    if (radioBtn) {
+                        radioBtn.checked = true;
+                    }
+                });
+            });
+            
+            // 附件上傳按鈕監聽
+            const uploadBtn = document.getElementById('upload-btn');
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', handleAttachmentUpload);
+            }
+            
+            // MB/L編輯功能
+            const mblEditButton = document.getElementById('mbl-edit-button');
+            const mblSaveButton = document.getElementById('mbl-save-button');
+            const mblDisplay = document.getElementById('mbl-display');
+            const mblEditForm = document.getElementById('mbl-edit-form');
+            const mblInput = document.getElementById('mbl-input');
+            
+            if (mblEditButton) {
+                mblEditButton.addEventListener('click', () => {
+                    mblDisplay.classList.add('hidden');
+                    mblEditForm.classList.remove('hidden');
+                    mblInput.focus();
+                    mblInput.select();
+                });
+            }
+            
+            if (mblSaveButton) {
+                mblSaveButton.addEventListener('click', () => {
+                    const newMblNo = mblInput.value.trim();
+                    if (newMblNo) {
+                        currentMblNo = newMblNo;
+                        mblDisplay.textContent = currentMblNo;
+                    }
+                    mblEditForm.classList.add('hidden');
+                    mblDisplay.classList.remove('hidden');
+                });
+            }
+
              // Initial state setup
-             if (gofreightmateButton) { gofreightmateButton.classList.add('hidden'); }
              if (gofreightmatePanel) { gofreightmatePanel.classList.add('hidden'); gofreightmatePanel.classList.remove('flex'); }
 
             // Initialize HB/L editing functionality
@@ -1116,10 +1831,6 @@
             const statusMessage = document.getElementById('status-message');
             const hblUpdatedBadge = document.getElementById('hbl-updated-badge');
             
-            // 已經全局宣告，這裡不需要再宣告
-            // 用於追踪哪些 email 已經更新過
-            // let updatedEmailIds = new Set();
-            
             // 按鈕點擊事件
             if (updateGofreightBtn) {
                 updateGofreightBtn.addEventListener('click', function() {
@@ -1143,7 +1854,7 @@
                         // Email ID 1, 3, 4 會成功，其他會失敗
                         if (currentOpenEmail.id === 1 || currentOpenEmail.id === 3 || currentOpenEmail.id === 4) {
                             // 成功狀態
-                            statusMessage.innerHTML = `<i data-lucide="check-circle"></i> Successfully updated shipment data in GoFreight.`;
+                            statusMessage.innerHTML = `<i data-lucide="check-circle"></i> 成功將運輸數據更新至 GoFreight。`;
                             statusMessage.classList.add('success');
                             statusMessage.classList.remove('hidden');
                             
@@ -1160,7 +1871,7 @@
                             disableAllInputFields();
                         } else {
                             // 失敗狀態
-                            statusMessage.innerHTML = `<i data-lucide="alert-circle"></i> Failed to update GoFreight. Please try again later.`;
+                            statusMessage.innerHTML = `<i data-lucide="alert-circle"></i> 無法更新 GoFreight。請稍後再試。`;
                             statusMessage.classList.add('error');
                             statusMessage.classList.remove('hidden');
                         }
@@ -1176,38 +1887,9 @@
                     }, 1000);
                 });
             }
-
         });
-
-        // 新增禁用所有輸入欄位的函數
-        function disableAllInputFields() {
-            // 禁用文本輸入框
-            const textInputs = document.querySelectorAll('.gfm-card-input, .gfm-date-picker, .gfm-autocomplete-input');
-            textInputs.forEach(input => {
-                input.disabled = true;
-            });
-            
-            // 禁用下拉選單
-            const selectInputs = document.querySelectorAll('.gfm-select');
-            selectInputs.forEach(select => {
-                select.disabled = true;
-            });
-            
-            // 為所有卡片添加 updated 類，應用已更新的樣式
-            const cards = document.querySelectorAll('.gfm-card');
-            cards.forEach(card => {
-                card.classList.add('updated');
-            });
-            
-            // 禁用 HB/L 編輯按鈕
-            const hblEditButton = document.getElementById('hbl-edit-button');
-            if (hblEditButton) {
-                hblEditButton.disabled = true;
-                hblEditButton.style.opacity = '0.5';
-                hblEditButton.style.cursor = 'not-allowed';
-            }
-        }
     </script>
 </body>
 </html>
+
 
