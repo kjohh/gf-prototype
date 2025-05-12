@@ -59,6 +59,7 @@
             margin-bottom: 1rem;
             border: 1px solid #e5e7eb;
             transition: all 0.2s ease;
+            position: relative;
         }
         .gfm-card:hover {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -570,15 +571,20 @@
         .gfm-card-checkbox {
             display: flex;
             align-items: center;
-            margin-top: 0.5rem;
+            justify-content: center;
+            cursor: pointer;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
         }
 
         .gfm-card-checkbox input[type="checkbox"] {
-            margin-right: 0.5rem;
-            width: 1rem;
-            height: 1rem;
+            width: 1.2rem;
+            height: 1.2rem;
             cursor: pointer;
             accent-color: #6366f1;
+            position: relative;
+            top: 1px;
         }
 
         .gfm-card-checkbox label {
@@ -879,6 +885,12 @@
                             <button id="hbl-save-button" class="hbl-save-btn">Confirm</button>
                         </div>
                     </div>
+                    
+                    <!-- 欄位勾選提示 -->
+                    <div class="update-selection-note mb-4">
+                        <i data-lucide="info"></i>
+                        <span>勾選要更新的欄位，取消勾選表示不更新該欄位。</span>
+                    </div>
                 </div>
                 
                 <div id="gofreightmate-content" class="flex-1">
@@ -887,12 +899,6 @@
                 
                 <!-- 添加自定義欄位區域 -->
                 <div id="custom-field-container" class="hidden mt-4">
-                    <!-- 自定義欄位說明 -->
-                    <div class="update-selection-note">
-                        <i data-lucide="info"></i>
-                        <span>勾選要更新的欄位，取消勾選表示不更新該欄位。</span>
-                    </div>
-                    
                     <!-- 添加自定義欄位按鈕 -->
                     <div class="add-custom-field" id="add-custom-field-btn">
                         <i data-lucide="plus-circle" class="w-6 h-6 mx-auto"></i>
@@ -904,15 +910,21 @@
                     <div class="custom-field-form" id="custom-field-form">
                         <div class="custom-field-form-row">
                             <label for="custom-field-name">欄位名稱</label>
-                            <input type="text" id="custom-field-name" placeholder="例如：集裝箱類型、貨物重量等">
-                        </div>
-                        <div class="custom-field-form-row">
-                            <label for="custom-field-type">欄位類型</label>
-                            <select id="custom-field-type">
-                                <option value="text">文字</option>
-                                <option value="date">日期</option>
-                                <option value="number">數字</option>
-                            </select>
+                            <div class="gfm-autocomplete-wrapper">
+                                <input type="text" id="custom-field-name" class="gfm-autocomplete-input" placeholder="開始輸入欄位名稱...">
+                                <div class="gfm-autocomplete-dropdown">
+                                    <div class="gfm-autocomplete-item">Commodity Description</div>
+                                    <div class="gfm-autocomplete-item">Package Count</div>
+                                    <div class="gfm-autocomplete-item">Gross Weight</div>
+                                    <div class="gfm-autocomplete-item">Net Weight</div>
+                                    <div class="gfm-autocomplete-item">Volume</div>
+                                    <div class="gfm-autocomplete-item">Shipping Instructions</div>
+                                    <div class="gfm-autocomplete-item">Delivery Instructions</div>
+                                    <div class="gfm-autocomplete-item">Incoterms</div>
+                                    <div class="gfm-autocomplete-item">Shipper Reference</div>
+                                    <div class="gfm-autocomplete-item">Consignee Reference</div>
+                                </div>
+                            </div>
                         </div>
                         <div class="custom-field-form-row">
                             <label for="custom-field-value">欄位值</label>
@@ -1321,7 +1333,6 @@
             // 確認添加
             confirmCustomFieldBtn.addEventListener('click', function() {
                 const fieldName = document.getElementById('custom-field-name').value.trim();
-                const fieldType = document.getElementById('custom-field-type').value;
                 const fieldValue = document.getElementById('custom-field-value').value.trim();
                 
                 // 驗證必填欄位
@@ -1331,7 +1342,7 @@
                 }
                 
                 // 創建自定義欄位
-                addCustomField(fieldName, fieldType, fieldValue);
+                addCustomField(fieldName, fieldValue);
                 
                 // 隱藏表單
                 customFieldForm.classList.remove('active');
@@ -1339,27 +1350,11 @@
         }
         
         // 添加自定義欄位
-        function addCustomField(fieldName, fieldType, fieldValue) {
+        function addCustomField(fieldName, fieldValue) {
             const addedCustomFieldsContainer = document.getElementById('added-custom-fields');
             
             // 生成唯一ID
             const fieldId = 'custom-' + Date.now();
-            
-            // 根據欄位類型生成不同的輸入元素
-            let inputHtml = '';
-            if (fieldType === 'date') {
-                inputHtml = `
-                    <input type="text" class="gfm-date-picker" value="${fieldValue}" placeholder="YYYY-MM-DD, HH:MM">
-                `;
-            } else if (fieldType === 'number') {
-                inputHtml = `
-                    <input type="number" class="gfm-card-input" value="${fieldValue}">
-                `;
-            } else {
-                inputHtml = `
-                    <input type="text" class="gfm-card-input" value="${fieldValue}">
-                `;
-            }
             
             // 創建自定義欄位卡片
             const customFieldHtml = `
@@ -1369,10 +1364,14 @@
                             <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                             ${fieldName} <span class="text-xs text-purple-500">(自定義)</span>
                         </div>
-                        <button class="delete-custom-field" data-field-id="${fieldId}">
-                            <i data-lucide="trash-2" class="w-4 h-4 text-gray-500 hover:text-red-500"></i>
-                        </button>
+                        <div class="gfm-card-checkbox" title="勾選此欄位以更新至GoFreight">
+                            <input type="checkbox" id="${fieldId}" class="field-update-checkbox" checked>
+                            <label for="${fieldId}" class="sr-only">更新此欄位</label>
+                        </div>
                     </div>
+                    <button class="delete-custom-field absolute top-1 right-8" data-field-id="${fieldId}" title="刪除此欄位">
+                        <i data-lucide="trash-2" class="w-4 h-4 text-gray-500 hover:text-red-500"></i>
+                    </button>
                     <div class="gfm-card-content">
                         <div class="gfm-card-row">
                             <div class="gfm-card-label">GoFreight Current Data:</div>
@@ -1380,11 +1379,7 @@
                         </div>
                         <div class="gfm-card-row">
                             <div class="gfm-card-label">Update Data:</div>
-                            ${inputHtml}
-                            <div class="gfm-card-checkbox">
-                                <input type="checkbox" id="${fieldId}" class="field-update-checkbox" checked>
-                                <label for="${fieldId}">更新此欄位至 GoFreight</label>
-                            </div>
+                            <input type="text" class="gfm-card-input" value="${fieldValue}">
                         </div>
                     </div>
                 </div>
@@ -1930,6 +1925,10 @@
                             <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                             ${label}
                         </div>
+                        <div class="gfm-card-checkbox" title="勾選此欄位以更新至GoFreight">
+                            <input type="checkbox" id="update-${label.replace(/\s+/g, '-').toLowerCase()}" class="field-update-checkbox" checked>
+                            <label for="update-${label.replace(/\s+/g, '-').toLowerCase()}" class="sr-only">更新此欄位</label>
+                        </div>
                     </div>
                     <div class="gfm-card-content">
                         <div class="gfm-card-row">
@@ -1943,10 +1942,6 @@
                         <div class="gfm-card-row">
                             <div class="gfm-card-label">Update Data:</div>
                             ${inputHtml}
-                            <div class="gfm-card-checkbox">
-                                <input type="checkbox" id="update-${label.replace(/\s+/g, '-').toLowerCase()}" class="field-update-checkbox" checked>
-                                <label for="update-${label.replace(/\s+/g, '-').toLowerCase()}">更新此欄位至 GoFreight</label>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -2423,22 +2418,22 @@
         // ... rest of the code ...
 
         function disableAllInputFields() {
-            // 禁用文本輸入框
-            const textInputs = document.querySelectorAll('.gfm-card-input, .gfm-date-picker, .gfm-autocomplete-input');
-            textInputs.forEach(input => {
-                input.disabled = true;
-            });
-            
-            // 禁用下拉選單
-            const selectInputs = document.querySelectorAll('.gfm-select');
-            selectInputs.forEach(select => {
-                select.disabled = true;
-            });
-            
-            // 為所有卡片添加 updated 類，應用已更新的樣式
-            const cards = document.querySelectorAll('.gfm-card');
-            cards.forEach(card => {
+            // 禁用選中的欄位的輸入框
+            document.querySelectorAll('.field-update-checkbox:checked').forEach(checkbox => {
+                const card = checkbox.closest('.gfm-card');
+                if (!card) return;
+                
+                // 標記卡片為已更新
                 card.classList.add('updated');
+                
+                // 禁用該卡片中的所有輸入元素
+                const inputs = card.querySelectorAll('.gfm-card-input, .gfm-date-picker, .gfm-autocomplete-input, .gfm-select');
+                inputs.forEach(input => {
+                    input.disabled = true;
+                });
+                
+                // 禁用複選框
+                checkbox.disabled = true;
             });
             
             // 禁用 HB/L 編輯按鈕
@@ -2449,12 +2444,6 @@
                 hblEditButton.style.cursor = 'not-allowed';
             }
             
-            // 禁用所有欄位選擇複選框
-            const checkboxes = document.querySelectorAll('.field-update-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.disabled = true;
-            });
-            
             // 禁用添加自定義欄位按鈕
             const addCustomFieldBtn = document.getElementById('add-custom-field-btn');
             if (addCustomFieldBtn) {
@@ -2462,9 +2451,8 @@
                 addCustomFieldBtn.style.opacity = '0.5';
             }
             
-            // 禁用刪除自定義欄位按鈕
-            const deleteButtons = document.querySelectorAll('.delete-custom-field');
-            deleteButtons.forEach(button => {
+            // 禁用所有刪除自定義欄位按鈕
+            document.querySelectorAll('.delete-custom-field').forEach(button => {
                 button.disabled = true;
                 button.style.opacity = '0.5';
                 button.style.pointerEvents = 'none';
