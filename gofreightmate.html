@@ -1021,7 +1021,7 @@
                             <span>Upload Successful</span>
                         </div>
                         <div class="upload-success-details">
-                            <p><strong>MB/L No.:</strong> <span id="success-mbl-no">KIOR294757356</span></p>
+                            <p><strong>MB/L No.:</strong> <span id="success-mbl-no">MAEU9876543</span></p>
                             <p><strong>Uploaded Content:</strong> <span id="success-content-type">Email & Attachments (2 files)</span></p>
                             <p><strong>Upload Time:</strong> <span id="success-time">2024-04-16 11:42</span></p>
                             <a href="#" class="shipment-link">Go to GoFreight to view Shipment</a>
@@ -1582,22 +1582,22 @@
                 // 根據郵件ID添加不同的附件
                 if (currentOpenEmail) {
                     if (currentOpenEmail.id === 1) {
-                        // Maersk ETA更新
+                        // Maersk 預到達通知
                         if (attachmentList) {
                             attachmentList.innerHTML += `
                                 <div class="attachment-item p-3 bg-gray-50 rounded-md mb-2">
                                     <div class="attachment-icon">
                                         <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
                                     </div>
-                                    <div class="attachment-name font-medium">ETA_Update_MSKU1234567.pdf</div>
-                                    <div class="attachment-size">156 KB</div>
+                                    <div class="attachment-name font-medium">Pre-arrival_Notice_MAEU9876543.pdf</div>
+                                    <div class="attachment-size">185 KB</div>
                                 </div>
                                 <div class="attachment-item p-3 bg-gray-50 rounded-md">
                                     <div class="attachment-icon">
                                         <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
                                     </div>
-                                    <div class="attachment-name font-medium">Delivery_Instructions.pdf</div>
-                                    <div class="attachment-size">245 KB</div>
+                                    <div class="attachment-name font-medium">Arrival_Instructions.pdf</div>
+                                    <div class="attachment-size">246 KB</div>
                                 </div>
                             `;
                         }
@@ -2042,15 +2042,17 @@
             const hblInput = document.getElementById('hbl-input');
             
             if (email.id === 1) {
-                // Maersk 更新信件，可分析可更新
-                currentHblNo = "MSKU1234567";
+                // Maersk 預到達通知，可分析可更新
+                currentHblNo = "MAEU9876543";
                 if (hblDisplay) hblDisplay.textContent = currentHblNo;
                 if (hblInput) hblInput.value = currentHblNo;
                 
                 gofreightmateContent.innerHTML += createFieldHtml('Container No.', 'MSKU1234567', 'MSKU1234567', 'container');
                 gofreightmateContent.innerHTML += createFieldHtml('Vessel/Voyage', 'MAERSK HONG KONG / 2401', 'MAERSK HONG KONG V.2401', 'vessel');
                 gofreightmateContent.innerHTML += createFieldHtml('ETA', 'April 18, 2025, 08:00 PST', 'April 18, 2025, 14:00 PST', 'date');
-                gofreightmateContent.innerHTML += createFieldHtml('Destination', 'Los Angeles, CA', 'Port of Los Angeles (USLAX)', 'port');
+                gofreightmateContent.innerHTML += createFieldHtml('POL', '<i>(None)</i>', 'Shanghai, China', 'port');
+                gofreightmateContent.innerHTML += createFieldHtml('CY/CFS Location', '<i>(None)</i>', 'Maersk CY Los Angeles', 'location');
+                gofreightmateContent.innerHTML += createFieldHtml('Last Free Day', '<i>(None)</i>', 'April 22, 2025', 'date');
             } 
             else if (email.id === 2) {
                 // Evergreen 到達通知，可分析但不可更新
@@ -2131,7 +2133,7 @@
             
             // 根據不同的郵件設置不同的MB/L No.
             if (email.id === 1) {
-                currentMblNo = "KIOR294757356";
+                currentMblNo = "MAEU9876543";
             } else if (email.id === 2) {
                 currentMblNo = "EGLV1234567890";
             } else if (email.id === 3) {
