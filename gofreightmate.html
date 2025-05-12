@@ -1049,11 +1049,11 @@
     <script>
         // Simulated email data for ocean import operator
         const emails = [
-            // 1. 可以分析並能成功更新的信件 - 測試場景：ETA 更新信，可成功分析和更新
-            { id: 1, sender: 'Maersk Line [TEST: 可分析並成功更新]', senderInitial: 'M', subject: 'ETA Update - Vessel MAERSK HONG KONG V.2401 - Container MSKU1234567', snippet: 'Please note that the updated ETA for MAERSK HONG KONG V.2401 at Los Angeles port is now...', timestamp: '9:45 AM', unread: true, body: `<p>Dear Customer,</p><p>Please be advised that the vessel <strong>MAERSK HONG KONG V.2401</strong> has an updated estimated time of arrival (ETA) at Los Angeles Port (USLAX) of <strong>April 18, 2025, 14:00 PST</strong>.</p><p>Container Number: <strong>MSKU1234567</strong></p><p>Booking Reference: <strong>AE123987</strong></p><p>We apologize for any inconvenience this schedule change may cause. You can track the latest status of the vessel on our website.</p><p>Best regards,<br>Maersk Customer Service</p>`, 
+            // 1. 可以分析並能成功更新的信件 - 測試場景：船公司發送的預到達通知
+            { id: 1, sender: 'Maersk Line [TEST: Pre-arrival Notice]', senderInitial: 'M', subject: 'Pre-arrival Notice - MAERSK HONG KONG V.2401 - B/L MAEU9876543', snippet: 'Please find attached the pre-arrival notice for your shipment on MAERSK HONG KONG V.2401 arriving at Los Angeles port...', timestamp: '9:45 AM', unread: true, body: `<p>Dear Valued Customer,</p><p>Please find attached the pre-arrival notice for your shipment with the following details:</p><ul><li><strong>Vessel:</strong> MAERSK HONG KONG V.2401</li><li><strong>ETA Los Angeles:</strong> April 18, 2025, 14:00 PST</li><li><strong>Container Number:</strong> MSKU1234567</li><li><strong>Bill of Lading:</strong> MAEU9876543</li><li><strong>POL:</strong> Shanghai, China</li><li><strong>POD:</strong> Los Angeles, CA</li><li><strong>CY/CFS:</strong> Maersk CY Los Angeles</li></ul><p>The Pre-arrival Notice and Arrival Instructions are attached for your reference.</p><p>Important Dates:</p><ul><li><strong>Estimated Discharge Date:</strong> April 18, 2025</li><li><strong>Storage Begins:</strong> April 23, 2025</li><li><strong>Last Free Day:</strong> April 22, 2025</li></ul><p>Please ensure customs clearance is prepared in advance to avoid demurrage charges.</p><p>For shipment status and updates, please visit our website or contact your local Maersk representative.</p><p>Best regards,<br>Maersk Customer Service Team</p>`, 
               attachments: [
-                { name: 'ETA_Update_MSKU1234567.pdf', size: '156 KB', type: 'pdf' },
-                { name: 'Delivery_Instructions.pdf', size: '245 KB', type: 'pdf' }
+                { name: 'Pre-arrival_Notice_MAEU9876543.pdf', size: '185 KB', type: 'pdf' },
+                { name: 'Arrival_Instructions.pdf', size: '246 KB', type: 'pdf' }
               ] 
             },
             
