@@ -889,7 +889,7 @@
                     <!-- 欄位勾選提示 -->
                     <div class="update-selection-note mb-4">
                         <i data-lucide="info"></i>
-                        <span>勾選要更新的欄位，取消勾選表示不更新該欄位。</span>
+                        <span>Select fields you want to update, uncheck to exclude fields from update.</span>
                     </div>
                 </div>
                 
@@ -902,16 +902,16 @@
                     <!-- 添加自定義欄位按鈕 -->
                     <div class="add-custom-field" id="add-custom-field-btn">
                         <i data-lucide="plus-circle" class="w-6 h-6 mx-auto"></i>
-                        <div class="add-custom-field-title">新增自定義欄位</div>
-                        <div class="add-custom-field-desc">新增 GoFreight 中沒有的欄位資料</div>
+                        <div class="add-custom-field-title">Add Custom Field</div>
+                        <div class="add-custom-field-desc">Add data fields not available in GoFreight</div>
                     </div>
                     
                     <!-- 自定義欄位表單 -->
                     <div class="custom-field-form" id="custom-field-form">
                         <div class="custom-field-form-row">
-                            <label for="custom-field-name">欄位名稱</label>
+                            <label for="custom-field-name">Field Name</label>
                             <div class="gfm-autocomplete-wrapper">
-                                <input type="text" id="custom-field-name" class="gfm-autocomplete-input" placeholder="開始輸入欄位名稱...">
+                                <input type="text" id="custom-field-name" class="gfm-autocomplete-input" placeholder="Start typing field name...">
                                 <div class="gfm-autocomplete-dropdown">
                                     <div class="gfm-autocomplete-item">Shipper</div>
                                     <div class="gfm-autocomplete-item">Consignee</div>
@@ -925,12 +925,12 @@
                             </div>
                         </div>
                         <div class="custom-field-form-row">
-                            <label for="custom-field-value">欄位值</label>
-                            <input type="text" id="custom-field-value" placeholder="輸入欄位值">
+                            <label for="custom-field-value">Field Value</label>
+                            <input type="text" id="custom-field-value" placeholder="Enter field value">
                         </div>
                         <div class="custom-field-form-buttons">
-                            <button class="btn-cancel" id="cancel-custom-field">取消</button>
-                            <button class="btn-add" id="confirm-custom-field">新增</button>
+                            <button class="btn-cancel" id="cancel-custom-field">Cancel</button>
+                            <button class="btn-add" id="confirm-custom-field">Add</button>
                         </div>
                     </div>
                     
@@ -1341,7 +1341,7 @@
                 
                 // 驗證必填欄位
                 if (!fieldName || !fieldValue) {
-                    alert('請填寫欄位名稱和值');
+                    alert('Please enter both field name and value');
                     return;
                 }
                 
@@ -1366,11 +1366,11 @@
                     <div class="gfm-card-header">
                         <div class="gfm-card-title">
                             <i data-lucide="clipboard-list" class="w-4 h-4"></i>
-                            ${fieldName} <span class="text-xs text-purple-500">(自定義)</span>
+                            ${fieldName} <span class="text-xs text-purple-500">(Custom)</span>
                         </div>
-                        <div class="gfm-card-checkbox" title="勾選此欄位以更新至GoFreight">
+                        <div class="gfm-card-checkbox" title="Check this field to update in GoFreight">
                             <input type="checkbox" id="${fieldId}" class="field-update-checkbox" checked>
-                            <label for="${fieldId}" class="sr-only">更新此欄位</label>
+                            <label for="${fieldId}" class="sr-only">Update this field</label>
                         </div>
                     </div>
                     <button class="delete-custom-field absolute top-1 right-8" data-field-id="${fieldId}" title="刪除此欄位">
@@ -1425,7 +1425,7 @@
             const card = button.closest('.gfm-card');
             if (card) {
                 // 詢問用戶確認
-                if (confirm('確定要刪除此自定義欄位嗎？')) {
+                if (confirm('Are you sure you want to delete this custom field?')) {
                     card.remove();
                 }
             }
@@ -1929,9 +1929,9 @@
                             <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                             ${label}
                         </div>
-                        <div class="gfm-card-checkbox" title="勾選此欄位以更新至GoFreight">
+                        <div class="gfm-card-checkbox" title="Check this field to update in GoFreight">
                             <input type="checkbox" id="update-${label.replace(/\s+/g, '-').toLowerCase()}" class="field-update-checkbox" checked>
-                            <label for="update-${label.replace(/\s+/g, '-').toLowerCase()}" class="sr-only">更新此欄位</label>
+                            <label for="update-${label.replace(/\s+/g, '-').toLowerCase()}" class="sr-only">Update this field</label>
                         </div>
                     </div>
                     <div class="gfm-card-content">
@@ -2681,7 +2681,7 @@
                     
                     // 如果沒有選中任何欄位，提示用戶
                     if (selectedFields.length === 0) {
-                        statusMessage.innerHTML = `<i data-lucide="alert-circle"></i> 請至少選擇一個欄位進行更新。`;
+                        statusMessage.innerHTML = `<i data-lucide="alert-circle"></i> Please select at least one field to update.`;
                         statusMessage.classList.add('error');
                         statusMessage.classList.remove('hidden', 'success');
                         
@@ -2713,7 +2713,7 @@
                         // Email ID 1, 3, 4 會成功，其他會失敗
                         if (currentOpenEmail.id === 1 || currentOpenEmail.id === 3 || currentOpenEmail.id === 4) {
                             // 成功狀態
-                            statusMessage.innerHTML = `<i data-lucide="check-circle"></i> 成功將 ${selectedFields.length} 個欄位更新至 GoFreight。`;
+                            statusMessage.innerHTML = `<i data-lucide="check-circle"></i> Successfully updated ${selectedFields.length} fields to GoFreight.`;
                             statusMessage.classList.add('success');
                             statusMessage.classList.remove('hidden');
                             
@@ -2730,7 +2730,7 @@
                             disableAllInputFields();
                         } else {
                             // 失敗狀態
-                            statusMessage.innerHTML = `<i data-lucide="alert-circle"></i> 無法更新 GoFreight。請稍後再試。`;
+                            statusMessage.innerHTML = `<i data-lucide="alert-circle"></i> Unable to update GoFreight. Please try again later.`;
                             statusMessage.classList.add('error');
                             statusMessage.classList.remove('hidden');
                         }
