@@ -566,6 +566,161 @@
             height: 0.875rem;
         }
 
+        /* 添加欄位選擇器樣式 */
+        .gfm-card-checkbox {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .gfm-card-checkbox input[type="checkbox"] {
+            margin-right: 0.5rem;
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+            accent-color: #6366f1;
+        }
+
+        .gfm-card-checkbox label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        /* 添加自定義欄位樣式 */
+        .add-custom-field {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border: 1px dashed #d1d5db;
+            border-radius: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-custom-field:hover {
+            border-color: #6366f1;
+            background-color: #f5f3ff;
+        }
+
+        .add-custom-field i {
+            color: #6366f1;
+            margin-bottom: 0.5rem;
+        }
+
+        .add-custom-field-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+        }
+
+        .add-custom-field-desc {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .custom-field-form {
+            padding: 1rem;
+            background-color: #f9fafb;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .custom-field-form.active {
+            display: block;
+        }
+
+        .custom-field-form-row {
+            margin-bottom: 0.75rem;
+        }
+
+        .custom-field-form-row label {
+            display: block;
+            font-size: 0.75rem;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+        }
+
+        .custom-field-form-row input,
+        .custom-field-form-row select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        .custom-field-form-row input:focus,
+        .custom-field-form-row select:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .custom-field-form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .custom-field-form-buttons button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel {
+            background-color: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e5e7eb;
+        }
+
+        .btn-add {
+            background-color: #6366f1;
+            color: white;
+            border: none;
+        }
+
+        .btn-add:hover {
+            background-color: #4f46e5;
+        }
+
+        /* 覆蓋原有的待更新樣式 */
+        .gfm-card.to-update {
+            border-left: 3px solid #6366f1;
+            background-color: #f5f3ff;
+        }
+
+        .gfm-card.not-update {
+            opacity: 0.7;
+        }
+
+        .update-selection-note {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: #f9fafb;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+        }
+
+        .update-selection-note i {
+            margin-right: 0.5rem;
+            color: #6366f1;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans flex h-screen overflow-hidden">
@@ -728,6 +883,49 @@
                 
                 <div id="gofreightmate-content" class="flex-1">
                     <p class="text-center text-purple-600">Click the GoFreightMate button to start analysis.</p>
+                </div>
+                
+                <!-- 添加自定義欄位區域 -->
+                <div id="custom-field-container" class="hidden mt-4">
+                    <!-- 自定義欄位說明 -->
+                    <div class="update-selection-note">
+                        <i data-lucide="info"></i>
+                        <span>勾選要更新的欄位，取消勾選表示不更新該欄位。</span>
+                    </div>
+                    
+                    <!-- 添加自定義欄位按鈕 -->
+                    <div class="add-custom-field" id="add-custom-field-btn">
+                        <i data-lucide="plus-circle" class="w-6 h-6 mx-auto"></i>
+                        <div class="add-custom-field-title">新增自定義欄位</div>
+                        <div class="add-custom-field-desc">新增 GoFreight 中沒有的欄位資料</div>
+                    </div>
+                    
+                    <!-- 自定義欄位表單 -->
+                    <div class="custom-field-form" id="custom-field-form">
+                        <div class="custom-field-form-row">
+                            <label for="custom-field-name">欄位名稱</label>
+                            <input type="text" id="custom-field-name" placeholder="例如：集裝箱類型、貨物重量等">
+                        </div>
+                        <div class="custom-field-form-row">
+                            <label for="custom-field-type">欄位類型</label>
+                            <select id="custom-field-type">
+                                <option value="text">文字</option>
+                                <option value="date">日期</option>
+                                <option value="number">數字</option>
+                            </select>
+                        </div>
+                        <div class="custom-field-form-row">
+                            <label for="custom-field-value">欄位值</label>
+                            <input type="text" id="custom-field-value" placeholder="輸入欄位值">
+                        </div>
+                        <div class="custom-field-form-buttons">
+                            <button class="btn-cancel" id="cancel-custom-field">取消</button>
+                            <button class="btn-add" id="confirm-custom-field">新增</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 已添加的自定義欄位將在這裡顯示 -->
+                    <div id="added-custom-fields"></div>
                 </div>
             </div>
             
@@ -1066,6 +1264,183 @@
                 populateGoFreightMateContent(email);
                 analysisTimeoutId = null;
             }, 1000);
+        }
+
+        // 處理欄位選擇更新狀態
+        function handleFieldSelectionToggle() {
+            document.querySelectorAll('.field-update-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // 取得當前 checkbox 所屬的卡片
+                    const card = this.closest('.gfm-card');
+                    
+                    if (this.checked) {
+                        // 選中時添加更新樣式
+                        card.classList.add('to-update');
+                        card.classList.remove('not-update');
+                    } else {
+                        // 未選中時添加非更新樣式
+                        card.classList.remove('to-update');
+                        card.classList.add('not-update');
+                    }
+                });
+                
+                // 初始化所有卡片為選中狀態
+                const card = checkbox.closest('.gfm-card');
+                card.classList.add('to-update');
+            });
+        }
+        
+        // 處理自定義欄位添加
+        function setupCustomFieldFunctionality() {
+            const addCustomFieldBtn = document.getElementById('add-custom-field-btn');
+            const customFieldForm = document.getElementById('custom-field-form');
+            const cancelCustomFieldBtn = document.getElementById('cancel-custom-field');
+            const confirmCustomFieldBtn = document.getElementById('confirm-custom-field');
+            const addedCustomFieldsContainer = document.getElementById('added-custom-fields');
+            
+            // 確保元素存在
+            if (!addCustomFieldBtn || !customFieldForm || !cancelCustomFieldBtn || !confirmCustomFieldBtn || !addedCustomFieldsContainer) {
+                console.error("自定義欄位相關元素缺失");
+                return;
+            }
+            
+            // 顯示自定義欄位表單
+            addCustomFieldBtn.addEventListener('click', function() {
+                customFieldForm.classList.add('active');
+                // 清空表單
+                document.getElementById('custom-field-name').value = '';
+                document.getElementById('custom-field-type').value = 'text';
+                document.getElementById('custom-field-value').value = '';
+            });
+            
+            // 取消添加
+            cancelCustomFieldBtn.addEventListener('click', function() {
+                customFieldForm.classList.remove('active');
+            });
+            
+            // 確認添加
+            confirmCustomFieldBtn.addEventListener('click', function() {
+                const fieldName = document.getElementById('custom-field-name').value.trim();
+                const fieldType = document.getElementById('custom-field-type').value;
+                const fieldValue = document.getElementById('custom-field-value').value.trim();
+                
+                // 驗證必填欄位
+                if (!fieldName || !fieldValue) {
+                    alert('請填寫欄位名稱和值');
+                    return;
+                }
+                
+                // 創建自定義欄位
+                addCustomField(fieldName, fieldType, fieldValue);
+                
+                // 隱藏表單
+                customFieldForm.classList.remove('active');
+            });
+        }
+        
+        // 添加自定義欄位
+        function addCustomField(fieldName, fieldType, fieldValue) {
+            const addedCustomFieldsContainer = document.getElementById('added-custom-fields');
+            
+            // 生成唯一ID
+            const fieldId = 'custom-' + Date.now();
+            
+            // 根據欄位類型生成不同的輸入元素
+            let inputHtml = '';
+            if (fieldType === 'date') {
+                inputHtml = `
+                    <input type="text" class="gfm-date-picker" value="${fieldValue}" placeholder="YYYY-MM-DD, HH:MM">
+                `;
+            } else if (fieldType === 'number') {
+                inputHtml = `
+                    <input type="number" class="gfm-card-input" value="${fieldValue}">
+                `;
+            } else {
+                inputHtml = `
+                    <input type="text" class="gfm-card-input" value="${fieldValue}">
+                `;
+            }
+            
+            // 創建自定義欄位卡片
+            const customFieldHtml = `
+                <div class="gfm-card to-update" data-field-label="${fieldName}" data-custom="true">
+                    <div class="gfm-card-header">
+                        <div class="gfm-card-title">
+                            <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                            ${fieldName} <span class="text-xs text-purple-500">(自定義)</span>
+                        </div>
+                        <button class="delete-custom-field" data-field-id="${fieldId}">
+                            <i data-lucide="trash-2" class="w-4 h-4 text-gray-500 hover:text-red-500"></i>
+                        </button>
+                    </div>
+                    <div class="gfm-card-content">
+                        <div class="gfm-card-row">
+                            <div class="gfm-card-label">GoFreight Current Data:</div>
+                            <div class="gfm-card-value current"><i>(None)</i></div>
+                        </div>
+                        <div class="gfm-card-row">
+                            <div class="gfm-card-label">Update Data:</div>
+                            ${inputHtml}
+                            <div class="gfm-card-checkbox">
+                                <input type="checkbox" id="${fieldId}" class="field-update-checkbox" checked>
+                                <label for="${fieldId}">更新此欄位至 GoFreight</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 添加到容器中
+            addedCustomFieldsContainer.insertAdjacentHTML('beforeend', customFieldHtml);
+            
+            // 初始化刪除功能
+            initDeleteCustomField();
+            
+            // 確保新添加的欄位選擇功能也被初始化
+            handleFieldSelectionToggle();
+            
+            // 確保圖標被渲染
+            if (typeof lucide !== 'undefined') {
+                try {
+                    lucide.createIcons();
+                } catch (error) {
+                    console.error("Error creating icons for custom field:", error);
+                }
+            }
+        }
+        
+        // 初始化刪除自定義欄位功能
+        function initDeleteCustomField() {
+            document.querySelectorAll('.delete-custom-field').forEach(button => {
+                // 移除之前添加的事件監聽器（避免重複）
+                button.removeEventListener('click', handleDeleteCustomField);
+                
+                // 添加新的事件監聽器
+                button.addEventListener('click', handleDeleteCustomField);
+            });
+        }
+        
+        // 處理刪除自定義欄位
+        function handleDeleteCustomField(event) {
+            const button = event.currentTarget;
+            const card = button.closest('.gfm-card');
+            if (card) {
+                // 詢問用戶確認
+                if (confirm('確定要刪除此自定義欄位嗎？')) {
+                    card.remove();
+                }
+            }
+        }
+        
+        // 獲取選中的欄位ID
+        function getSelectedFieldIds() {
+            const selectedIds = [];
+            document.querySelectorAll('.field-update-checkbox:checked').forEach(checkbox => {
+                const card = checkbox.closest('.gfm-card');
+                const fieldLabel = card.getAttribute('data-field-label');
+                selectedIds.push(fieldLabel);
+            });
+            return selectedIds;
         }
 
         function openGoFreightMatePanel() {
@@ -1549,7 +1924,7 @@
             }
 
             return `
-                <div class="gfm-card">
+                <div class="gfm-card" data-field-label="${label}">
                     <div class="gfm-card-header">
                         <div class="gfm-card-title">
                             <i data-lucide="clipboard-list" class="w-4 h-4"></i>
@@ -1568,6 +1943,10 @@
                         <div class="gfm-card-row">
                             <div class="gfm-card-label">Update Data:</div>
                             ${inputHtml}
+                            <div class="gfm-card-checkbox">
+                                <input type="checkbox" id="update-${label.replace(/\s+/g, '-').toLowerCase()}" class="field-update-checkbox" checked>
+                                <label for="update-${label.replace(/\s+/g, '-').toLowerCase()}">更新此欄位至 GoFreight</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1627,6 +2006,24 @@
             // 以下是數據掃描頁面的內容處理
             // Update HB/L No. display based on current email
             updateHblNoForEmail(email);
+            
+            // 顯示自定義欄位區域（如果郵件可分析）
+            const customFieldContainer = document.getElementById('custom-field-container');
+            if (customFieldContainer) {
+                if (email.id === 1 || email.id === 2 || email.id === 3 || email.id === 4 || email.id === 8) {
+                    // 可分析的郵件，顯示自定義欄位區域
+                    customFieldContainer.classList.remove('hidden');
+                } else {
+                    // 不可分析的郵件，隱藏自定義欄位區域
+                    customFieldContainer.classList.add('hidden');
+                }
+            }
+            
+            // 初始化欄位選擇功能（在內容填充後）
+            setTimeout(() => {
+                handleFieldSelectionToggle();
+                setupCustomFieldFunctionality();
+            }, 100);
             
             // 確保圖標被渲染
             if (typeof lucide !== 'undefined') {
@@ -2051,6 +2448,27 @@
                 hblEditButton.style.opacity = '0.5';
                 hblEditButton.style.cursor = 'not-allowed';
             }
+            
+            // 禁用所有欄位選擇複選框
+            const checkboxes = document.querySelectorAll('.field-update-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.disabled = true;
+            });
+            
+            // 禁用添加自定義欄位按鈕
+            const addCustomFieldBtn = document.getElementById('add-custom-field-btn');
+            if (addCustomFieldBtn) {
+                addCustomFieldBtn.style.pointerEvents = 'none';
+                addCustomFieldBtn.style.opacity = '0.5';
+            }
+            
+            // 禁用刪除自定義欄位按鈕
+            const deleteButtons = document.querySelectorAll('.delete-custom-field');
+            deleteButtons.forEach(button => {
+                button.disabled = true;
+                button.style.opacity = '0.5';
+                button.style.pointerEvents = 'none';
+            });
         }
         
         // --- Initial Setup ---
@@ -2265,6 +2683,26 @@
                 updateGofreightBtn.addEventListener('click', function() {
                     if (!currentOpenEmail) return;
                     
+                    // 獲取選中的欄位
+                    const selectedFields = getSelectedFieldIds();
+                    console.log("選中更新的欄位:", selectedFields);
+                    
+                    // 如果沒有選中任何欄位，提示用戶
+                    if (selectedFields.length === 0) {
+                        statusMessage.innerHTML = `<i data-lucide="alert-circle"></i> 請至少選擇一個欄位進行更新。`;
+                        statusMessage.classList.add('error');
+                        statusMessage.classList.remove('hidden', 'success');
+                        
+                        if (typeof lucide !== 'undefined') {
+                            try {
+                                lucide.createIcons();
+                            } catch (error) {
+                                console.error("Error creating icons for status message:", error);
+                            }
+                        }
+                        return;
+                    }
+                    
                     // 顯示讀取狀態
                     this.classList.add('btn-loading');
                     this.disabled = true;
@@ -2283,7 +2721,7 @@
                         // Email ID 1, 3, 4 會成功，其他會失敗
                         if (currentOpenEmail.id === 1 || currentOpenEmail.id === 3 || currentOpenEmail.id === 4) {
                             // 成功狀態
-                            statusMessage.innerHTML = `<i data-lucide="check-circle"></i> 成功將運輸數據更新至 GoFreight。`;
+                            statusMessage.innerHTML = `<i data-lucide="check-circle"></i> 成功將 ${selectedFields.length} 個欄位更新至 GoFreight。`;
                             statusMessage.classList.add('success');
                             statusMessage.classList.remove('hidden');
                             
