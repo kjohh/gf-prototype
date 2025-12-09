@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CargoMind: Design Exploration Concept</title>
+    
+    <!-- 1. Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- 3. Babel (for JSX compilation in browser) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- 4. Framer Motion (Global Build) -->
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: white; }
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion, AnimatePresence } = window.Motion;
+
+        // --- 0. ICON DEFINITIONS (INLINE SVG) ---
+        // 為了避免外部 CDN 錯誤，我們將所有圖示直接寫在這裡
+        // 這樣就不需要依賴 lucide-react 的外部腳本，保證不會報錯
+        const IconBase = ({ children, className, ...props }) => (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className={className} 
+                {...props}
+            >
+                {children}
+            </svg>
+        );
+
+        const ArrowRight = (p) => <IconBase {...p}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></IconBase>;
+        const ArrowLeft = (p) => <IconBase {...p}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></IconBase>;
+        const Cpu = (p) => <IconBase {...p}><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 14h3"/><path d="M1 9h3"/><path d="M1 14h3"/></IconBase>;
+        const AlertTriangle = (p) => <IconBase {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></IconBase>;
+        const FileText = (p) => <IconBase {...p}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></IconBase>;
+        const Database = (p) => <IconBase {...p}><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></IconBase>;
+        const Zap = (p) => <IconBase {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></IconBase>;
+        const CheckCircle2 = (p) => <IconBase {...p}><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></IconBase>;
+        const Users = (p) => <IconBase {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconBase>;
+        const TrendingUp = (p) => <IconBase {...p}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></IconBase>;
+        const Clock = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></IconBase>;
+        const ShieldCheck = (p) => <IconBase {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></IconBase>;
+        const Mail = (p) => <IconBase {...p}><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></IconBase>;
+        const Sparkles = (p) => <IconBase {...p}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></IconBase>;
+        const MessageCircle = (p) => <IconBase {...p}><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></IconBase>;
+        const Lightbulb = (p) => <IconBase {...p}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2.4 1.5-3.8 0-3.3-2.7-6-6-6S6 4.7 6 8c0 1.4.5 2.8 1.5 3.8.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></IconBase>;
+        const HelpCircle = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></IconBase>;
+        const Target = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></IconBase>;
+        const Rocket = (p) => <IconBase {...p}><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></IconBase>;
+        const Menu = (p) => <IconBase {...p}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></IconBase>;
+        const X = (p) => <IconBase {...p}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
+        const BrainCircuit = (p) => <IconBase {...p}><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/><path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/><path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/><path d="M3.477 10.896a4 4 0 0 1 .585-.396"/><path d="M19.938 10.5a4 4 0 0 1 .585.396"/><path d="M6 18a4 4 0 0 1-1.97-3.284"/><path d="M17.97 14.716A4 4 0 0 1 18 18"/><path d="M12 18v5"/><path d="m9 22 3-3 3 3"/></IconBase>;
+        const Layers = (p) => <IconBase {...p}><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></IconBase>;
+        const Search = (p) => <IconBase {...p}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></IconBase>;
+        const Sunrise = (p) => <IconBase {...p}><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></IconBase>;
+        const Coffee = (p) => <IconBase {...p}><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></IconBase>;
+        const ListChecks = (p) => <IconBase {...p}><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></IconBase>;
+        const MousePointerClick = (p) => <IconBase {...p}><path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12 4.1 2"/></IconBase>;
+
+        // --- 1. Background Component ---
+        const Background = () => (
+            <div className="fixed inset-0 z-0 pointer-events-none bg-slate-950 overflow-hidden">
+                <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-600/10 blur-[120px] animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-purple-600/10 blur-[120px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '1s' }} />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+            </div>
+        );
+
+        // --- 2. Quick Navigation Menu ---
+        const QuickMenu = ({ slides, current, onChange, isOpen, setIsOpen }) => (
+            <React.Fragment>
+                <button 
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-slate-800 hover:bg-slate-700 text-white shadow-lg border border-slate-700 transition-all hover:scale-105"
+                >
+                    {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                            className="fixed bottom-20 right-6 z-40 w-64 bg-slate-900/95 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-2xl p-2 overflow-hidden"
+                        >
+                            <div className="px-4 py-2 text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Jump to slide</div>
+                            <div className="flex flex-col gap-1">
+                                {slides.map((slide, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => { onChange(index); setIsOpen(false); }}
+                                        className={`text-left px-4 py-3 rounded-lg text-sm transition-colors flex items-center gap-3 ${
+                                            current === index 
+                                                ? 'bg-indigo-600 text-white' 
+                                                : 'text-slate-300 hover:bg-slate-800'
+                                        }`}
+                                    >
+                                        <span className={`text-xs font-mono opacity-50 ${current === index ? 'text-indigo-200' : ''}`}>
+                                            {String(index + 1).padStart(2, '0')}
+                                        </span>
+                                        {slide.title}
+                                    </button>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </React.Fragment>
+        );
+
+        // --- 3. Navigation Bar ---
+        const Navigation = ({ current, total, onNext, onPrev }) => (
+            <div className="fixed bottom-0 left-0 p-6 flex items-end pointer-events-none z-40">
+                <div className="flex gap-4 pointer-events-auto">
+                    <button 
+                        onClick={onPrev} 
+                        disabled={current === 0}
+                        className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700 text-white disabled:opacity-30 backdrop-blur border border-slate-700 transition-all hover:scale-105"
+                    >
+                        <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <button 
+                        onClick={onNext} 
+                        disabled={current === total - 1}
+                        className="p-3 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-30 shadow-lg shadow-indigo-500/30 transition-all hover:scale-105"
+                    >
+                        <ArrowRight className="w-6 h-6" />
+                    </button>
+                </div>
+                <div className="ml-6 mb-2 text-slate-500 text-xs font-mono hidden md:block">
+                    DESIGN_EXPLORATION_OP2.0 <br />
+                    SLIDE {current + 1} / {total}
+                </div>
+            </div>
+        );
+
+        // --- SLIDES CONTENT ---
+
+        // Slide 1: Cover
+        const SlideIntro = () => (
+            <div className="flex flex-col items-center justify-center h-full text-center px-4">
+                <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.8 }}
+                    className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-[0_0_60px_rgba(99,102,241,0.5)] mb-8"
+                >
+                    <BrainCircuit className="text-white w-12 h-12" />
+                </motion.div>
+                
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="mb-4 px-4 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-sm font-mono"
+                >
+                    Design Concept Review
+                </motion.div>
+
+                <motion.h1 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tight"
+                >
+                    CargoMind: OP 2.0
+                </motion.h1>
+                
+                <motion.p 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="text-xl md:text-2xl text-slate-400 max-w-2xl font-light"
+                >
+                    探索 AI 時代下的 <span className="text-indigo-400 font-bold">自動化體驗</span><br/>
+                    <span className="text-base text-slate-500 mt-2 block">A Product Design Exploration</span>
+                </motion.p>
+            </div>
+        );
+
+        // Slide 2: The Context
+        const SlideContext = () => (
+            <div className="flex flex-col h-full justify-center max-w-5xl mx-auto px-8">
+                <motion.h2 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-4xl font-bold text-white mb-12 flex items-center gap-4"
+                >
+                    <Target className="text-indigo-500" />
+                    專案背景 (The Context)
+                </motion.h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="space-y-8"
+                    >
+                        <div className="bg-slate-900/50 border-l-4 border-indigo-500 p-6 rounded-r-xl">
+                            <p className="text-slate-400 text-sm uppercase tracking-widest mb-2">核心命題 (Core Challenge)</p>
+                            <h3 className="text-2xl text-white font-medium italic">
+                                "在 AI 時代，我們的操作系統應該長什麼樣子？如果我們能重新設計體驗，OP 2.0 會是什麼？"
+                            </h3>
+                        </div>
+                        
+                        <div>
+                            <p className="text-slate-300 text-lg leading-relaxed">
+                                這是一個針對 <span className="text-white font-bold">後 AI 時代產品策略</span> 的設計探索 (Design Exploration)。
+                                <br/><br/>
+                                我試圖從 <span className="text-indigo-400">產品體驗 (UX)</span> 的角度出發，提出一個初步構想，並希望聽聽大家作為 PM 與 Engineering 的專業回饋，共同評估其可行性與價值。
+                            </p>
+                        </div>
+                    </motion.div>
+
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="bg-slate-900 border border-slate-800 p-8 rounded-2xl relative"
+                    >
+                        <div className="absolute -top-4 -right-4 bg-indigo-600 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">Goal</div>
+                        <ul className="space-y-4">
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+                                <span className="text-slate-300">定義「人機協作」的新模式</span>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+                                <span className="text-slate-300">驗證 AI 在垂直領域的應用價值</span>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+                                <span className="text-slate-300">收集內部技術與產品觀點</span>
+                            </li>
+                        </ul>
+                    </motion.div>
+                </div>
+            </div>
+        );
+
+        // Slide 3: The Persona
+        const SlidePersona = () => (
+            <div className="flex flex-col h-full justify-center max-w-6xl mx-auto px-8">
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
+                    <h2 className="text-4xl font-bold text-white mb-2">Persona: Sarah</h2>
+                    <p className="text-indigo-400 text-xl">The "Human Middleware" Problem</p>
+                </motion.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    {/* Profile Card */}
+                    <motion.div 
+                        initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }}
+                        className="md:col-span-4 bg-slate-900 border border-slate-700 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl" />
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center text-3xl">👩‍💻</div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white">Sarah</h3>
+                                <p className="text-slate-400">Import Data Specialist</p>
+                                <p className="text-xs text-slate-500 mt-1">年資: 5年 | 數位能力: 中等</p>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="p-4 bg-slate-800/50 rounded-xl">
+                                <div className="text-xs text-slate-500 uppercase mb-1">Primary Goal</div>
+                                <div className="text-white">確保每一票貨準時、正確申報 (Zero Penalty)</div>
+                            </div>
+                            <div className="p-4 bg-slate-800/50 rounded-xl border border-rose-500/20">
+                                <div className="text-xs text-rose-400 uppercase mb-1">Pain Point</div>
+                                <div className="text-white">我是公司的 "Human OCR"，每天都在做重複的資料搬運。</div>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Cognitive Load Map */}
+                    <motion.div 
+                        initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }}
+                        className="md:col-span-8 space-y-6"
+                    >
+                        <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
+                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <BrainCircuit className="w-5 h-5 text-indigo-400" />
+                                認知負荷分析 (Cognitive Load Analysis)
+                            </h3>
+                            <div className="space-y-6">
+                                <div>
+                                    <div className="flex justify-between text-sm mb-2">
+                                        <span className="text-slate-400">Context Switching (視窗切換)</span>
+                                        <span className="text-rose-400 font-bold">High</span>
+                                    </div>
+                                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div className="h-full bg-gradient-to-r from-rose-500 to-orange-500 w-[90%]" />
+                                    </div>
+                                    <p className="text-xs text-slate-500 mt-1">Email ↔ PDF ↔ TMS 系統，平均每票貨切換 20+ 次</p>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between text-sm mb-2">
+                                        <span className="text-slate-400">Decision Making (決策價值)</span>
+                                        <span className="text-indigo-400 font-bold">Low</span>
+                                    </div>
+                                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                                        <div className="h-full bg-indigo-500 w-[15%]" />
+                                    </div>
+                                    <p className="text-xs text-slate-500 mt-1">大部分時間在做 Data Entry，而非異常處理</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
+                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <Layers className="w-5 h-5 text-amber-400" />
+                                設計機會點 (Design Opportunity)
+                            </h3>
+                            <p className="text-slate-300 leading-relaxed">
+                                Sarah 的價值不在於「輸入資料」，而在於「判斷異常」。<br/>
+                                如果我們能消除 <span className="text-white font-bold underline decoration-indigo-500">80% 的重複性輸入工作</span>，就能讓她專注於處理那 20% 真正需要人類智慧的複雜案件。
+                            </p>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
+        );
+
+        // Slide 4: Current Landscape
+        const SlideProblem = () => (
+            <div className="flex flex-col items-center justify-center h-full max-w-5xl mx-auto px-4 text-center">
+                <h2 className="text-3xl md:text-5xl font-bold text-white mb-12">為何這是一個值得解決的問題？</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                    {['傳統 OCR', '人力外包', '規則引擎'].map((item, i) => (
+                        <motion.div 
+                            key={i}
+                            initial={{ y: 50, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: i * 0.2 }}
+                            className="bg-slate-900/50 border border-slate-800 p-8 rounded-2xl opacity-70 hover:opacity-100 transition-all duration-500"
+                        >
+                            <div className="text-4xl mb-4 text-slate-600">❌</div>
+                            <h3 className="text-xl font-bold text-slate-300 mb-2">{item}</h3>
+                            <p className="text-sm text-slate-500">
+                                {i === 0 && "缺乏彈性：文件格式一變就失效，維護成本高。"}
+                                {i === 1 && "資安隱憂、時效慢，且無法即時互動。"}
+                                {i === 2 && "開發瓶頸：每家客戶都要工程師寫新的 Parser。"}
+                            </p>
+                        </motion.div>
+                    ))}
+                </div>
+
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1 }}
+                    className="mt-16 bg-gradient-to-r from-indigo-900/50 to-purple-900/50 p-1 rounded-2xl"
+                >
+                    <div className="bg-slate-950 px-8 py-6 rounded-xl flex items-center gap-6 text-left">
+                        <Rocket className="w-10 h-10 text-indigo-400 shrink-0" />
+                        <div>
+                            <p className="text-sm text-indigo-300 font-bold uppercase tracking-wider mb-1">Technology Enabler</p>
+                            <h3 className="text-xl text-white font-bold">LLM 的出現改變了規則</h3>
+                            <p className="text-slate-400 mt-2 text-sm">
+                                我們不再需要寫死規則去抓座標，而是讓 AI <span className="text-white font-bold">「像人類一樣閱讀理解」</span> 文件內容與語意。這讓我們有機會打造一個真正通用的 Agent。
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+        );
+
+        // Slide 5: The Vision (The North Star)
+        const SlideVision = () => {
+            const [showCards, setShowCards] = useState(false);
+
+            return (
+                <div className="flex flex-col h-full justify-center max-w-6xl mx-auto px-8" onClick={() => !showCards && setShowCards(true)}>
+                    <div className="mb-12 text-center cursor-pointer">
+                        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="inline-block px-4 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 text-sm font-bold tracking-wider mb-4 border border-amber-500/30">
+                            THE NORTH STAR
+                        </motion.div>
+                        <h2 className="text-5xl font-bold text-white mb-4">重塑體驗：黃金 10 分鐘</h2>
+                        <p className="text-xl text-slate-400">如果 AI 真正成熟，Sarah 的早晨將會變成什麼樣子？</p>
+                        
+                        {!showCards && (
+                            <motion.div 
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, repeat: Infinity, duration: 2 }}
+                                className="mt-12 flex flex-col items-center gap-2 text-slate-600 text-sm"
+                            >
+                                <MousePointerClick className="w-5 h-5" />
+                                <span>Click to reveal timeline</span>
+                            </motion.div>
+                        )}
+                    </div>
+
+                    <AnimatePresence>
+                        {showCards && (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                                {/* Connector Line */}
+                                <motion.div 
+                                    initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8 }}
+                                    className="hidden md:block absolute top-12 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500/30 via-indigo-500 to-indigo-500/30 -z-10 origin-left" 
+                                />
+
+                                {/* Step 1 */}
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                                    className="bg-slate-900 border border-slate-800 p-8 rounded-2xl relative"
+                                >
+                                    <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-6 border-4 border-slate-950 mx-auto z-10 relative">
+                                        <Sunrise className="w-8 h-8 text-indigo-400" />
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-3xl font-black text-white mb-1">09:00</div>
+                                        <div className="text-indigo-400 font-bold mb-4">Start of Day</div>
+                                        <p className="text-slate-300 text-sm leading-relaxed">
+                                            Sarah 悠閒地喝著咖啡打開電腦。她不再面對塞滿 50 封未讀郵件的 Inbox，而是一個乾淨的 <span className="text-white font-bold">Dashboard</span>。
+                                        </p>
+                                    </div>
+                                </motion.div>
+
+                                {/* Step 2 */}
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
+                                    className="bg-slate-900 border border-slate-800 p-8 rounded-2xl relative shadow-xl shadow-indigo-500/10"
+                                >
+                                    <div className="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mb-6 border-4 border-slate-950 mx-auto z-10 relative">
+                                        <ListChecks className="w-8 h-8 text-white" />
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-3xl font-black text-white mb-1">09:05</div>
+                                        <div className="text-emerald-400 font-bold mb-4">The Briefing</div>
+                                        <p className="text-slate-300 text-sm leading-relaxed">
+                                            系統回報：「昨夜 45 筆訂單已自動處理完畢。有 <span className="text-amber-400 font-bold">3 筆異常</span> 需要妳確認。」
+                                            她只需專注處理這 3 個紅燈，其餘皆已歸檔。
+                                        </p>
+                                    </div>
+                                </motion.div>
+
+                                {/* Step 3 */}
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0 }}
+                                    className="bg-slate-900 border border-slate-800 p-8 rounded-2xl relative"
+                                >
+                                    <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-6 border-4 border-slate-950 mx-auto z-10 relative">
+                                        <Coffee className="w-8 h-8 text-indigo-400" />
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="text-3xl font-black text-white mb-1">09:10</div>
+                                        <div className="text-indigo-400 font-bold mb-4">High Value Work</div>
+                                        <p className="text-slate-300 text-sm leading-relaxed">
+                                            以往要忙到中午的工作，現在 10 分鐘內搞定。剩下的時間，她可以用來聯繫客戶，或處理更複雜的報關諮詢。
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            );
+        };
+
+        // Slide 6: The Solution
+        const SlideSolution = () => (
+            <div className="flex flex-col h-full justify-center max-w-6xl mx-auto px-8">
+                <div className="mb-12">
+                    <h2 className="text-5xl font-bold text-white mb-4">產品概念：<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">CargoMind</span></h2>
+                    <p className="text-xl text-slate-400">
+                        定位：<span className="text-white font-bold">Autonomous Import Agent</span> (自主進口代理人)
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        { 
+                            icon: FileText, 
+                            title: "Context-Aware Ingestion", 
+                            desc: "利用 Vision LLM 讀取 PDF/圖片，理解表格結構，自動將 CI/PL 轉為結構化數據。",
+                            color: "text-blue-400" 
+                        },
+                        { 
+                            icon: ShieldCheck, 
+                            title: "The Guardian Angel", 
+                            desc: "執行業務邏輯檢查（例如：HBL 重量 vs. PL 總和），在寫入系統前攔截錯誤。",
+                            color: "text-emerald-400" 
+                        },
+                        { 
+                            icon: Zap, 
+                            title: "Autonomous Action", 
+                            desc: "不只是顯示錯誤，還能主動採取行動（如：自動發信追討 Tax ID）。",
+                            color: "text-amber-400" 
+                        }
+                    ].map((feature, i) => (
+                        <motion.div 
+                            key={i}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: i * 0.2 }}
+                            className="group relative bg-slate-900 border border-slate-700 p-8 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-colors"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <feature.icon className={`w-12 h-12 ${feature.color} mb-6`} />
+                            <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
+                            <p className="text-slate-400 leading-relaxed">{feature.desc}</p>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // Slide 7: Concept Demo
+        const SlideDemo = () => {
+            const [step, setStep] = useState(0); 
+
+            return (
+                <div className="flex flex-col items-center justify-center h-full max-w-5xl mx-auto px-4">
+                    <div className="text-center mb-8">
+                        <h2 className="text-3xl font-bold text-white mb-2">概念原型 (Concept Prototype)</h2>
+                        <p className="text-slate-400">這是我們設想中 Sarah 未來的工作體驗。</p>
+                    </div>
+
+                    <div className="w-full max-w-3xl bg-slate-950 rounded-xl border border-slate-800 shadow-2xl overflow-hidden relative">
+                        <div className="bg-slate-900 px-4 py-3 border-b border-slate-800 flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full bg-rose-500" />
+                                <div className="w-3 h-3 rounded-full bg-amber-500" />
+                                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                            </div>
+                            <div className="text-xs text-slate-500 font-mono">CargoMind OS v1.0</div>
+                        </div>
+
+                        <div className="p-8 min-h-[400px] flex items-center justify-center relative">
+                            
+                            {step === 0 && (
+                                <motion.div 
+                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                                    className="text-center"
+                                >
+                                    <div className="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                                        <Database className="w-8 h-8" />
+                                    </div>
+                                    <h3 className="text-white text-xl font-bold mb-2">背景執行中...</h3>
+                                    <p className="text-slate-500 text-sm mb-6">Agent 正在監聽 Sarah 的郵件收件匣。</p>
+                                    <button 
+                                        onClick={() => setStep(1)}
+                                        className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold transition-all"
+                                    >
+                                        模擬：偵測到異常案件
+                                    </button>
+                                </motion.div>
+                            )}
+
+                            {step === 1 && (
+                                <motion.div 
+                                    initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                                    className="w-full"
+                                >
+                                    <div className="bg-slate-900 border border-amber-500/50 rounded-lg p-6 mb-6 relative overflow-hidden">
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500" />
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <AlertTriangle className="text-amber-500 w-5 h-5" />
+                                                <span className="text-amber-500 font-bold">邏輯錯誤偵測</span>
+                                            </div>
+                                            <span className="text-xs text-slate-500">Just now</span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                                            <div className="bg-slate-950 p-3 rounded border border-slate-800">
+                                                <div className="text-slate-500 text-xs">HBL Weight (PDF)</div>
+                                                <div className="text-white font-mono text-lg">5,000 KG</div>
+                                            </div>
+                                            <div className="bg-slate-950 p-3 rounded border border-slate-800">
+                                                <div className="text-slate-500 text-xs">Packing List Sum</div>
+                                                <div className="text-rose-400 font-mono text-lg">4,500 KG</div>
+                                            </div>
+                                        </div>
+                                        <div className="text-xs text-slate-400 italic mb-4">
+                                            "AI 發現差異 &gt; 10%。這通常是文件錯誤。"
+                                        </div>
+                                        <button 
+                                            onClick={() => setStep(2)}
+                                            className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all"
+                                        >
+                                            <Sparkles className="w-4 h-4" /> Apply AI Fix (一鍵修復)
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {step === 2 && (
+                                <motion.div 
+                                    initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                                    className="text-center"
+                                >
+                                    <div className="w-20 h-20 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <CheckCircle2 className="w-10 h-10" />
+                                    </div>
+                                    <h3 className="text-white text-2xl font-bold mb-2">已修復並寫入 ERP</h3>
+                                    <p className="text-slate-400 text-sm mb-6">Sarah 只需做最後的「決策」，而非「輸入」。</p>
+                                    <button 
+                                        onClick={() => setStep(0)}
+                                        className="text-slate-500 hover:text-white text-sm underline"
+                                    >
+                                        重播演示
+                                    </button>
+                                </motion.div>
+                            )}
+
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Slide 8: Expected Impact
+        const SlideImpact = () => (
+            <div className="flex flex-col items-center justify-center h-full max-w-6xl mx-auto px-4">
+                <h2 className="text-4xl font-bold text-white mb-16">預期設計效益</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                    {[
+                        { val: "Shift", label: "角色轉型", sub: "從 Data Entry -> Exception Manager", icon: Users, color: "text-indigo-400" },
+                        { val: "Zero", label: "罰款焦慮", sub: "透過預先邏輯檢查消除人為疏失", icon: ShieldCheck, color: "text-emerald-400" },
+                        { val: "Scalable", label: "營運擴展", sub: "業務量增加不再等於人力線性增加", icon: TrendingUp, color: "text-amber-400" },
+                    ].map((item, i) => (
+                        <motion.div 
+                            key={i}
+                            initial={{ y: 50, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: i * 0.2 }}
+                            className="bg-slate-900/50 border border-slate-800 p-8 rounded-2xl text-center hover:bg-slate-800 transition-colors"
+                        >
+                            <item.icon className={`w-12 h-12 ${item.color} mx-auto mb-6`} />
+                            <div className={`text-4xl font-black ${item.color} mb-2`}>{item.val}</div>
+                            <div className="text-xl font-bold text-white mb-2">{item.label}</div>
+                            <div className="text-sm text-slate-400">{item.sub}</div>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // Slide 9: Feedback (The Outro)
+        const SlideOutro = () => (
+            <div className="flex flex-col items-center justify-center h-full text-center px-4 relative">
+                <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+                    <div className="w-[500px] h-[500px] bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full blur-[150px]" />
+                </div>
+                
+                <motion.h2 
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-4xl md:text-6xl font-bold text-white mb-8 relative z-10"
+                >
+                    I Need Your Feedback
+                </motion.h2>
+                
+                <motion.div 
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full text-left relative z-10"
+                >
+                    <div className="bg-slate-900/80 p-6 rounded-xl border border-slate-700">
+                        <h3 className="text-indigo-400 font-bold mb-3 flex items-center gap-2">
+                            <Lightbulb className="w-5 h-5" /> 討論重點 (To Product/Tech)
+                        </h3>
+                        <ul className="space-y-3 text-slate-300 text-sm list-disc pl-5">
+                            <li>從技術角度看，LLM 的幻覺 (Hallucination) 風險如何控制？</li>
+                            <li>這個設計流程中，有沒有遺漏什麼關鍵的 Edge Case？</li>
+                            <li>對於 MVP 的範圍，我們該如何切分？</li>
+                        </ul>
+                    </div>
+
+                    <div className="bg-slate-900/80 p-6 rounded-xl border border-slate-700">
+                        <h3 className="text-emerald-400 font-bold mb-3 flex items-center gap-2">
+                            <Target className="w-5 h-5" /> 下一步 (Next Steps)
+                        </h3>
+                        <ul className="space-y-3 text-slate-300 text-sm list-disc pl-5">
+                            <li>整合大家的回饋，優化 Prototype</li>
+                            <li>與主管進行正式 Concept Pitch</li>
+                            <li>尋找 1-2 位友善客戶/內部 OP 進行訪談驗證</li>
+                        </ul>
+                    </div>
+                </motion.div>
+            </div>
+        );
+
+        // --- MAIN APP ---
+        const PitchDeck = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+            // Define slides with titles
+            const slides = [
+                { title: '封面 (Intro)', component: <SlideIntro /> },
+                { title: '專案緣起 (Context)', component: <SlideContext /> },
+                { title: '使用者畫像 (Persona)', component: <SlidePersona /> },
+                { title: '現況痛點 (Problem)', component: <SlideProblem /> },
+                { title: '北極星願景 (Vision)', component: <SlideVision /> },
+                { title: '解決方案 (Solution)', component: <SlideSolution /> },
+                { title: '概念演示 (Demo)', component: <SlideDemo /> },
+                { title: '預期效益 (Impact)', component: <SlideImpact /> },
+                { title: '下一步 & 回饋 (Next)', component: <SlideOutro /> }
+            ];
+
+            const nextSlide = () => {
+                if (currentSlide < slides.length - 1) setCurrentSlide(curr => curr + 1);
+            };
+
+            const prevSlide = () => {
+                if (currentSlide > 0) setCurrentSlide(curr => curr - 1);
+            };
+
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'ArrowRight' || e.key === 'Space') nextSlide();
+                    if (e.key === 'ArrowLeft') prevSlide();
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentSlide]);
+
+            return (
+                <div className="h-screen w-screen bg-slate-950 text-slate-200 font-sans selection:bg-indigo-500/30 overflow-hidden relative">
+                    <Background />
+                    
+                    <QuickMenu 
+                        slides={slides} 
+                        current={currentSlide} 
+                        onChange={setCurrentSlide}
+                        isOpen={isMenuOpen}
+                        setIsOpen={setIsMenuOpen}
+                    />
+
+                    <main className="h-full w-full relative z-10">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentSlide}
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -50 }}
+                                transition={{ duration: 0.4, ease: "easeInOut" }}
+                                className="h-full w-full"
+                            >
+                                {slides[currentSlide].component}
+                            </motion.div>
+                        </AnimatePresence>
+                    </main>
+
+                    <Navigation 
+                        current={currentSlide} 
+                        total={slides.length} 
+                        onNext={nextSlide} 
+                        onPrev={prevSlide} 
+                    />
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<PitchDeck />);
+    </script>
+</body>
+</html>
