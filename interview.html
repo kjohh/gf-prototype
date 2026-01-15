@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Intelligence Interview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Palette: Clean, Modern, Trustworthy */
+            --bg-body: #F9FAFB;
+            --bg-card: #FFFFFF;
+            --text-primary: #111827;
+            /* Gray 900 */
+            --text-secondary: #4B5563;
+            /* Gray 600 */
+            --text-tertiary: #9CA3AF;
+            /* Gray 400 */
+
+            /* Primary Brand Color */
+            --primary: #2563EB;
+
+            /* Spacing & Radius */
+            --radius-lg: 24px;
+
+            /* Animations */
+            --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 24px;
+            padding-top: 80px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Main Card */
+        main {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 600px;
+            padding: 48px 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.04),
+                0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.025em;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .subheading {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .intro-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.6;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-disclosure {
+            margin-top: 56px;
+            padding-top: 24px;
+            border-top: 1px solid #F3F4F6;
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+        }
+
+        /* Widget Container Adjustment */
+        elevenlabs-convai {
+            display: block;
+            margin: 0 auto;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <h1>Share your workflow to make it better</h1>
+        <p class="subheading">A short, one‑on‑one conversation focused on your day‑to‑day tasks.</p>
+
+        <div class="intro-copy">
+            <p class="intro-text">
+                Thanks for taking the time to chat. We’d like to understand how you handle everyday documents in your
+                workflow, and what would make this experience smoother. Your feedback helps us refine Document
+                Intelligence with real‑world needs in mind.
+            </p>
+        </div>
+
+        <!-- 11 Labs Widget -->
+        <elevenlabs-convai agent-id="agent_5401kezqmzjyf58rytx73a58s1zf"></elevenlabs-convai>
+        <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+        <p class="footer-disclosure">
+            By continuing, you consent to recording and analysis for product improvement.
+        </p>
+    </main>
+
+</body>
+
+</html>
