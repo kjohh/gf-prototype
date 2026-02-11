@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Import Shipment — GoFreight</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f8fafc; }
+
+        /* shadcn-style scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* shadcn-style input */
+        .input {
+            display: flex; height: 36px; width: 100%; border-radius: 6px;
+            border: 1px solid #e2e8f0; background: #fff; padding: 6px 12px;
+            font-size: 13px; color: #0f172a; outline: none; transition: all 0.15s;
+        }
+        .input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+        .input::placeholder { color: #94a3b8; }
+
+        .input-sm { height: 30px; font-size: 12px; padding: 4px 8px; }
+
+        /* shadcn-style select */
+        .select {
+            display: flex; height: 36px; width: 100%; border-radius: 6px;
+            border: 1px solid #e2e8f0; background: #fff; padding: 6px 12px;
+            font-size: 13px; color: #0f172a; outline: none; transition: all 0.15s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 10px center;
+            padding-right: 32px;
+        }
+        .select:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+
+        .select-sm { height: 30px; font-size: 12px; padding: 4px 8px; padding-right: 28px; }
+
+        /* shadcn-style button */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 6px; font-size: 13px; font-weight: 500;
+            padding: 8px 16px; cursor: pointer; transition: all 0.15s;
+            border: none; gap: 6px; white-space: nowrap;
+        }
+        .btn-primary { background: #2563eb; color: #fff; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0; }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-ghost { background: transparent; color: #64748b; }
+        .btn-ghost:hover { background: #f1f5f9; color: #334155; }
+        .btn-destructive { background: #ef4444; color: #fff; }
+        .btn-destructive:hover { background: #dc2626; }
+        .btn-sm { height: 30px; padding: 4px 10px; font-size: 12px; }
+        .btn-xs { height: 24px; padding: 2px 8px; font-size: 11px; }
+        .btn-icon { width: 36px; height: 36px; padding: 0; }
+        .btn-icon.btn-sm { width: 30px; height: 30px; }
+
+        /* shadcn-style badge */
+        .badge {
+            display: inline-flex; align-items: center; border-radius: 9999px;
+            padding: 2px 10px; font-size: 11px; font-weight: 500;
+            line-height: 1.4;
+        }
+        .badge-default { background: #f1f5f9; color: #475569; }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-yellow { background: #fef9c3; color: #854d0e; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+        .badge-purple { background: #f3e8ff; color: #6b21a8; }
+        .badge-orange { background: #ffedd5; color: #9a3412; }
+
+        /* shadcn-style card */
+        .card {
+            background: #fff; border-radius: 8px; border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.03);
+        }
+
+        /* shadcn-style tabs */
+        .tab-list {
+            display: flex; border-bottom: 1px solid #e2e8f0;
+            gap: 0; padding: 0 16px;
+        }
+        .tab-trigger {
+            padding: 10px 16px; font-size: 13px; font-weight: 500;
+            color: #64748b; cursor: pointer; border-bottom: 2px solid transparent;
+            transition: all 0.15s; background: none; border-top: none;
+            border-left: none; border-right: none; white-space: nowrap;
+        }
+        .tab-trigger:hover { color: #334155; }
+        .tab-trigger.active { color: #2563eb; border-bottom-color: #2563eb; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Table styles */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .data-table thead th {
+            text-align: left; padding: 8px 12px; font-weight: 500;
+            color: #64748b; font-size: 12px; text-transform: uppercase;
+            letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc; white-space: nowrap;
+        }
+        .data-table tbody td {
+            padding: 10px 12px; border-bottom: 1px solid #f1f5f9;
+            color: #334155; white-space: nowrap;
+        }
+        .data-table tbody tr:hover { background: #f8fafc; }
+        .data-table tbody tr.selected { background: #eff6ff; }
+
+        /* sidebar nav */
+        .nav-item {
+            display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+            border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;
+            color: #64748b; transition: all 0.15s; text-decoration: none;
+        }
+        .nav-item:hover { background: #f1f5f9; color: #334155; }
+        .nav-item.active { background: #eff6ff; color: #2563eb; }
+        .nav-item .nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+        /* Separator */
+        .separator { height: 1px; background: #e2e8f0; margin: 8px 0; }
+
+        /* Label */
+        .label { font-size: 12px; font-weight: 500; color: #64748b; margin-bottom: 4px; display: block; }
+
+        /* Tooltip */
+        .field-group { display: flex; flex-direction: column; gap: 4px; }
+
+        /* section header */
+        .section-header {
+            font-size: 14px; font-weight: 600; color: #0f172a;
+            display: flex; align-items: center; gap: 8px;
+            padding-bottom: 12px; border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 16px;
+        }
+
+        /* status dot */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .status-dot.green { background: #22c55e; }
+        .status-dot.yellow { background: #eab308; }
+        .status-dot.red { background: #ef4444; }
+        .status-dot.blue { background: #3b82f6; }
+        .status-dot.gray { background: #94a3b8; }
+
+        /* Dropdown menu */
+        .dropdown-menu {
+            position: absolute; top: 100%; right: 0; z-index: 50;
+            min-width: 180px; background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            padding: 4px; display: none;
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-item {
+            display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+            font-size: 13px; color: #334155; border-radius: 4px; cursor: pointer;
+            transition: background 0.1s;
+        }
+        .dropdown-item:hover { background: #f1f5f9; }
+
+        /* Modal overlay */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 100; display: none; align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: #fff; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            max-width: 640px; width: 90%; max-height: 85vh; overflow-y: auto;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px; z-index: 200;
+            background: #0f172a; color: #fff; padding: 12px 20px;
+            border-radius: 8px; font-size: 13px; display: none;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease;
+        }
+        .toast.show { display: flex; align-items: center; gap: 8px; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Checkbox */
+        .checkbox {
+            width: 16px; height: 16px; border-radius: 4px; border: 1px solid #cbd5e1;
+            appearance: none; cursor: pointer; transition: all 0.15s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .checkbox:checked { background: #2563eb; border-color: #2563eb; }
+        .checkbox:checked::after { content: ''; display: block; width: 4px; height: 8px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg) translateY(-1px); }
+
+        /* Resizable panels */
+        .resizer { width: 1px; background: #e2e8f0; cursor: col-resize; position: relative; flex-shrink: 0; }
+        .resizer:hover, .resizer.active { background: #3b82f6; }
+        .resizer::after { content:''; position:absolute; inset: -2px; }
+
+        /* Transition */
+        .fade-in { animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* HBL sub-tab */
+        .hbl-tab {
+            padding: 6px 14px; font-size: 12px; font-weight: 500;
+            color: #64748b; cursor: pointer; border-radius: 6px;
+            transition: all 0.15s; background: none; border: 1px solid transparent;
+        }
+        .hbl-tab:hover { background: #f1f5f9; color: #334155; }
+        .hbl-tab.active { background: #fff; color: #0f172a; border-color: #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+
+        /* Progress step */
+        .step { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; }
+        .step.completed { color: #22c55e; }
+        .step.current { color: #2563eb; font-weight: 600; }
+        .step-dot { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
+        .step.completed .step-dot { background: #dcfce7; color: #166534; }
+        .step.current .step-dot { background: #dbeafe; color: #1e40af; }
+        .step .step-dot { background: #f1f5f9; color: #94a3b8; }
+        .step-line { width: 24px; height: 2px; background: #e2e8f0; }
+        .step.completed + .step-line, .step-line.completed { background: #22c55e; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+<!-- Top Header Bar -->
+<header class="h-12 bg-white border-b border-slate-200 flex items-center px-4 sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+            <div class="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center">
+                <i data-lucide="ship" class="w-4 h-4 text-white"></i>
+            </div>
+            <span class="font-semibold text-sm text-slate-800">GoFreight</span>
+        </div>
+        <div class="h-5 w-px bg-slate-200"></div>
+        <nav class="flex items-center gap-1">
+            <button class="btn btn-ghost btn-sm">Dashboard</button>
+            <button class="btn btn-ghost btn-sm" style="color:#2563eb; background:#eff6ff;">Ocean Import</button>
+            <button class="btn btn-ghost btn-sm">Ocean Export</button>
+            <button class="btn btn-ghost btn-sm">Air Import</button>
+            <button class="btn btn-ghost btn-sm">Air Export</button>
+        </nav>
+    </div>
+    <div class="ml-auto flex items-center gap-2">
+        <div class="relative">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input type="text" placeholder="Search shipments..." class="input input-sm pl-9" style="width: 220px;">
+        </div>
+        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="bell" class="w-4 h-4"></i></button>
+        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="help-circle" class="w-4 h-4"></i></button>
+        <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-700">KL</div>
+    </div>
+</header>
+
+<div class="flex" style="height: calc(100vh - 48px);">
+
+    <!-- Left Sidebar -->
+    <aside class="w-56 bg-white border-r border-slate-200 flex flex-col flex-shrink-0" id="sidebar">
+        <div class="p-3 flex flex-col gap-1">
+            <div class="px-3 py-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Shipment</div>
+            <a class="nav-item active" onclick="showView('list')">
+                <i data-lucide="list" class="nav-icon"></i> Shipment List
+            </a>
+            <a class="nav-item" onclick="showView('detail')">
+                <i data-lucide="file-text" class="nav-icon"></i> Shipment Detail
+            </a>
+            <a class="nav-item">
+                <i data-lucide="container" class="nav-icon"></i> My Containers
+            </a>
+            <div class="separator"></div>
+            <div class="px-3 py-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tools</div>
+            <a class="nav-item">
+                <i data-lucide="upload" class="nav-icon"></i> Excel Upload
+            </a>
+            <a class="nav-item">
+                <i data-lucide="file-search" class="nav-icon"></i> Tracking
+            </a>
+            <a class="nav-item">
+                <i data-lucide="bar-chart-3" class="nav-icon"></i> Reports
+            </a>
+            <div class="separator"></div>
+            <div class="px-3 py-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Accounting</div>
+            <a class="nav-item">
+                <i data-lucide="receipt" class="nav-icon"></i> Invoices
+            </a>
+            <a class="nav-item">
+                <i data-lucide="wallet" class="nav-icon"></i> Payment Plans
+            </a>
+            <a class="nav-item">
+                <i data-lucide="trending-up" class="nav-icon"></i> Profit & Loss
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto" id="mainContent">
+
+        <!-- ==================== SHIPMENT LIST VIEW ==================== -->
+        <div id="listView" class="p-6">
+            <!-- Page Header -->
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900">Ocean Import Shipments</h1>
+                    <p class="text-sm text-slate-500 mt-0.5">Manage inbound ocean freight shipments</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="btn btn-secondary btn-sm" onclick="showToast('Refreshed')">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="showModal('newShipmentModal')">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> New Shipment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="p-3 flex items-center gap-3 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs font-medium text-slate-500">Date Range:</label>
+                        <input type="date" class="input input-sm" value="2026-01-01" style="width:140px;">
+                        <span class="text-slate-400 text-xs">to</span>
+                        <input type="date" class="input input-sm" value="2026-02-10" style="width:140px;">
+                    </div>
+                    <div class="h-5 w-px bg-slate-200"></div>
+                    <select class="select select-sm" style="width:120px;">
+                        <option>All Status</option>
+                        <option>In Transit</option>
+                        <option>Arrived</option>
+                        <option>Delivered</option>
+                        <option>Customs Hold</option>
+                    </select>
+                    <select class="select select-sm" style="width:130px;">
+                        <option>All Ship Mode</option>
+                        <option>FCL</option>
+                        <option>LCL</option>
+                        <option>Bulk</option>
+                    </select>
+                    <select class="select select-sm" style="width:110px;">
+                        <option>All OP</option>
+                        <option>Kyle Lin</option>
+                        <option>Jane Chen</option>
+                        <option>Tom Wu</option>
+                    </select>
+                    <div class="relative ml-auto">
+                        <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" placeholder="File No., MB/L, HB/L..." class="input input-sm pl-8" style="width:200px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-5 gap-3 mb-4">
+                <div class="card p-3">
+                    <div class="text-xs text-slate-500 font-medium">Total Shipments</div>
+                    <div class="text-2xl font-bold text-slate-900 mt-1">247</div>
+                    <div class="text-xs text-green-600 mt-1">+12 this week</div>
+                </div>
+                <div class="card p-3">
+                    <div class="text-xs text-slate-500 font-medium">In Transit</div>
+                    <div class="text-2xl font-bold text-blue-600 mt-1">68</div>
+                    <div class="text-xs text-slate-400 mt-1">27.5% of total</div>
+                </div>
+                <div class="card p-3">
+                    <div class="text-xs text-slate-500 font-medium">At Port</div>
+                    <div class="text-2xl font-bold text-yellow-600 mt-1">23</div>
+                    <div class="text-xs text-slate-400 mt-1">5 customs hold</div>
+                </div>
+                <div class="card p-3">
+                    <div class="text-xs text-slate-500 font-medium">Delivered</div>
+                    <div class="text-2xl font-bold text-green-600 mt-1">149</div>
+                    <div class="text-xs text-slate-400 mt-1">This month</div>
+                </div>
+                <div class="card p-3">
+                    <div class="text-xs text-slate-500 font-medium">Revenue</div>
+                    <div class="text-2xl font-bold text-slate-900 mt-1">$1.2M</div>
+                    <div class="text-xs text-green-600 mt-1">+8.3% vs last month</div>
+                </div>
+            </div>
+
+            <!-- Shipment Table -->
+            <div class="card">
+                <div class="p-3 border-b border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-semibold text-slate-700">All Shipments</span>
+                        <span class="badge badge-default">247</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="btn btn-ghost btn-sm"><i data-lucide="columns" class="w-3.5 h-3.5"></i> Columns</button>
+                        <button class="btn btn-ghost btn-sm"><i data-lucide="download" class="w-3.5 h-3.5"></i> Export</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width:32px;"><input type="checkbox" class="checkbox"></th>
+                                <th>File No.</th>
+                                <th>MB/L No.</th>
+                                <th>Status</th>
+                                <th>Ship Mode</th>
+                                <th>Carrier</th>
+                                <th>POL</th>
+                                <th>POD</th>
+                                <th>ETD</th>
+                                <th>ETA</th>
+                                <th>CTNR</th>
+                                <th>HBL</th>
+                                <th>OP</th>
+                                <th style="width:40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="cursor-pointer" onclick="showView('detail')">
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td><a class="text-blue-600 font-medium hover:underline">OI-2026-0247</a></td>
+                                <td class="font-mono text-xs">MAEU261845920</td>
+                                <td><span class="badge badge-blue"><span class="status-dot blue mr-1.5"></span>In Transit</span></td>
+                                <td><span class="badge badge-default">FCL</span></td>
+                                <td>Maersk Line</td>
+                                <td>CNSHA</td>
+                                <td>USLAX</td>
+                                <td>Jan 28</td>
+                                <td>Feb 15</td>
+                                <td class="text-center">3</td>
+                                <td class="text-center">2</td>
+                                <td>Kyle L.</td>
+                                <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <tr class="cursor-pointer" onclick="showView('detail')">
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td><a class="text-blue-600 font-medium hover:underline">OI-2026-0246</a></td>
+                                <td class="font-mono text-xs">COSU6285937401</td>
+                                <td><span class="badge badge-yellow"><span class="status-dot yellow mr-1.5"></span>At Port</span></td>
+                                <td><span class="badge badge-default">FCL</span></td>
+                                <td>COSCO</td>
+                                <td>CNNGB</td>
+                                <td>USNYC</td>
+                                <td>Jan 15</td>
+                                <td>Feb 08</td>
+                                <td class="text-center">2</td>
+                                <td class="text-center">3</td>
+                                <td>Jane C.</td>
+                                <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <tr class="cursor-pointer" onclick="showView('detail')">
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td><a class="text-blue-600 font-medium hover:underline">OI-2026-0245</a></td>
+                                <td class="font-mono text-xs">EGLV204785300</td>
+                                <td><span class="badge badge-green"><span class="status-dot green mr-1.5"></span>Delivered</span></td>
+                                <td><span class="badge badge-default">LCL</span></td>
+                                <td>Evergreen</td>
+                                <td>TWKHH</td>
+                                <td>USLAX</td>
+                                <td>Jan 05</td>
+                                <td>Jan 25</td>
+                                <td class="text-center">1</td>
+                                <td class="text-center">1</td>
+                                <td>Kyle L.</td>
+                                <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <tr class="cursor-pointer" onclick="showView('detail')">
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td><a class="text-blue-600 font-medium hover:underline">OI-2026-0244</a></td>
+                                <td class="font-mono text-xs">YMLU3019284750</td>
+                                <td><span class="badge badge-red"><span class="status-dot red mr-1.5"></span>Customs Hold</span></td>
+                                <td><span class="badge badge-default">FCL</span></td>
+                                <td>Yang Ming</td>
+                                <td>CNSHA</td>
+                                <td>USSEA</td>
+                                <td>Jan 10</td>
+                                <td>Feb 02</td>
+                                <td class="text-center">4</td>
+                                <td class="text-center">2</td>
+                                <td>Tom W.</td>
+                                <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <tr class="cursor-pointer" onclick="showView('detail')">
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td><a class="text-blue-600 font-medium hover:underline">OI-2026-0243</a></td>
+                                <td class="font-mono text-xs">ONEY629374810</td>
+                                <td><span class="badge badge-blue"><span class="status-dot blue mr-1.5"></span>In Transit</span></td>
+                                <td><span class="badge badge-default">FCL</span></td>
+                                <td>ONE</td>
+                                <td>JPYOK</td>
+                                <td>USLAX</td>
+                                <td>Feb 01</td>
+                                <td>Feb 18</td>
+                                <td class="text-center">2</td>
+                                <td class="text-center">1</td>
+                                <td>Kyle L.</td>
+                                <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <tr class="cursor-pointer" onclick="showView('detail')">
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td><a class="text-blue-600 font-medium hover:underline">OI-2026-0242</a></td>
+                                <td class="font-mono text-xs">HDMU8203749100</td>
+                                <td><span class="badge badge-green"><span class="status-dot green mr-1.5"></span>Delivered</span></td>
+                                <td><span class="badge badge-default">LCL</span></td>
+                                <td>HMM</td>
+                                <td>KRPUS</td>
+                                <td>USCHI</td>
+                                <td>Dec 20</td>
+                                <td>Jan 18</td>
+                                <td class="text-center">1</td>
+                                <td class="text-center">4</td>
+                                <td>Jane C.</td>
+                                <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <tr class="cursor-pointer" onclick="showView('detail')">
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td><a class="text-blue-600 font-medium hover:underline">OI-2026-0241</a></td>
+                                <td class="font-mono text-xs">MSCU9170384620</td>
+                                <td><span class="badge badge-blue"><span class="status-dot blue mr-1.5"></span>In Transit</span></td>
+                                <td><span class="badge badge-default">Bulk</span></td>
+                                <td>MSC</td>
+                                <td>DEHAM</td>
+                                <td>USHOU</td>
+                                <td>Feb 03</td>
+                                <td>Feb 22</td>
+                                <td class="text-center">6</td>
+                                <td class="text-center">1</td>
+                                <td>Tom W.</td>
+                                <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-3 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-xs text-slate-500">Showing 1-7 of 247 shipments</span>
+                    <div class="flex items-center gap-1">
+                        <button class="btn btn-ghost btn-sm" disabled><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+                        <button class="btn btn-sm" style="background:#2563eb;color:#fff;">1</button>
+                        <button class="btn btn-ghost btn-sm">2</button>
+                        <button class="btn btn-ghost btn-sm">3</button>
+                        <span class="text-slate-400 text-xs px-1">...</span>
+                        <button class="btn btn-ghost btn-sm">36</button>
+                        <button class="btn btn-ghost btn-sm"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SHIPMENT DETAIL VIEW ==================== -->
+        <div id="detailView" style="display:none;" class="fade-in">
+            <!-- Detail Header -->
+            <div class="bg-white border-b border-slate-200 px-6 py-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <button class="btn btn-ghost btn-sm" onclick="showView('list')">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+                    </button>
+                    <div class="h-5 w-px bg-slate-200"></div>
+                    <h2 class="text-lg font-bold text-slate-900">OI-2026-0247</h2>
+                    <span class="badge badge-blue"><span class="status-dot blue mr-1.5"></span>In Transit</span>
+                    <span class="badge badge-default">FCL</span>
+                    <div class="ml-auto flex items-center gap-2">
+                        <button class="btn btn-secondary btn-sm"><i data-lucide="copy" class="w-3.5 h-3.5"></i> Duplicate</button>
+                        <button class="btn btn-secondary btn-sm"><i data-lucide="printer" class="w-3.5 h-3.5"></i> Print</button>
+                        <button class="btn btn-secondary btn-sm"><i data-lucide="lock" class="w-3.5 h-3.5"></i> Block</button>
+                        <button class="btn btn-primary btn-sm" onclick="showToast('Shipment saved successfully')">
+                            <i data-lucide="save" class="w-3.5 h-3.5"></i> Save
+                        </button>
+                        <div class="relative">
+                            <button class="btn btn-ghost btn-icon btn-sm" onclick="toggleDropdown('detailMore')">
+                                <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                            </button>
+                            <div class="dropdown-menu" id="detailMore">
+                                <div class="dropdown-item"><i data-lucide="send" class="w-4 h-4"></i> Send EDI</div>
+                                <div class="dropdown-item"><i data-lucide="git-merge" class="w-4 h-4"></i> Merge Shipment</div>
+                                <div class="dropdown-item"><i data-lucide="history" class="w-4 h-4"></i> Audit Log</div>
+                                <div class="separator" style="margin:2px 0;"></div>
+                                <div class="dropdown-item" style="color:#dc2626;"><i data-lucide="trash-2" class="w-4 h-4"></i> Delete Shipment</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipment Progress -->
+                <div class="flex items-center gap-1 mb-4">
+                    <div class="step completed">
+                        <div class="step-dot"><i data-lucide="check" class="w-3 h-3"></i></div>
+                        <span>Booked</span>
+                    </div>
+                    <div class="step-line completed"></div>
+                    <div class="step completed">
+                        <div class="step-dot"><i data-lucide="check" class="w-3 h-3"></i></div>
+                        <span>Departed</span>
+                    </div>
+                    <div class="step-line completed"></div>
+                    <div class="step current">
+                        <div class="step-dot">3</div>
+                        <span>In Transit</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-dot">4</div>
+                        <span>Arrived</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-dot">5</div>
+                        <span>Customs</span>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-dot">6</div>
+                        <span>Delivered</span>
+                    </div>
+                </div>
+
+                <!-- Main Tabs -->
+                <div class="tab-list" style="padding:0; margin: 0 -24px; padding: 0 24px;">
+                    <button class="tab-trigger active" onclick="switchTab('basic', this)">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 inline mr-1.5" style="vertical-align: -2px;"></i>Basic
+                    </button>
+                    <button class="tab-trigger" onclick="switchTab('container', this)">
+                        <i data-lucide="container" class="w-3.5 h-3.5 inline mr-1.5" style="vertical-align: -2px;"></i>Container
+                    </button>
+                    <button class="tab-trigger" onclick="switchTab('accounting', this)">
+                        <i data-lucide="calculator" class="w-3.5 h-3.5 inline mr-1.5" style="vertical-align: -2px;"></i>Accounting
+                    </button>
+                    <button class="tab-trigger" onclick="switchTab('docCenter', this)">
+                        <i data-lucide="folder-open" class="w-3.5 h-3.5 inline mr-1.5" style="vertical-align: -2px;"></i>Doc Center
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content Area -->
+            <div class="p-6">
+
+                <!-- ========== BASIC TAB ========== -->
+                <div class="tab-content active" id="tab-basic">
+
+                    <!-- MBL / HBL Toggle -->
+                    <div class="flex items-center gap-2 mb-5 bg-slate-100 rounded-lg p-1 w-fit">
+                        <button class="hbl-tab active" onclick="switchMblHbl('mbl', this)">MBL — Master B/L</button>
+                        <button class="hbl-tab" onclick="switchMblHbl('hbl', this)">HBL-1 (H9283746)</button>
+                        <button class="hbl-tab" onclick="switchMblHbl('hbl2', this)">HBL-2 (H9283747)</button>
+                        <button class="hbl-tab" style="color:#2563eb;" onclick="showToast('New HBL added')"><i data-lucide="plus" class="w-3 h-3 inline" style="vertical-align:-1px;"></i> Add HBL</button>
+                    </div>
+
+                    <!-- MBL Content -->
+                    <div id="mblContent">
+                        <div class="grid grid-cols-2 gap-5">
+                            <!-- Left Column -->
+                            <div class="space-y-5">
+                                <!-- Identity -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="hash" class="w-4 h-4 text-slate-400"></i> Identity
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">File No.</label>
+                                            <input class="input" value="OI-2026-0247" disabled style="background:#f8fafc;">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">MB/L No.</label>
+                                            <input class="input" value="MAEU261845920">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">B/L Type</label>
+                                            <select class="select">
+                                                <option selected>Original</option>
+                                                <option>Telex Release</option>
+                                                <option>Sea Waybill</option>
+                                            </select>
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Post Date</label>
+                                            <input type="date" class="input" value="2026-01-25">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Parties -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="users" class="w-4 h-4 text-slate-400"></i> Parties
+                                        <button class="btn btn-ghost btn-xs ml-auto"><i data-lucide="search" class="w-3 h-3"></i> Lookup</button>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">Oversea Agent</label>
+                                            <input class="input" value="Shanghai Freight Co.">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Carrier</label>
+                                            <input class="input" value="Maersk Line">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Forwarding Agent</label>
+                                            <input class="input" value="Pacific Logistics Inc.">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Co-loader</label>
+                                            <input class="input" placeholder="Select co-loader...">
+                                        </div>
+                                        <div class="field-group col-span-2">
+                                            <label class="label">Operator (OP)</label>
+                                            <select class="select">
+                                                <option selected>Kyle Lin</option>
+                                                <option>Jane Chen</option>
+                                                <option>Tom Wu</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Vessel Info -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="ship" class="w-4 h-4 text-slate-400"></i> Vessel
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">Vessel Name</label>
+                                            <input class="input" value="MAERSK EDINBURGH">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Voyage</label>
+                                            <input class="input" value="026E">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column -->
+                            <div class="space-y-5">
+                                <!-- Routing -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="route" class="w-4 h-4 text-slate-400"></i> Routing
+                                        <span class="badge badge-yellow ml-2 text-[10px]"><i data-lucide="alert-triangle" class="w-3 h-3 inline mr-0.5" style="vertical-align:-1px;"></i> EDI Conflict</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">Port of Loading (POL)</label>
+                                            <input class="input" value="CNSHA — Shanghai">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Port of Discharge (POD)</label>
+                                            <input class="input" value="USLAX — Los Angeles">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Place of Delivery (DEL)</label>
+                                            <input class="input" value="Los Angeles, CA">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Final Destination (FDEST)</label>
+                                            <input class="input" value="Chicago, IL">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Key Dates -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i> Key Dates
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">ETD</label>
+                                            <input type="date" class="input" value="2026-01-28">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">ETA</label>
+                                            <input type="date" class="input" value="2026-02-15">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">ATD (Actual)</label>
+                                            <input type="date" class="input" value="2026-01-28">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">ATA (Actual)</label>
+                                            <input type="date" class="input" placeholder="Pending...">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">ETB</label>
+                                            <input type="date" class="input" value="2026-02-15">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Shipment Config -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i> Shipment Config
+                                        <button class="btn btn-ghost btn-xs ml-auto" onclick="showToast('Synced to all HBLs')"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Sync to HBLs</button>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">Ship Mode</label>
+                                            <select class="select">
+                                                <option selected>FCL (Full Container Load)</option>
+                                                <option>LCL (Less Container Load)</option>
+                                                <option>Bulk</option>
+                                            </select>
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Freight Term</label>
+                                            <select class="select">
+                                                <option selected>Prepaid</option>
+                                                <option>Collect</option>
+                                            </select>
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Service Term</label>
+                                            <select class="select">
+                                                <option selected>CY-CY</option>
+                                                <option>CFS-CFS</option>
+                                                <option>CY-CFS</option>
+                                                <option>CFS-CY</option>
+                                                <option>Door-Door</option>
+                                            </select>
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">OB/L Type</label>
+                                            <select class="select">
+                                                <option selected>Original</option>
+                                                <option>Copy</option>
+                                            </select>
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">CY Location</label>
+                                            <input class="input" value="APM Terminals, Pier 400">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">CFS Location</label>
+                                            <input class="input" placeholder="N/A">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HBL Content (hidden by default) -->
+                    <div id="hblContent" style="display:none;">
+                        <div class="grid grid-cols-2 gap-5">
+                            <div class="space-y-5">
+                                <!-- HBL Identity -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="hash" class="w-4 h-4 text-slate-400"></i> HBL Identity
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">HB/L No.</label>
+                                            <input class="input" value="H9283746">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">AMS No.</label>
+                                            <input class="input" value="AMS20260128001">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">ISF No.</label>
+                                            <input class="input" value="ISF20260125-A1">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">IT No.</label>
+                                            <input class="input" placeholder="Enter IT No.">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- HBL Parties -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="users" class="w-4 h-4 text-slate-400"></i> Parties
+                                        <span class="badge badge-red ml-2 text-[10px]"><i data-lucide="alert-circle" class="w-3 h-3 inline mr-0.5" style="vertical-align:-1px;"></i> Credit Hold</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group col-span-2">
+                                            <label class="label">Shipper</label>
+                                            <input class="input" value="Shenzhen Electronics Corp.">
+                                        </div>
+                                        <div class="field-group col-span-2">
+                                            <label class="label">Consignee</label>
+                                            <input class="input" value="US Trading Inc.">
+                                        </div>
+                                        <div class="field-group col-span-2">
+                                            <label class="label">Notify Party</label>
+                                            <input class="input" value="US Trading Inc.">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Customer</label>
+                                            <input class="input" value="US Trading Inc.">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Bill To</label>
+                                            <input class="input" value="US Trading Inc.">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Customs Broker</label>
+                                            <input class="input" value="ABC Customs Brokers">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Trucker</label>
+                                            <input class="input" value="Pacific Drayage LLC">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Sales</label>
+                                            <input class="input" value="Mike Johnson">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">OP</label>
+                                            <select class="select">
+                                                <option selected>Kyle Lin</option>
+                                                <option>Jane Chen</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-5">
+                                <!-- Status Flags -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="flag" class="w-4 h-4 text-slate-400"></i> Status Flags
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <label class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer">
+                                            <input type="checkbox" class="checkbox"> <span class="text-sm text-slate-700">Hold</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer">
+                                            <input type="checkbox" class="checkbox" checked> <span class="text-sm text-slate-700">Customs Clearance</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer">
+                                            <input type="checkbox" class="checkbox"> <span class="text-sm text-slate-700">Customs Hold</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer">
+                                            <input type="checkbox" class="checkbox"> <span class="text-sm text-slate-700">Telex Release Rcvd</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer">
+                                            <input type="checkbox" class="checkbox"> <span class="text-sm text-slate-700">Door Move</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Document Dates -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="mail" class="w-4 h-4 text-slate-400"></i> Document Dates
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">Arrival Notice Sent</label>
+                                            <input type="date" class="input" value="2026-02-05">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Release Order Sent</label>
+                                            <input type="date" class="input" placeholder="Not sent">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Delivery Order Sent</label>
+                                            <input type="date" class="input" placeholder="Not sent">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">POD Sent</label>
+                                            <input type="date" class="input" placeholder="Not sent">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Routing override -->
+                                <div class="card p-4">
+                                    <div class="section-header">
+                                        <i data-lucide="route" class="w-4 h-4 text-slate-400"></i> HBL Routing
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="field-group">
+                                            <label class="label">DEL</label>
+                                            <input class="input" value="Los Angeles, CA">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Final Destination</label>
+                                            <input class="input" value="Chicago, IL">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Delivery Location</label>
+                                            <input class="input" value="Warehouse #12, Chicago">
+                                        </div>
+                                        <div class="field-group">
+                                            <label class="label">Rail Code</label>
+                                            <input class="input" placeholder="Enter rail code">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== CONTAINER TAB ========== -->
+                <div class="tab-content" id="tab-container">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm font-semibold text-slate-800">MBL Containers</h3>
+                            <span class="badge badge-default">3 containers</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="btn btn-secondary btn-sm"><i data-lucide="file-up" class="w-3.5 h-3.5"></i> Excel Upload</button>
+                            <div class="relative">
+                                <button class="btn btn-primary btn-sm" onclick="toggleDropdown('addContainerDD')">
+                                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Container
+                                    <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                                </button>
+                                <div class="dropdown-menu" id="addContainerDD" style="min-width:140px;">
+                                    <div class="dropdown-item" onclick="showToast('1 container added')">Add 1</div>
+                                    <div class="dropdown-item" onclick="showToast('5 containers added')">Add 5</div>
+                                    <div class="dropdown-item">Custom...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Container Cards -->
+                    <div class="space-y-3">
+                        <!-- Container 1 -->
+                        <div class="card">
+                            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center">
+                                        <i data-lucide="container" class="w-4 h-4 text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-sm text-slate-900 font-mono">MSKU 927 384 1</div>
+                                        <div class="text-xs text-slate-500">40' HC | Seal: SL20260128A</div>
+                                    </div>
+                                    <span class="badge badge-green"><span class="status-dot green mr-1"></span>Carrier Released</span>
+                                    <span class="badge badge-blue">Available</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="btn btn-ghost btn-sm">Assign HBL</button>
+                                    <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-6 gap-4">
+                                    <div class="field-group">
+                                        <label class="label">Packages</label>
+                                        <input class="input input-sm" value="450 CTN">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Gross Weight</label>
+                                        <input class="input input-sm" value="12,500 KG">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Measurement</label>
+                                        <input class="input input-sm" value="67.5 CBM">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">VGM</label>
+                                        <input class="input input-sm" value="16,200 KG">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">LFD</label>
+                                        <input type="date" class="input input-sm" value="2026-02-20">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">FDD</label>
+                                        <input type="date" class="input input-sm" value="2026-02-22">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-6 gap-4 mt-3">
+                                    <div class="field-group">
+                                        <label class="label">Gate In</label>
+                                        <span class="text-xs text-slate-600">Jan 26</span>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Gate Out</label>
+                                        <span class="text-xs text-slate-400">Pending</span>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Available</label>
+                                        <span class="text-xs text-green-600">Feb 16</span>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Delivery</label>
+                                        <span class="text-xs text-slate-400">Pending</span>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Empty Return</label>
+                                        <span class="text-xs text-slate-400">Pending</span>
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Yard Location</label>
+                                        <span class="text-xs text-slate-600">Block C, Row 5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Container 2 -->
+                        <div class="card">
+                            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center">
+                                        <i data-lucide="container" class="w-4 h-4 text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-sm text-slate-900 font-mono">MSKU 927 384 2</div>
+                                        <div class="text-xs text-slate-500">40' HC | Seal: SL20260128B</div>
+                                    </div>
+                                    <span class="badge badge-yellow"><span class="status-dot yellow mr-1"></span>Customs Hold</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="btn btn-ghost btn-sm">Assign HBL</button>
+                                    <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-6 gap-4">
+                                    <div class="field-group">
+                                        <label class="label">Packages</label>
+                                        <input class="input input-sm" value="320 CTN">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Gross Weight</label>
+                                        <input class="input input-sm" value="9,800 KG">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Measurement</label>
+                                        <input class="input input-sm" value="55.2 CBM">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">VGM</label>
+                                        <input class="input input-sm" value="13,600 KG">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">LFD</label>
+                                        <input type="date" class="input input-sm" value="2026-02-20">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">FDD</label>
+                                        <input type="date" class="input input-sm" value="2026-02-22">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Container 3 - Reefer -->
+                        <div class="card">
+                            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-md bg-orange-50 flex items-center justify-center">
+                                        <i data-lucide="thermometer" class="w-4 h-4 text-orange-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-sm text-slate-900 font-mono">MSKU 927 384 3</div>
+                                        <div class="text-xs text-slate-500">20' RF | Seal: SL20260128C</div>
+                                    </div>
+                                    <span class="badge badge-orange"><span class="status-dot" style="background:#f97316;" class="mr-1"></span> Reefer</span>
+                                    <span class="badge badge-purple">DG</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="btn btn-ghost btn-sm">Assign HBL</button>
+                                    <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-6 gap-4">
+                                    <div class="field-group">
+                                        <label class="label">Packages</label>
+                                        <input class="input input-sm" value="180 CTN">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Gross Weight</label>
+                                        <input class="input input-sm" value="5,200 KG">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Temp (°C)</label>
+                                        <input class="input input-sm" value="-18°C">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">Vent</label>
+                                        <input class="input input-sm" value="Closed">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">LFD</label>
+                                        <input type="date" class="input input-sm" value="2026-02-18">
+                                    </div>
+                                    <div class="field-group">
+                                        <label class="label">FDD</label>
+                                        <input type="date" class="input input-sm" value="2026-02-20">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Container Summary -->
+                    <div class="card mt-4 p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm font-semibold text-slate-700">Container Totals</div>
+                            <button class="btn btn-ghost btn-xs"><i data-lucide="copy" class="w-3 h-3"></i> Copy from HBL</button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-6 mt-3">
+                            <div>
+                                <div class="text-xs text-slate-500">Total Packages</div>
+                                <div class="text-lg font-bold text-slate-900">950 CTN</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-500">Total Gross Weight</div>
+                                <div class="text-lg font-bold text-slate-900">27,500 KG</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-500">Total Measurement</div>
+                                <div class="text-lg font-bold text-slate-900">122.7 CBM</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-500">Containers</div>
+                                <div class="text-lg font-bold text-slate-900">3 (2x40'HC + 1x20'RF)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== ACCOUNTING TAB ========== -->
+                <div class="tab-content" id="tab-accounting">
+                    <!-- Invoice Summary -->
+                    <div class="grid grid-cols-4 gap-3 mb-5">
+                        <div class="card p-4">
+                            <div class="text-xs text-slate-500 font-medium">AR Revenue</div>
+                            <div class="text-xl font-bold text-green-600 mt-1">$18,450.00</div>
+                            <div class="text-xs text-slate-400 mt-1">2 invoices</div>
+                        </div>
+                        <div class="card p-4">
+                            <div class="text-xs text-slate-500 font-medium">AP Cost</div>
+                            <div class="text-xl font-bold text-red-600 mt-1">$14,280.00</div>
+                            <div class="text-xs text-slate-400 mt-1">3 invoices</div>
+                        </div>
+                        <div class="card p-4">
+                            <div class="text-xs text-slate-500 font-medium">Profit</div>
+                            <div class="text-xl font-bold text-blue-600 mt-1">$4,170.00</div>
+                            <div class="text-xs text-slate-400 mt-1">22.6% margin</div>
+                        </div>
+                        <div class="card p-4">
+                            <div class="text-xs text-slate-500 font-medium">Outstanding</div>
+                            <div class="text-xl font-bold text-yellow-600 mt-1">$8,250.00</div>
+                            <div class="text-xs text-slate-400 mt-1">1 overdue</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2 bg-slate-100 rounded-lg p-1">
+                            <button class="hbl-tab active" onclick="switchInvTab('all', this)">All</button>
+                            <button class="hbl-tab" onclick="switchInvTab('ar', this)">AR</button>
+                            <button class="hbl-tab" onclick="switchInvTab('ap', this)">AP</button>
+                            <button class="hbl-tab" onclick="switchInvTab('dc', this)">DC Note</button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="btn btn-secondary btn-sm"><i data-lucide="dollar-sign" class="w-3.5 h-3.5"></i> Payment Plan</button>
+                            <button class="btn btn-primary btn-sm" onclick="showModal('newInvoiceModal')">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> New Invoice
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Table -->
+                    <div class="card">
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice No.</th>
+                                        <th>Type</th>
+                                        <th>Level</th>
+                                        <th>Bill To / Vendor</th>
+                                        <th>Amount</th>
+                                        <th>Currency</th>
+                                        <th>Status</th>
+                                        <th>Due Date</th>
+                                        <th>Confirmed</th>
+                                        <th style="width:40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><a class="text-blue-600 font-medium hover:underline">INV-S-2026-0891</a></td>
+                                        <td><span class="badge badge-green">AR</span></td>
+                                        <td>MBL</td>
+                                        <td>US Trading Inc.</td>
+                                        <td class="font-medium">$12,450.00</td>
+                                        <td>USD</td>
+                                        <td><span class="badge badge-yellow">Outstanding</span></td>
+                                        <td>Feb 28, 2026</td>
+                                        <td><i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i></td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a class="text-blue-600 font-medium hover:underline">INV-S-2026-0892</a></td>
+                                        <td><span class="badge badge-green">AR</span></td>
+                                        <td>HBL-1</td>
+                                        <td>US Trading Inc.</td>
+                                        <td class="font-medium">$6,000.00</td>
+                                        <td>USD</td>
+                                        <td><span class="badge badge-green">Paid</span></td>
+                                        <td>Feb 15, 2026</td>
+                                        <td><i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i></td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a class="text-blue-600 font-medium hover:underline">INV-B-2026-0334</a></td>
+                                        <td><span class="badge badge-red">AP</span></td>
+                                        <td>MBL</td>
+                                        <td>Maersk Line</td>
+                                        <td class="font-medium">$8,900.00</td>
+                                        <td>USD</td>
+                                        <td><span class="badge badge-green">Paid</span></td>
+                                        <td>Feb 10, 2026</td>
+                                        <td><i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i></td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a class="text-blue-600 font-medium hover:underline">INV-B-2026-0335</a></td>
+                                        <td><span class="badge badge-red">AP</span></td>
+                                        <td>MBL</td>
+                                        <td>APM Terminals</td>
+                                        <td class="font-medium">$3,200.00</td>
+                                        <td>USD</td>
+                                        <td><span class="badge badge-yellow">Outstanding</span></td>
+                                        <td>Feb 20, 2026</td>
+                                        <td><i data-lucide="minus-circle" class="w-4 h-4 text-slate-300"></i></td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a class="text-blue-600 font-medium hover:underline">INV-B-2026-0336</a></td>
+                                        <td><span class="badge badge-red">AP</span></td>
+                                        <td>HBL-1</td>
+                                        <td>ABC Customs Brokers</td>
+                                        <td class="font-medium">$2,180.00</td>
+                                        <td>USD</td>
+                                        <td><span class="badge badge-green">Paid</span></td>
+                                        <td>Feb 08, 2026</td>
+                                        <td><i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i></td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="more-horizontal" class="w-4 h-4"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Charge Items / Freight Info -->
+                    <div class="card mt-4">
+                        <div class="p-3 border-b border-slate-100 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-slate-700">Charge Items — INV-S-2026-0891</span>
+                                <span class="badge badge-green">AR</span>
+                            </div>
+                            <button class="btn btn-secondary btn-sm"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Line</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Billing Code</th>
+                                        <th>Description</th>
+                                        <th>Unit</th>
+                                        <th>Volume</th>
+                                        <th>Rate</th>
+                                        <th>Amount</th>
+                                        <th>Tax</th>
+                                        <th>Agent Link</th>
+                                        <th style="width:40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-mono text-xs">OFR</td>
+                                        <td>Ocean Freight</td>
+                                        <td>Per Container</td>
+                                        <td>3</td>
+                                        <td>$3,200.00</td>
+                                        <td class="font-medium">$9,600.00</td>
+                                        <td><span class="badge badge-default">Exempt</span></td>
+                                        <td>Our Cost</td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-400"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-mono text-xs">THC</td>
+                                        <td>Terminal Handling</td>
+                                        <td>Per Container</td>
+                                        <td>3</td>
+                                        <td>$450.00</td>
+                                        <td class="font-medium">$1,350.00</td>
+                                        <td><span class="badge badge-default">Normal</span></td>
+                                        <td>Our Cost</td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-400"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-mono text-xs">DOC</td>
+                                        <td>Documentation Fee</td>
+                                        <td>Per Shipment</td>
+                                        <td>1</td>
+                                        <td>$150.00</td>
+                                        <td class="font-medium">$150.00</td>
+                                        <td><span class="badge badge-default">Normal</span></td>
+                                        <td>—</td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-400"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-mono text-xs">ISF</td>
+                                        <td>ISF Filing Fee</td>
+                                        <td>Per HBL</td>
+                                        <td>2</td>
+                                        <td>$75.00</td>
+                                        <td class="font-medium">$150.00</td>
+                                        <td><span class="badge badge-default">Normal</span></td>
+                                        <td>—</td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-400"></i></button></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-mono text-xs">DRG</td>
+                                        <td>Drayage</td>
+                                        <td>Per Container</td>
+                                        <td>3</td>
+                                        <td>$400.00</td>
+                                        <td class="font-medium">$1,200.00</td>
+                                        <td><span class="badge badge-default">Exempt</span></td>
+                                        <td>Pay for Agent</td>
+                                        <td><button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="trash-2" class="w-3.5 h-3.5 text-slate-400"></i></button></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="border-t-2 border-slate-200">
+                                        <td colspan="5" class="text-right font-semibold text-slate-700">Total</td>
+                                        <td class="font-bold text-slate-900">$12,450.00</td>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== DOC CENTER TAB ========== -->
+                <div class="tab-content" id="tab-docCenter">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm font-semibold text-slate-800">Documents</h3>
+                            <span class="badge badge-default">12 files</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button class="btn btn-secondary btn-sm"><i data-lucide="mail" class="w-3.5 h-3.5"></i> Email Selected</button>
+                            <button class="btn btn-secondary btn-sm"><i data-lucide="printer" class="w-3.5 h-3.5"></i> Print</button>
+                            <button class="btn btn-primary btn-sm" onclick="document.getElementById('fileUpload').click()">
+                                <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload
+                            </button>
+                            <input type="file" id="fileUpload" style="display:none;" multiple>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-5">
+                        <!-- Left: System Forms -->
+                        <div class="col-span-1">
+                            <div class="card">
+                                <div class="p-3 border-b border-slate-100">
+                                    <span class="text-sm font-semibold text-slate-700">System Forms</span>
+                                </div>
+                                <div class="p-2">
+                                    <div class="flex flex-col gap-0.5">
+                                        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer group">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                                            <span class="text-sm text-slate-700 flex-1">Arrival Notice</span>
+                                            <span class="badge badge-green text-[10px]">Sent</span>
+                                            <button class="btn btn-ghost btn-icon btn-sm opacity-0 group-hover:opacity-100"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer group">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                                            <span class="text-sm text-slate-700 flex-1">Delivery Order</span>
+                                            <span class="badge badge-default text-[10px]">Draft</span>
+                                            <button class="btn btn-ghost btn-icon btn-sm opacity-0 group-hover:opacity-100"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer group">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                                            <span class="text-sm text-slate-700 flex-1">Release Order</span>
+                                            <span class="badge badge-default text-[10px]">Draft</span>
+                                            <button class="btn btn-ghost btn-icon btn-sm opacity-0 group-hover:opacity-100"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer group">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i>
+                                            <span class="text-sm text-slate-500 flex-1">Proof of Delivery</span>
+                                            <span class="badge badge-default text-[10px]">N/A</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer group">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i>
+                                            <span class="text-sm text-slate-500 flex-1">Pickup Instruction</span>
+                                            <span class="badge badge-default text-[10px]">N/A</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer group">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i>
+                                            <span class="text-sm text-slate-500 flex-1">Customs Instruction</span>
+                                            <span class="badge badge-default text-[10px]">N/A</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer group">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i>
+                                            <span class="text-sm text-slate-500 flex-1">Detention Notice</span>
+                                            <span class="badge badge-default text-[10px]">N/A</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 p-2 rounded-md hover:bg-slate-50 cursor-pointer group">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                                            <span class="text-sm text-slate-700 flex-1">Carrier Certificate</span>
+                                            <span class="badge badge-green text-[10px]">Ready</span>
+                                            <button class="btn btn-ghost btn-icon btn-sm opacity-0 group-hover:opacity-100"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Uploaded Documents -->
+                        <div class="col-span-2">
+                            <div class="card">
+                                <div class="p-3 border-b border-slate-100 flex items-center justify-between">
+                                    <span class="text-sm font-semibold text-slate-700">Uploaded Documents</span>
+                                    <div class="flex items-center gap-2">
+                                        <button class="btn btn-ghost btn-xs"><i data-lucide="grid" class="w-3 h-3"></i></button>
+                                        <button class="btn btn-ghost btn-xs" style="background:#f1f5f9;"><i data-lucide="list" class="w-3 h-3"></i></button>
+                                    </div>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:32px;"><input type="checkbox" class="checkbox"></th>
+                                                <th>Document</th>
+                                                <th>Type</th>
+                                                <th>Level</th>
+                                                <th>Size</th>
+                                                <th>Uploaded</th>
+                                                <th>Portal</th>
+                                                <th style="width:80px;"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><input type="checkbox" class="checkbox"></td>
+                                                <td class="flex items-center gap-2">
+                                                    <i data-lucide="file" class="w-4 h-4 text-red-500"></i>
+                                                    <span>Commercial_Invoice_H9283746.pdf</span>
+                                                </td>
+                                                <td><span class="badge badge-default">Commercial Invoice</span></td>
+                                                <td>HBL-1</td>
+                                                <td class="text-slate-500">2.4 MB</td>
+                                                <td class="text-slate-500">Feb 05</td>
+                                                <td><i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i></td>
+                                                <td>
+                                                    <div class="flex items-center gap-1">
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="checkbox" class="checkbox"></td>
+                                                <td class="flex items-center gap-2">
+                                                    <i data-lucide="file" class="w-4 h-4 text-red-500"></i>
+                                                    <span>Packing_List_H9283746.pdf</span>
+                                                </td>
+                                                <td><span class="badge badge-default">Packing List</span></td>
+                                                <td>HBL-1</td>
+                                                <td class="text-slate-500">1.8 MB</td>
+                                                <td class="text-slate-500">Feb 05</td>
+                                                <td><i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i></td>
+                                                <td>
+                                                    <div class="flex items-center gap-1">
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="checkbox" class="checkbox"></td>
+                                                <td class="flex items-center gap-2">
+                                                    <i data-lucide="file" class="w-4 h-4 text-blue-500"></i>
+                                                    <span>ISF_Confirmation_AMS20260128.pdf</span>
+                                                </td>
+                                                <td><span class="badge badge-default">ISF Confirmation</span></td>
+                                                <td>MBL</td>
+                                                <td class="text-slate-500">845 KB</td>
+                                                <td class="text-slate-500">Jan 28</td>
+                                                <td><i data-lucide="minus-circle" class="w-4 h-4 text-slate-300"></i></td>
+                                                <td>
+                                                    <div class="flex items-center gap-1">
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="checkbox" class="checkbox"></td>
+                                                <td class="flex items-center gap-2">
+                                                    <i data-lucide="file" class="w-4 h-4 text-red-500"></i>
+                                                    <span>Entry_Summary_7501.pdf</span>
+                                                </td>
+                                                <td><span class="badge badge-default">Entry Summary</span></td>
+                                                <td>HBL-1</td>
+                                                <td class="text-slate-500">3.1 MB</td>
+                                                <td class="text-slate-500">Feb 08</td>
+                                                <td><i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i></td>
+                                                <td>
+                                                    <div class="flex items-center gap-1">
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="checkbox" class="checkbox"></td>
+                                                <td class="flex items-center gap-2">
+                                                    <i data-lucide="image" class="w-4 h-4 text-purple-500"></i>
+                                                    <span>HBL_Print_H9283746.jpg</span>
+                                                </td>
+                                                <td><span class="badge badge-default">HBL Print</span></td>
+                                                <td>HBL-1</td>
+                                                <td class="text-slate-500">4.2 MB</td>
+                                                <td class="text-slate-500">Jan 30</td>
+                                                <td><i data-lucide="minus-circle" class="w-4 h-4 text-slate-300"></i></td>
+                                                <td>
+                                                    <div class="flex items-center gap-1">
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+                                                        <button class="btn btn-ghost btn-icon btn-sm"><i data-lucide="download" class="w-3.5 h-3.5"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Drop zone -->
+                            <div class="mt-4 border-2 border-dashed border-slate-200 rounded-lg p-8 text-center hover:border-blue-300 hover:bg-blue-50/30 transition cursor-pointer"
+                                 onclick="document.getElementById('fileUpload').click()">
+                                <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+                                <div class="text-sm text-slate-500">Drag & drop files here or <span class="text-blue-600 font-medium">browse</span></div>
+                                <div class="text-xs text-slate-400 mt-1">Max 25 MB per file</div>
+                            </div>
+
+                            <!-- Memo Section -->
+                            <div class="card mt-4">
+                                <div class="p-3 border-b border-slate-100 flex items-center justify-between">
+                                    <span class="text-sm font-semibold text-slate-700">Memos</span>
+                                    <button class="btn btn-secondary btn-sm"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Memo</button>
+                                </div>
+                                <div class="p-3 space-y-3">
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-yellow-600"></i>
+                                            <span class="text-xs font-semibold text-yellow-800">URGENT</span>
+                                            <span class="text-xs text-yellow-600 ml-auto">Kyle L. — Feb 08, 2026</span>
+                                        </div>
+                                        <p class="text-sm text-yellow-900">Container MSKU9273842 has customs hold. Contact broker for expedited clearance. Customer expecting delivery by Feb 20.</p>
+                                    </div>
+                                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <i data-lucide="message-square" class="w-3.5 h-3.5 text-slate-500"></i>
+                                            <span class="text-xs font-medium text-slate-600">Note</span>
+                                            <span class="text-xs text-slate-400 ml-auto">Jane C. — Feb 05, 2026</span>
+                                        </div>
+                                        <p class="text-sm text-slate-700">Arrival notice sent to customer. Confirmed receipt via email.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- New Shipment Modal -->
+<div class="modal-overlay" id="newShipmentModal">
+    <div class="modal">
+        <div class="p-5 border-b border-slate-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-slate-900">Create New Shipment</h3>
+                <button class="btn btn-ghost btn-icon btn-sm" onclick="hideModal('newShipmentModal')"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <p class="text-sm text-slate-500 mt-1">Fill in the basic details to create a new Ocean Import shipment.</p>
+        </div>
+        <div class="p-5 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="field-group">
+                    <label class="label">MB/L No. <span class="text-red-500">*</span></label>
+                    <input class="input" placeholder="Enter Master B/L number">
+                </div>
+                <div class="field-group">
+                    <label class="label">B/L Type</label>
+                    <select class="select">
+                        <option>Original</option>
+                        <option>Telex Release</option>
+                        <option>Sea Waybill</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="label">Ship Mode <span class="text-red-500">*</span></label>
+                    <select class="select">
+                        <option>FCL (Full Container Load)</option>
+                        <option>LCL (Less Container Load)</option>
+                        <option>Bulk</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="label">Carrier <span class="text-red-500">*</span></label>
+                    <input class="input" placeholder="Search carrier...">
+                </div>
+                <div class="field-group">
+                    <label class="label">POL</label>
+                    <input class="input" placeholder="Port of Loading">
+                </div>
+                <div class="field-group">
+                    <label class="label">POD</label>
+                    <input class="input" placeholder="Port of Discharge">
+                </div>
+                <div class="field-group">
+                    <label class="label">ETD</label>
+                    <input type="date" class="input">
+                </div>
+                <div class="field-group">
+                    <label class="label">ETA</label>
+                    <input type="date" class="input">
+                </div>
+                <div class="field-group">
+                    <label class="label">Operator (OP)</label>
+                    <select class="select">
+                        <option>Kyle Lin</option>
+                        <option>Jane Chen</option>
+                        <option>Tom Wu</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="label">Oversea Agent</label>
+                    <input class="input" placeholder="Search agent...">
+                </div>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="checkbox">
+                <span class="text-sm text-slate-700">Enable Direct Master Mode</span>
+                <span class="text-xs text-slate-400">(MBL acts as both master and house)</span>
+            </label>
+        </div>
+        <div class="p-5 border-t border-slate-200 flex items-center justify-end gap-2">
+            <button class="btn btn-secondary" onclick="hideModal('newShipmentModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="hideModal('newShipmentModal'); showToast('Shipment OI-2026-0248 created successfully')">Create Shipment</button>
+        </div>
+    </div>
+</div>
+
+<!-- New Invoice Modal -->
+<div class="modal-overlay" id="newInvoiceModal">
+    <div class="modal">
+        <div class="p-5 border-b border-slate-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-slate-900">Create New Invoice</h3>
+                <button class="btn btn-ghost btn-icon btn-sm" onclick="hideModal('newInvoiceModal')"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+        <div class="p-5 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="field-group">
+                    <label class="label">Invoice Type <span class="text-red-500">*</span></label>
+                    <select class="select">
+                        <option>AR (Accounts Receivable)</option>
+                        <option>AP (Accounts Payable)</option>
+                        <option>Debit Note</option>
+                        <option>Credit Note</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="label">Level</label>
+                    <select class="select">
+                        <option>MBL</option>
+                        <option>HBL-1 (H9283746)</option>
+                        <option>HBL-2 (H9283747)</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="label">Bill To / Vendor <span class="text-red-500">*</span></label>
+                    <input class="input" placeholder="Search party...">
+                </div>
+                <div class="field-group">
+                    <label class="label">Currency</label>
+                    <select class="select">
+                        <option>USD</option>
+                        <option>EUR</option>
+                        <option>CNY</option>
+                        <option>TWD</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label class="label">Due Date</label>
+                    <input type="date" class="input">
+                </div>
+                <div class="field-group">
+                    <label class="label">Payment Method</label>
+                    <select class="select">
+                        <option>Wire Transfer</option>
+                        <option>Check</option>
+                        <option>Cash</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="p-5 border-t border-slate-200 flex items-center justify-end gap-2">
+            <button class="btn btn-secondary" onclick="hideModal('newInvoiceModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="hideModal('newInvoiceModal'); showToast('Invoice created')">Create Invoice</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i>
+    <span id="toastMsg"></span>
+</div>
+
+<script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // View switching
+    function showView(view) {
+        document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
+        document.getElementById('detailView').style.display = view === 'detail' ? 'block' : 'none';
+
+        // Update sidebar
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        if (view === 'list') {
+            document.querySelectorAll('.nav-item')[0].classList.add('active');
+        } else {
+            document.querySelectorAll('.nav-item')[1].classList.add('active');
+        }
+
+        // Re-init icons for new content
+        lucide.createIcons();
+    }
+
+    // Tab switching
+    function switchTab(tabId, el) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+
+        document.getElementById('tab-' + tabId).classList.add('active');
+        el.classList.add('active');
+        lucide.createIcons();
+    }
+
+    // MBL/HBL switching
+    function switchMblHbl(type, el) {
+        document.querySelectorAll('.hbl-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+
+        if (type === 'mbl') {
+            document.getElementById('mblContent').style.display = 'block';
+            document.getElementById('hblContent').style.display = 'none';
+        } else {
+            document.getElementById('mblContent').style.display = 'none';
+            document.getElementById('hblContent').style.display = 'block';
+        }
+    }
+
+    // Invoice tab switching (visual only)
+    function switchInvTab(type, el) {
+        el.parentElement.querySelectorAll('.hbl-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // Dropdown toggle
+    function toggleDropdown(id) {
+        const dd = document.getElementById(id);
+        const isShown = dd.classList.contains('show');
+        // Close all dropdowns first
+        document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+        if (!isShown) dd.classList.add('show');
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.relative')) {
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+        }
+    });
+
+    // Modal
+    function showModal(id) {
+        document.getElementById(id).classList.add('show');
+    }
+    function hideModal(id) {
+        document.getElementById(id).classList.remove('show');
+    }
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.classList.remove('show');
+        });
+    });
+
+    // Toast
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+</script>
+
+</body>
+</html>
