@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoFreight — HBL List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Open Sans', sans-serif; font-size: 13px; color: #333; background: #f4f5f7; overflow-x: hidden; }
+
+/* ─── LIST PAGE ──────────────────────────────────────────── */
+#list-page { min-height: 100vh; display: flex; flex-direction: column; }
+#list-page.hidden { display: none; }
+
+.topbar {
+  background: #1b3a2e;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 32px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.topbar-logo {
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+}
+.topbar-nav { display: flex; gap: 2px; }
+.topbar-link {
+  color: rgba(255,255,255,0.65);
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.topbar-link:hover { color: white; background: rgba(255,255,255,0.1); }
+.topbar-link.active { color: white; background: rgba(255,255,255,0.15); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.topbar-avatar {
+  width: 30px; height: 30px;
+  background: #26a69a;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 12px; font-weight: 700;
+}
+
+.list-header {
+  background: white;
+  border-bottom: 1px solid #e8e9ec;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.list-title { font-size: 16px; font-weight: 700; color: #1b3a2e; }
+.list-sub { font-size: 11.5px; color: #888; margin-top: 1px; }
+
+.list-actions { display: flex; gap: 8px; }
+.btn-outline {
+  padding: 6px 14px;
+  border: 1px solid #d0d3d9;
+  background: white;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Open Sans', sans-serif;
+}
+.btn-outline:hover { border-color: #26a69a; color: #26a69a; }
+.btn-primary {
+  padding: 6px 16px;
+  border: none;
+  background: #26a69a;
+  color: white;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Open Sans', sans-serif;
+}
+.btn-primary:hover { background: #1e8a7f; }
+
+.table-wrap {
+  background: white;
+  margin: 16px 24px;
+  border-radius: 8px;
+  border: 1px solid #e8e9ec;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+table { width: 100%; border-collapse: collapse; }
+thead { background: #f8f9fb; }
+th {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #777;
+  text-align: left;
+  border-bottom: 1px solid #e8e9ec;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+td {
+  padding: 10px 14px;
+  font-size: 12.5px;
+  border-bottom: 1px solid #f0f1f3;
+  white-space: nowrap;
+  color: #333;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #f7fffe; }
+tbody tr { transition: background 0.1s; }
+
+.file-link { color: #26a69a; font-weight: 600; cursor: pointer; }
+.file-link:hover { text-decoration: underline; }
+
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.tag-green { background: #e6f4f2; color: #1a8a7e; }
+.tag-blue  { background: #e8f0fe; color: #1a56c0; }
+.tag-grey  { background: #f0f1f3; color: #666; }
+.tag-amber { background: #fff8e1; color: #b45309; }
+
+.route-arrow { color: #aaa; margin: 0 4px; font-size: 10px; }
+
+.table-footer {
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #888;
+  background: white;
+  border-top: 1px solid #f0f1f3;
+}
+.pagination { display: flex; gap: 4px; align-items: center; }
+.page-btn {
+  width: 28px; height: 28px;
+  border: 1px solid #e8e9ec;
+  border-radius: 4px;
+  background: white;
+  font-size: 11.5px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #555;
+}
+.page-btn.active { background: #26a69a; color: white; border-color: #26a69a; }
+
+/* drag hint */
+.drag-hint {
+  margin: 0 24px 16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(38,166,154,0.06) 0%, rgba(38,166,154,0.03) 100%);
+  border: 1.5px dashed rgba(38,166,154,0.4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #26a69a;
+  font-size: 12.5px;
+}
+.drag-hint i { font-size: 16px; opacity: 0.8; }
+.drag-hint span { opacity: 0.8; }
+
+/* ─── DRAG OVERLAY ───────────────────────────────────────── */
+#drop-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(38, 166, 154, 0.18);
+  z-index: 100;
+  pointer-events: none;
+}
+#drop-overlay.active { display: flex; align-items: flex-end; justify-content: center; padding-bottom: 80px; }
+
+.drop-card {
+  background: #26a69a;
+  border-radius: 8px;
+  padding: 24px 30px;
+  width: 370px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 12px 40px rgba(38,166,154,0.35);
+  animation: cardPop 0.2s ease-out;
+}
+@keyframes cardPop { from { transform: translateY(10px) scale(0.97); opacity: 0.7; } to { transform: none; opacity: 1; } }
+.drop-card i { font-size: 30px; margin-bottom: 12px; display: block; }
+.drop-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+.drop-card p  { font-size: 12px; opacity: 0.88; line-height: 1.5; }
+
+/* ─── ANALYZING ──────────────────────────────────────────── */
+#analyzing-screen {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+#analyzing-screen.active { display: flex; }
+
+.spin-ring {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  border: 3px solid #e0f2f0;
+  border-top-color: #26a69a;
+  animation: spin 0.8s linear infinite;
+  position: relative;
+}
+.spin-ring::after {
+  content: '\f0d0';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  color: #26a69a;
+  animation: spin 0.8s linear infinite reverse;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.analyze-title { font-size: 18px; font-weight: 700; color: #1b3a2e; }
+.analyze-sub { font-size: 13px; color: #888; }
+
+.progress-wrap { width: 320px; background: #e8f5e9; border-radius: 20px; height: 5px; overflow: hidden; }
+.progress-bar  { height: 100%; background: linear-gradient(90deg, #26a69a, #80cbc4, #a5d6a7); border-radius: 20px; width: 0%; transition: width 0.4s ease; }
+
+.steps-list { list-style: none; display: flex; flex-direction: column; gap: 9px; font-size: 12.5px; color: #999; }
+.steps-list li { display: flex; align-items: center; gap: 9px; transition: color 0.2s; }
+.steps-list li i { width: 16px; font-size: 13px; color: #ccc; transition: color 0.2s; }
+.steps-list li.done { color: #333; }
+.steps-list li.done i { color: #26a69a; }
+.steps-list li.running { color: #26a69a; }
+.steps-list li.running i { color: #26a69a; animation: spin 0.7s linear infinite; }
+
+/* ─── ENTRY PAGE ─────────────────────────────────────────── */
+#entry-page { display: none; min-height: 100vh; flex-direction: column; }
+#entry-page.active { display: flex; }
+
+.entry-topbar {
+  background: #1b3a2e;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.back-btn {
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+.back-btn:hover { color: white; background: rgba(255,255,255,0.1); }
+.entry-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+.entry-file-id { color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.3px; }
+.entry-topbar-right { margin-left: auto; display: flex; gap: 8px; }
+.entry-action {
+  padding: 5px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  font-family: 'Open Sans', sans-serif;
+  display: flex; align-items: center; gap: 6px;
+}
+.entry-action:hover { background: rgba(255,255,255,0.1); color: white; }
+.entry-action.save { background: #26a69a; border-color: #26a69a; color: white; }
+.entry-action.save:hover { background: #1e8a7f; }
+
+.entry-body {
+  flex: 1;
+  background: #f4f5f7;
+  padding: 14px 20px;
+  overflow-y: auto;
+}
+
+/* GoNEXUS fill notice */
+.ai-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  background: linear-gradient(109deg, rgba(112,218,194,0.20) 0%, rgba(192,220,160,0.20) 50%, rgba(254,215,114,0.20) 100%), #fff;
+  border: 1px solid #b2dfdb;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1b3a2e;
+  margin-bottom: 12px;
+}
+.ai-notice i { color: #26a69a; font-size: 12px; }
+
+/* ─── SECTION CARD ───────────────────────────────────────── */
+.section-card {
+  background: white;
+  border: 1px solid #e4e4e4;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.section-bar {
+  background: #f5f5f5;
+  border-bottom: 1px solid #e4e4e4;
+  padding: 7px 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.section-bar i { color: #26a69a; font-size: 11px; }
+.section-body { padding: 14px 16px; }
+
+/* ─── FORM GROUPS ────────────────────────────────────────── */
+.form-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+.req { color: #f3565d; }
+
+/* NORMAL INPUT */
+.f-input {
+  width: 220px;
+  height: 36px;
+  border: 1.5px solid #e4e4e4;
+  border-radius: 8px;
+  background: white;
+  padding: 0 12px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.f-input:focus { border-color: #26a69a; }
+
+/* Date input wrapper */
+.input-date-wrap { position: relative; width: 220px; }
+.input-date-wrap .f-input { width: 100%; padding-right: 36px; }
+.input-date-wrap .cal-icon {
+  position: absolute; right: 10px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px; color: #bbb;
+  pointer-events: none;
+}
+
+/* Select with chevron */
+.select-wrap { position: relative; width: 220px; }
+.select-wrap .f-input { width: 100%; padding-right: 32px; cursor: default; }
+.select-wrap::after {
+  content: '\f107';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px; color: #bbb;
+  pointer-events: none;
+}
+
+/* Disabled input */
+.f-input.disabled { background: #f5f5f5; color: #aaa; border-color: #e8e8e8; }
+
+/* ─── AI FILL ────────────────────────────────────────────── */
+.f-input.ai-fill {
+  background: transparent !important;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+/* Gradient overlay that wipes left → right */
+.ai-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: linear-gradient(109deg,
+    rgba(112, 218, 194, 0.70) 0%,
+    rgba(192, 220, 160, 0.70) 50%,
+    rgba(254, 215, 114, 0.70) 100%
+  );
+  clip-path: inset(0 100% 0 0 round 8px);
+  transition: clip-path 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+.ai-overlay.active {
+  clip-path: inset(0 0% 0 0 round 8px);
+}
+
+/* Inputs on top of overlay */
+.select-wrap .f-input,
+.input-date-wrap .f-input,
+.form-group > .f-input {
+  position: relative;
+  z-index: 1;
+}
+
+/* section sub-divider */
+.form-divider {
+  width: 100%;
+  border-top: 1px solid #f0f0f0;
+  margin: 4px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LIST PAGE ══════════════════════════════════ -->
+<div id="list-page">
+  <div class="list-header">
+    <div>
+      <div class="list-title">House B/L List</div>
+      <div class="list-sub">Ocean Import · LAX Office</div>
+    </div>
+  </div>
+
+  <!-- Drag hint -->
+  <div style="height:12px"></div>
+  <div class="drag-hint">
+    <i class="fa-solid fa-wand-magic-sparkles"></i>
+    <span><strong>GoNEXUS AI:</strong> Drag & drop a pre-alert document anywhere on this page to auto-create a shipment</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:32px"><input type="checkbox"></th>
+          <th>File No.</th>
+          <th>Route</th>
+          <th>ETD</th>
+          <th>Carrier</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><span class="file-link">OILAX-26041001</span></td>
+          <td>TAICHUNG <span class="route-arrow">→</span> LOS ANGELES</td>
+          <td>04-12-2026</td>
+          <td>EVERGREEN</td>
+          <td><span class="tag tag-blue">New</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><span class="file-link">OILAX-26038042</span></td>
+          <td>SHANGHAI <span class="route-arrow">→</span> LONG BEACH</td>
+          <td>03-28-2026</td>
+          <td>MSC</td>
+          <td><span class="tag tag-green">Ok to Block</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><span class="file-link">OILAX-26035019</span></td>
+          <td>KAOHSIUNG <span class="route-arrow">→</span> LOS ANGELES</td>
+          <td>03-15-2026</td>
+          <td>OOCL</td>
+          <td><span class="tag tag-green">Ok to Block</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><span class="file-link">OILAX-26031008</span></td>
+          <td>BUSAN <span class="route-arrow">→</span> LOS ANGELES</td>
+          <td>03-05-2026</td>
+          <td>EVERGREEN</td>
+          <td><span class="tag tag-amber">Pending</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><span class="file-link">OILAX-26028055</span></td>
+          <td>HONG KONG <span class="route-arrow">→</span> LONG BEACH</td>
+          <td>02-21-2026</td>
+          <td>HAPAG-LLOYD</td>
+          <td><span class="tag tag-green">Ok to Block</span></td>
+        </tr>
+        <tr>
+          <td><input type="checkbox"></td>
+          <td><span class="file-link">OILAX-26024012</span></td>
+          <td>NINGBO <span class="route-arrow">→</span> LOS ANGELES</td>
+          <td>02-10-2026</td>
+          <td>MSC</td>
+          <td><span class="tag tag-grey">Completed</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="table-footer">
+      <span>Showing 1–6 of 6 records</span>
+      <div class="pagination">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DRAG OVERLAY ═══════════════════════════════ -->
+<div id="drop-overlay">
+  <div class="drop-card">
+    <i class="fa-solid fa-wand-magic-sparkles"></i>
+    <h3>Drop your file to start AI-powered shipment processing</h3>
+    <p>GoNEXUS will analyze your document and help you create or update a shipment.</p>
+  </div>
+</div>
+
+<!-- ══════════ ANALYZING ══════════════════════════════════ -->
+<div id="analyzing-screen">
+  <div class="spin-ring"></div>
+  <div class="analyze-title">Analyzing your document…</div>
+  <div class="analyze-sub">GoNEXUS is reading your pre-alert</div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="pbar"></div>
+  </div>
+  <ul class="steps-list">
+    <li id="s1"><i class="fa-solid fa-circle"></i> Reading document structure</li>
+    <li id="s2"><i class="fa-solid fa-circle"></i> Extracting MBL / HBL fields</li>
+    <li id="s3"><i class="fa-solid fa-circle"></i> Matching trade partners</li>
+    <li id="s4"><i class="fa-solid fa-circle"></i> Populating shipment entry</li>
+  </ul>
+</div>
+
+<!-- ══════════ ENTRY PAGE ═════════════════════════════════ -->
+<div id="entry-page">
+  <div class="entry-topbar">
+    <div class="back-btn" onclick="backToList()">
+      <i class="fa-solid fa-chevron-left"></i> HBL List
+    </div>
+    <div class="entry-divider"></div>
+    <div class="entry-file-id">OILAX-26041001</div>
+  </div>
+
+  <div class="entry-body">
+    <div class="ai-notice">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      GoNEXUS filled 6 fields from your document
+    </div>
+
+    <!-- MBL Section -->
+    <div class="section-card">
+      <div class="section-bar">
+        <i class="fa-solid fa-file-lines"></i>
+        LFPI32058545
+      </div>
+      <div class="section-body">
+        <div class="form-wrap">
+
+          <!-- Row 1 -->
+          <div class="form-group">
+            <span class="form-label">File No.</span>
+            <input class="f-input disabled" value="MEDUQ4621130" readonly>
+          </div>
+          <div class="form-group">
+            <span class="form-label"><span class="req">*</span> MB/L No.</span>
+            <input class="f-input ai-fill" id="f-mbl" value="" readonly>
+          </div>
+          <div class="form-group">
+            <span class="form-label"><span class="req">*</span> Office</span>
+            <div class="select-wrap"><input class="f-input" value="LAX" readonly></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Carrier</span>
+            <div class="select-wrap"><input class="f-input ai-fill" id="f-carrier" value="" readonly></div>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <!-- Row 2 — Voyage -->
+          <div class="form-group">
+            <span class="form-label">Vessel</span>
+            <div class="select-wrap"><input class="f-input ai-fill" id="f-vessel" value="" readonly></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Port of Loading</span>
+            <div class="select-wrap"><input class="f-input ai-fill" id="f-pol" value="" readonly></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">ETD</span>
+            <div class="input-date-wrap">
+              <input class="f-input ai-fill" id="f-etd" value="" readonly>
+              <span class="cal-icon"><i class="fa-solid fa-calendar"></i></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">Port of Discharge</span>
+            <div class="select-wrap"><input class="f-input ai-fill" id="f-pod" value="" readonly></div>
+          </div>
+
+          <div class="form-divider"></div>
+
+          <!-- Row 3 -->
+          <div class="form-group">
+            <span class="form-label">Ship Mode</span>
+            <div class="select-wrap"><input class="f-input" value="FCL" readonly></div>
+          </div>
+          <div class="form-group">
+            <span class="form-label">B/L Type</span>
+            <div class="select-wrap"><input class="f-input" value="NORMAL" readonly></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── AI fields to animate
+const AI_FIELDS = [
+  { id: 'f-mbl',     val: 'LFPI32058545',  delay: 0   },
+  { id: 'f-carrier', val: 'EVERGREEN',      delay: 160 },
+  { id: 'f-vessel',  val: 'EVER GLORY',     delay: 320 },
+  { id: 'f-pol',     val: 'TAICHUNG',       delay: 480 },
+  { id: 'f-etd',     val: '04-12-2026',     delay: 640 },
+  { id: 'f-pod',     val: 'LOS ANGELES',    delay: 800 },
+];
+
+// ── Inject overlay divs into AI field containers
+function setupOverlays() {
+  AI_FIELDS.forEach(({ id }) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    if (document.querySelector(`.ai-overlay[data-for="${id}"]`)) return;
+
+    // Find a scoped container (only wraps the input, not the label)
+    let container = input.closest('.select-wrap, .input-date-wrap');
+
+    if (!container) {
+      // Plain input — wrap it in a new div so the overlay doesn't bleed onto the label
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'position:relative;display:inline-block;width:220px;';
+      input.parentNode.insertBefore(wrapper, input);
+      wrapper.appendChild(input);
+      container = wrapper;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'ai-overlay';
+    overlay.dataset.for = id;
+    container.style.position = 'relative';
+    container.insertBefore(overlay, container.firstChild);
+  });
+}
+
+// ── Drag & drop
+document.addEventListener('dragenter', e => { e.preventDefault(); document.getElementById('drop-overlay').classList.add('active'); });
+document.addEventListener('dragover',  e => { e.preventDefault(); });
+document.addEventListener('dragleave', e => { if (!e.relatedTarget) document.getElementById('drop-overlay').classList.remove('active'); });
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  document.getElementById('drop-overlay').classList.remove('active');
+  if (!document.getElementById('list-page').classList.contains('hidden')) startAnalyzing();
+});
+
+// ── Analyzing animation
+function startAnalyzing() {
+  const screen = document.getElementById('analyzing-screen');
+  const bar = document.getElementById('pbar');
+  const steps = ['s1','s2','s3','s4'];
+
+  screen.classList.add('active');
+  bar.style.width = '0%';
+  steps.forEach(id => {
+    const el = document.getElementById(id);
+    el.className = '';
+    el.querySelector('i').className = 'fa-solid fa-circle';
+  });
+
+  const seq = [
+    { id: 's1', pct: 30,  t: 0   },
+    { id: 's2', pct: 60,  t: 200 },
+    { id: 's3', pct: 85,  t: 450 },
+    { id: 's4', pct: 100, t: 700 },
+  ];
+
+  seq.forEach(({ id, pct, t }) => {
+    const el = document.getElementById(id);
+    setTimeout(() => {
+      el.className = 'running';
+      el.querySelector('i').className = 'fa-solid fa-spinner';
+      bar.style.width = pct + '%';
+      setTimeout(() => {
+        el.className = 'done';
+        el.querySelector('i').className = 'fa-solid fa-circle-check';
+      }, 180);
+    }, t);
+  });
+
+  setTimeout(() => {
+    screen.classList.remove('active');
+    showEntry();
+  }, 1000);
+}
+
+// ── Show entry & animate AI fields
+function showEntry() {
+  document.getElementById('list-page').classList.add('hidden');
+  document.getElementById('entry-page').classList.add('active');
+
+  // Setup overlays first time
+  setupOverlays();
+
+  // Reset
+  AI_FIELDS.forEach(({ id }) => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.value = '';
+    input.classList.remove('ai-fill');
+    const overlay = document.querySelector(`.ai-overlay[data-for="${id}"]`);
+    if (overlay) overlay.classList.remove('active');
+  });
+
+  // Animate each in sequence
+  AI_FIELDS.forEach(({ id, val, delay }) => {
+    setTimeout(() => {
+      const input = document.getElementById(id);
+      const overlay = document.querySelector(`.ai-overlay[data-for="${id}"]`);
+      if (!input || !overlay) return;
+
+      input.value = val;
+      input.classList.add('ai-fill');
+
+      // Trigger clip-path wipe
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          overlay.classList.add('active');
+        });
+      });
+    }, 350 + delay);
+  });
+}
+
+// ── Back to list
+function backToList() {
+  document.getElementById('entry-page').classList.remove('active');
+  document.getElementById('list-page').classList.remove('hidden');
+  AI_FIELDS.forEach(({ id }) => {
+    const input = document.getElementById(id);
+    if (input) { input.value = ''; input.classList.remove('ai-fill'); }
+    const overlay = document.querySelector(`.ai-overlay[data-for="${id}"]`);
+    if (overlay) overlay.classList.remove('active');
+  });
+}
+</script>
+</body>
+</html>
