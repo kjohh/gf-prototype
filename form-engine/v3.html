@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Engine v3 — HBL Template Setup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+
+    .screen { display: none; height: 100%; }
+    .screen.active { display: flex; }
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeIn 0.2s ease forwards; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin 0.9s linear infinite; }
+
+    .drop-zone { transition: all 0.2s; }
+    .drop-zone.over { border-color: #2563eb !important; background: #eff6ff !important; }
+
+    /* Field mapping row states */
+    .row-confirmed { background: #fff; }
+    .row-blank     { background: #fff; }
+    .row-review    { background: #fffbeb; }
+    .row-unknown   { background: #fef2f2; }
+
+    .row-confirmed:hover { background: #f8fafc; }
+    .row-blank:hover     { background: #f8fafc; }
+    .row-review:hover    { background: #fef3c7; }
+    .row-unknown:hover   { background: #fee2e2; }
+
+    /* GoFreight field select */
+    .gf-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 28px;
+    }
+    .gf-select:focus { outline: none; box-shadow: 0 0 0 2px #3b82f6; border-color: transparent; }
+
+    /* Settings radio */
+    .radio-option { cursor: pointer; transition: all 0.15s; }
+    .radio-option:hover { background: #f1f5f9; }
+    .radio-option.selected { background: #eff6ff; border-color: #3b82f6 !important; }
+    .radio-option.selected .radio-dot { background: #2563eb; }
+
+    /* HBL doc */
+    #hbl-doc table { border-collapse: collapse; width: 100%; }
+    #hbl-doc td, #hbl-doc th { border: 0.5px solid #333; padding: 3px 5px; vertical-align: top; }
+    #hbl-doc .lbl { font-size: 7px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 2px; }
+    #hbl-doc .val { font-size: 8.5px; font-weight: 500; }
+
+    /* Preview chat */
+    @keyframes blink { 0%,80%,100%{ opacity:.2; } 40%{ opacity:1; } }
+    .dot { width:6px; height:6px; background:#94a3b8; border-radius:50%; display:inline-block; animation:blink 1.4s infinite; }
+    .dot:nth-child(2){ animation-delay:.2s; }
+    .dot:nth-child(3){ animation-delay:.4s; }
+    .chat-input:focus { outline:none; box-shadow:0 0 0 2px #3b82f6; border-color:transparent; }
+
+    /* Progress bar in generation */
+    @keyframes progress { from { width: 0%; } to { width: 100%; } }
+    .progress-bar { animation: progress 1.8s ease-in-out forwards; }
+
+    /* Editable mapping cell */
+    .mapping-text { cursor: pointer; }
+    .mapping-text:hover { text-decoration: underline; text-decoration-style: dashed; }
+
+    /* Leave blank button */
+    .btn-leave-blank {
+      flex: 1; font-size: 0.75rem; padding: 0.5rem; border-radius: 0.5rem;
+      border: 1px solid #e5e7eb; color: #6b7280;
+      background: white; cursor: pointer; transition: all 0.15s;
+    }
+    .btn-leave-blank:hover { background: #f1f5f9; border-color: #9ca3af; }
+  </style>
+</head>
+<body class="bg-slate-100 overflow-hidden" style="height:100vh; display:flex; flex-direction:column;">
+
+  <!-- Nav -->
+  <header class="bg-white border-b border-gray-200 px-5 h-11 flex items-center justify-between flex-shrink-0 z-10">
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+      <div class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+        <span class="text-white font-bold leading-none" style="font-size:10px">GF</span>
+      </div>
+      <span>Tenant Settings</span>
+      <span class="text-gray-300 mx-0.5">/</span>
+      <span>Documents</span>
+      <span class="text-gray-300 mx-0.5">/</span>
+      <span class="text-gray-800 font-medium" id="nav-title">New Template</span>
+    </div>
+    <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">v3 Prototype · ACME Logistics</span>
+  </header>
+
+  <main class="flex-1 overflow-hidden relative">
+
+    <!-- ══════════════════════════════ SCREEN 1: UPLOAD ═══════════════════════ -->
+    <div id="s-upload" class="screen active flex-col items-center justify-center">
+      <div class="text-center mb-8 fade-in">
+        <h1 class="text-xl font-semibold text-gray-800 mb-1">Create HBL Template</h1>
+        <p class="text-sm text-gray-500">Upload your customer's HBL sample — AI will detect fields and suggest mappings automatically</p>
+      </div>
+
+      <div id="drop-zone" class="drop-zone w-96 border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer bg-white hover:border-blue-400 hover:bg-blue-50 fade-in" style="animation-delay:.05s">
+        <div id="drop-idle">
+          <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <p class="text-sm font-medium text-gray-700 mb-1">Drop file here, or click to upload</p>
+          <p class="text-xs text-gray-400">PDF, PNG, JPG supported</p>
+          <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg">
+        </div>
+        <div id="drop-loading" class="hidden">
+          <svg class="spin w-8 h-8 text-blue-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <p class="text-sm text-blue-600 font-medium">Analyzing document…</p>
+          <p class="text-xs text-gray-400 mt-1">Detecting fields and mapping to GoFreight data</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-gray-400 mt-4 fade-in" style="animation-delay:.1s">
+        Or use a
+        <button onclick="simulateUpload()" class="text-blue-500 underline underline-offset-2 hover:text-blue-700">sample HBL</button>
+        to try the flow
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════ SCREEN 2: REVIEW ═══════════════════════ -->
+    <div id="s-review" class="screen flex-col overflow-hidden">
+
+      <!-- Top bar (updated dynamically) -->
+      <div id="top-bar" class="border-b px-5 py-2.5 flex items-center gap-3 flex-shrink-0 bg-amber-50 border-amber-200">
+        <svg id="top-bar-icon" class="w-4 h-4 flex-shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p id="top-bar-text" class="text-xs text-amber-800">
+          AI detected <strong>23 fields</strong> from your document.
+          <strong id="confirm-count" class="text-green-700">18 confirmed</strong> ·
+          <strong id="review-count" class="text-amber-700">3 need review</strong> ·
+          <strong id="unknown-count" class="text-red-600">1 unidentified</strong> ·
+          <strong id="blank-count" class="text-gray-500">1 left blank</strong>
+          — Review the mappings below before generating.
+        </p>
+      </div>
+
+      <!-- Main content -->
+      <div class="flex-1 flex overflow-hidden">
+
+        <!-- Left: Document Settings -->
+        <div class="bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0" style="width:300px;">
+          <div class="p-5">
+            <h2 class="text-sm font-semibold text-gray-800 mb-4">Document Settings</h2>
+
+            <!-- Print Method -->
+            <div class="mb-5">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Print Method</p>
+              <div class="space-y-1.5">
+                <label class="radio-option flex items-center gap-2.5 p-2.5 rounded-lg border border-gray-200 selected" onclick="selectRadio(this, 'print')">
+                  <div class="radio-dot w-3.5 h-3.5 rounded-full border-2 border-blue-600 flex items-center justify-center flex-shrink-0">
+                    <div class="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                  </div>
+                  <span class="text-xs text-gray-700">Laser Printer (blank paper)</span>
+                </label>
+                <label class="radio-option flex items-center gap-2.5 p-2.5 rounded-lg border border-gray-200" onclick="selectRadio(this, 'print')">
+                  <div class="radio-dot w-3.5 h-3.5 rounded-full border-2 border-gray-300 flex-shrink-0"></div>
+                  <span class="text-xs text-gray-700">Dot Matrix (pre-printed form)</span>
+                </label>
+                <label class="radio-option flex items-center gap-2.5 p-2.5 rounded-lg border border-gray-200" onclick="selectRadio(this, 'print')">
+                  <div class="radio-dot w-3.5 h-3.5 rounded-full border-2 border-gray-300 flex-shrink-0"></div>
+                  <span class="text-xs text-gray-700">Other</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Paper Size -->
+            <div class="mb-5">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Paper Size</p>
+              <div class="flex gap-2">
+                <label class="radio-option flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 selected text-xs text-gray-700 font-medium" onclick="selectRadio(this, 'paper')">
+                  <div class="radio-dot w-3 h-3 rounded-full border-2 border-blue-600 flex items-center justify-center">
+                    <div class="w-1 h-1 rounded-full bg-blue-600"></div>
+                  </div>
+                  A4
+                </label>
+                <label class="radio-option flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 font-medium" onclick="selectRadio(this, 'paper')">
+                  <div class="radio-dot w-3 h-3 rounded-full border-2 border-gray-300"></div>
+                  Letter
+                </label>
+                <label class="radio-option flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 font-medium" onclick="selectRadio(this, 'paper')">
+                  <div class="radio-dot w-3 h-3 rounded-full border-2 border-gray-300"></div>
+                  Other
+                </label>
+              </div>
+            </div>
+
+            <!-- Container Info -->
+            <div class="mb-5">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Container Info Layout</p>
+              <div class="space-y-1.5">
+                <label class="radio-option flex items-start gap-2.5 p-2.5 rounded-lg border border-gray-200 selected" onclick="selectRadio(this, 'container')">
+                  <div class="radio-dot w-3.5 h-3.5 rounded-full border-2 border-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div class="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                  </div>
+                  <div>
+                    <span class="text-xs text-gray-700 font-medium">Default layout</span>
+                    <p class="text-xs text-gray-400 mt-0.5">Container No. → Seal No. → Type → PKGs → GW → CBM</p>
+                  </div>
+                </label>
+                <label class="radio-option flex items-center gap-2.5 p-2.5 rounded-lg border border-gray-200" onclick="selectRadio(this, 'container')">
+                  <div class="radio-dot w-3.5 h-3.5 rounded-full border-2 border-gray-300 flex-shrink-0"></div>
+                  <span class="text-xs text-gray-700">Custom layout</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Freight Display -->
+            <div class="mb-5">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Freight &amp; Charges Display</p>
+              <div class="space-y-1.5">
+                <label class="radio-option flex items-center gap-2.5 p-2.5 rounded-lg border border-gray-200 selected" onclick="selectRadio(this, 'freight')">
+                  <div class="radio-dot w-3.5 h-3.5 rounded-full border-2 border-blue-600 flex items-center justify-center flex-shrink-0">
+                    <div class="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                  </div>
+                  <span class="text-xs text-gray-700">Fixed "As Arranged"</span>
+                </label>
+                <label class="radio-option flex items-center gap-2.5 p-2.5 rounded-lg border border-gray-200" onclick="selectRadio(this, 'freight')">
+                  <div class="radio-dot w-3.5 h-3.5 rounded-full border-2 border-gray-300 flex-shrink-0"></div>
+                  <span class="text-xs text-gray-700">Pull from GoFreight data</span>
+                </label>
+                <label class="radio-option flex items-center gap-2.5 p-2.5 rounded-lg border border-gray-200" onclick="selectRadio(this, 'freight')">
+                  <div class="radio-dot w-3.5 h-3.5 rounded-full border-2 border-gray-300 flex-shrink-0"></div>
+                  <span class="text-xs text-gray-700">Editable input field</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Watermark -->
+            <div class="mb-2">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Watermark</p>
+              <div class="flex gap-2">
+                <label class="radio-option flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 selected text-xs text-gray-700 font-medium" onclick="selectRadio(this, 'watermark')">
+                  <div class="radio-dot w-3 h-3 rounded-full border-2 border-blue-600 flex items-center justify-center">
+                    <div class="w-1 h-1 rounded-full bg-blue-600"></div>
+                  </div>
+                  No
+                </label>
+                <label class="radio-option flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 font-medium" onclick="selectRadio(this, 'watermark')">
+                  <div class="radio-dot w-3 h-3 rounded-full border-2 border-gray-300"></div>
+                  Yes
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Field Mapping -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <div class="px-5 py-3 border-b border-gray-200 bg-white flex items-center justify-between flex-shrink-0">
+            <div>
+              <h2 class="text-sm font-semibold text-gray-800">Field Mapping</h2>
+              <p class="text-xs text-gray-400 mt-0.5">Define which GoFreight data each field pulls when printing. Click any row to edit.</p>
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-500">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span> Confirmed</span>
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gray-400 inline-block"></span> Leave blank</span>
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span> Needs review</span>
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-400 inline-block"></span> Unidentified</span>
+            </div>
+          </div>
+
+          <div class="flex-1 overflow-y-auto">
+            <table class="w-full text-sm border-collapse">
+              <thead class="sticky top-0 bg-gray-50 z-10">
+                <tr class="border-b border-gray-200">
+                  <th class="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide" style="width:32px"></th>
+                  <th class="text-left px-3 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide" style="width:200px">Field in Document</th>
+                  <th class="text-left px-3 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide" style="width:32px"></th>
+                  <th class="text-left px-3 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">GoFreight Data</th>
+                  <th class="text-left px-3 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wide" style="width:120px">AI Confidence</th>
+                </tr>
+              </thead>
+              <tbody id="mapping-tbody">
+                <!-- Injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="bg-white border-t border-gray-200 px-5 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-4">
+          <p class="text-xs text-gray-500"><span id="bottom-summary"></span></p>
+          <div id="unresolved-warning" class="hidden flex items-center gap-1.5 text-xs text-amber-600">
+            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span id="unresolved-text"></span>
+          </div>
+        </div>
+        <button onclick="generateTemplate()"
+          class="bg-blue-600 text-white text-sm px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          Generate Template
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════ SCREEN 2.5: GENERATING ════════════════════ -->
+    <div id="s-generating" class="screen flex-col items-center justify-center">
+      <div class="text-center">
+        <svg class="spin w-10 h-10 text-blue-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <h2 class="text-base font-semibold text-gray-800 mb-1">Generating template…</h2>
+        <p class="text-xs text-gray-400 mb-5">Building Jinja template from your field mappings</p>
+        <div class="w-72 h-1.5 bg-gray-200 rounded-full overflow-hidden mx-auto">
+          <div class="progress-bar h-full bg-blue-500 rounded-full"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SCREEN 3: PREVIEW ═════════════════════ -->
+    <div id="s-preview" class="screen">
+
+      <!-- Left: Chat -->
+      <div class="flex flex-col bg-white border-r border-gray-200" style="width:360px; flex-shrink:0;">
+        <div class="px-5 py-3 border-b border-gray-100 flex items-center gap-2">
+          <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+          <span class="text-sm font-medium text-gray-700">Template ready</span>
+          <span class="text-xs text-gray-400 ml-auto">HBL · A4 · Laser</span>
+        </div>
+        <div id="preview-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-3"></div>
+        <div class="px-4 py-3 border-t border-gray-100 bg-gray-50">
+          <div class="flex gap-2">
+            <input id="preview-input" type="text" placeholder="Tell me what to adjust…"
+              class="chat-input flex-1 text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-800 placeholder-gray-400"
+              onkeydown="if(event.key==='Enter') sendPreviewMsg()" />
+            <button onclick="sendPreviewMsg()" class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: PDF Preview -->
+      <div class="flex-1 flex flex-col overflow-hidden bg-gray-300">
+        <div class="bg-white border-b border-gray-200 px-5 py-2 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-gray-500">Test data:</span>
+            <select id="test-data-select" onchange="switchTestData()"
+              class="text-xs border border-gray-200 rounded-md px-2 py-1 text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400">
+              <option value="0">Shipment #1 — SHA → LAX (3 containers)</option>
+              <option value="1">Shipment #2 — KHH → JFK (1 container)</option>
+            </select>
+          </div>
+          <button id="save-btn" onclick="saveTemplate()"
+            class="bg-blue-600 text-white text-xs px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            Save Template
+          </button>
+        </div>
+        <div class="flex-1 overflow-auto flex justify-center py-8 px-6">
+          <div id="hbl-doc" class="bg-white shadow-xl"
+            style="width:595px; min-height:842px; padding:30px 32px; box-sizing:border-box; font-family:Arial,sans-serif; font-size:8.5px; line-height:1.35; color:#111;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Mapping editor popup -->
+  <div id="mapping-overlay" class="hidden fixed inset-0 z-40" onclick="closeMappingEditor()"></div>
+  <div id="mapping-editor" class="hidden fixed z-50 bg-white rounded-xl shadow-2xl border border-gray-200 p-4" style="width:300px;">
+    <p class="text-xs text-gray-400 mb-1">Detected field</p>
+    <p id="editor-field-name" class="text-sm font-semibold text-gray-800 mb-3"></p>
+
+    <p class="text-xs font-medium text-gray-500 mb-1.5">GoFreight data field</p>
+    <select id="editor-select" class="gf-select w-full text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-800 bg-white mb-1 focus:outline-none focus:ring-2 focus:ring-blue-400"></select>
+    <p class="text-xs text-gray-400 mb-3">This field will pull the selected data from GoFreight when printing.</p>
+
+    <div class="flex gap-2">
+      <button onclick="closeMappingEditor()" class="flex-1 text-xs py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">Cancel</button>
+      <button onclick="leaveBlankMapping()" class="btn-leave-blank">Leave blank</button>
+      <button onclick="confirmMappingEdit()" class="flex-1 text-xs py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium">Confirm</button>
+    </div>
+  </div>
+
+  <!-- Save toast -->
+  <div id="save-toast"
+    class="fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 opacity-0 pointer-events-none"
+    style="transition: opacity 0.3s;">
+    <svg class="w-4 h-4 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    </svg>
+    Template saved — ready to apply in tenant settings
+  </div>
+
+<script>
+// ─── GoFreight Field Options ──────────────────────────────────────────────────
+const GF_FIELDS = [
+  // HBL core
+  'HBL No.', 'Booking No.', 'Filing No.', 'Customer Ref. No.',
+  // Trade partners
+  'Actual Shipper', 'Consignee', 'Notify Party',
+  'Forwarding Agent', 'HB/L Agent',
+  // Routing
+  'Pre-carriage by', 'Vessel / Voyage',
+  'POR (Place of Receipt)', 'POL (Port of Loading)',
+  'POD (Port of Discharge)', 'DEL (Place of Delivery)',
+  'Final Destination',
+  // Container
+  'Container No. / Seal No. / Marks', 'Container Size & Packages',
+  'Container Description', 'Container Gross Weight', 'Container Measurement',
+  // HBL fields
+  'Service Term', 'Selling Freight (Prepaid / Collect)',
+  'ITN No.', 'Express B/L Flag',
+  'Clean on Board', 'Number of Original B/L',
+  // Office
+  'Place of Issue', 'Date of Issue', 'Signature (As Agent for Carrier)',
+];
+
+// ─── Field Mapping Data ───────────────────────────────────────────────────────
+// status: 'confirmed' | 'blank' | 'review' | 'unknown'
+let mappings = [
+  // ── High confidence ──────────────────────────────────────────────────────
+  { field: 'B/L NO.',                              status: 'confirmed', gf: 'HBL No.',                                confidence: 99, source: 'HBL' },
+  { field: 'SHIPPER / EXPORTER',                   status: 'confirmed', gf: 'Actual Shipper',                         confidence: 98, source: 'HBL' },
+  { field: 'CONSIGNEE',                            status: 'confirmed', gf: 'Consignee',                              confidence: 98, source: 'HBL' },
+  { field: 'NOTIFY PARTY',                         status: 'confirmed', gf: 'Notify Party',                           confidence: 97, source: 'HBL' },
+  { field: 'S/O NO.',                              status: 'confirmed', gf: 'Booking No.',                            confidence: 96, source: 'HBL' },
+  { field: 'VESSEL / VOYAGE',                      status: 'confirmed', gf: 'Vessel / Voyage',                        confidence: 96, source: 'MBL' },
+  { field: 'PORT OF LOADING',                      status: 'confirmed', gf: 'POL (Port of Loading)',                  confidence: 99, source: 'MBL' },
+  { field: 'PORT OF DISCHARGE',                    status: 'confirmed', gf: 'POD (Port of Discharge)',                confidence: 99, source: 'HBL' },
+  { field: 'PLACE OF RECEIPT',                     status: 'confirmed', gf: 'POR (Place of Receipt)',                 confidence: 97, source: 'HBL' },
+  { field: 'PLACE OF DELIVERY',                    status: 'confirmed', gf: 'DEL (Place of Delivery)',                confidence: 97, source: 'HBL' },
+  { field: 'MARKS AND NUMBERS / CONTAINER NO.',    status: 'confirmed', gf: 'Container No. / Seal No. / Marks',      confidence: 95, source: 'HBL Container' },
+  { field: 'NO. OF PACKAGES',                      status: 'confirmed', gf: 'Container Size & Packages',             confidence: 95, source: 'HBL Container' },
+  { field: 'DESCRIPTION OF PACKAGES AND GOODS',    status: 'confirmed', gf: 'Container Description',                 confidence: 94, source: 'HBL Container' },
+  { field: 'GROSS WEIGHT',                         status: 'confirmed', gf: 'Container Gross Weight',                confidence: 99, source: 'HBL Container' },
+  { field: 'MEASUREMENT',                          status: 'confirmed', gf: 'Container Measurement',                 confidence: 98, source: 'HBL Container' },
+  { field: 'SERVICE TERM',                         status: 'confirmed', gf: 'Service Term',                          confidence: 93, source: 'HBL' },
+  { field: 'FREIGHT PREPAID / FREIGHT COLLECT',    status: 'confirmed', gf: 'Selling Freight (Prepaid / Collect)',   confidence: 92, source: 'HBL' },
+  { field: 'NUMBER OF ORIGINAL B/L',               status: 'confirmed', gf: 'Number of Original B/L',               confidence: 91, source: 'HBL' },
+  // ── Needs review ─────────────────────────────────────────────────────────
+  { field: 'EXPORT REFERENCES',                    status: 'review',    gf: 'Booking No.',                           confidence: 61, source: 'HBL',
+    note: 'Some customers fill both Booking No. and Customer Ref. No. — confirm which to use.' },
+  { field: 'FOR TRANSSHIPMENT TO',                 status: 'review',    gf: 'Final Destination',                     confidence: 55, source: 'HBL',
+    note: 'Usually maps to Final Destination but may differ — please verify.' },
+  { field: 'PRE-CARRIAGE BY',                      status: 'review',    gf: 'Pre-carriage by',                       confidence: 68, source: 'MBL',
+    note: 'Field was added to MBL recently (late last year). Confirm if your tenant has data.' },
+  // ── Unidentified ─────────────────────────────────────────────────────────
+  { field: 'OUR REF.',                             status: 'unknown',   gf: '',                                       confidence: 30, source: '?',
+    note: 'Could be Filing No. (MBL) or internal reference — need to confirm.' },
+  // ── AI set to blank ───────────────────────────────────────────────────────
+  { field: 'POINT AND COUNTRY OF ORIGIN',          status: 'blank',     gf: '',                                       confidence: 10, source: '?',
+    note: 'AI set to leave blank — usually not required on HBLs. Change if this customer needs it filled.' },
+];
+
+let editingRowIdx = null;
+
+// ─── Screens ──────────────────────────────────────────────────────────────────
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => { s.style.display='none'; s.classList.remove('active'); });
+  const el = document.getElementById(id);
+  el.style.display = 'flex'; el.classList.add('active');
+}
+
+// ─── Upload ───────────────────────────────────────────────────────────────────
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('over'); simulateUpload(); });
+fileInput.addEventListener('change', () => { if (fileInput.files.length) simulateUpload(); });
+
+function simulateUpload() {
+  document.getElementById('drop-idle').classList.add('hidden');
+  document.getElementById('drop-loading').classList.remove('hidden');
+  setTimeout(showReview, 2400);
+}
+
+// ─── Review Screen ────────────────────────────────────────────────────────────
+function showReview() {
+  goTo('s-review');
+  renderMappingTable();
+  updateSummary();
+}
+
+function renderMappingTable() {
+  const tbody = document.getElementById('mapping-tbody');
+  tbody.innerHTML = mappings.map((m, i) => `
+    <tr class="border-b border-gray-100 cursor-pointer ${rowClass(m.status)}" onclick="openMappingEditor(${i}, event)">
+      <td class="px-4 py-3 text-center">
+        ${statusDot(m.status)}
+      </td>
+      <td class="px-3 py-3">
+        <span class="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-0.5 rounded">${m.field}</span>
+      </td>
+      <td class="px-3 py-3 text-gray-400 text-xs">→</td>
+      <td class="px-3 py-3" id="gf-cell-${i}">
+        ${gfCell(m, i)}
+      </td>
+      <td class="px-3 py-3">
+        ${confidenceBadge(m)}
+      </td>
+    </tr>`).join('');
+}
+
+function rowClass(status) {
+  if (status === 'confirmed') return 'row-confirmed';
+  if (status === 'blank')     return 'row-blank';
+  if (status === 'review')    return 'row-review';
+  return 'row-unknown';
+}
+
+function statusDot(status) {
+  if (status === 'confirmed') return '<div class="w-2.5 h-2.5 rounded-full bg-green-500 mx-auto"></div>';
+  if (status === 'blank')     return '<div class="w-2.5 h-2.5 rounded-full bg-gray-400 mx-auto"></div>';
+  if (status === 'review')    return '<div class="w-2.5 h-2.5 rounded-full bg-amber-400 mx-auto"></div>';
+  return '<div class="w-2.5 h-2.5 rounded-full bg-red-400 mx-auto"></div>';
+}
+
+function gfCell(m) {
+  if (status === 'blank' || m.status === 'blank') {
+    return `<div>
+      <span class="text-xs text-gray-400 italic flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+        Leave blank
+      </span>
+      ${m.note ? `<p class="text-xs text-gray-400 mt-0.5 ml-5 opacity-75">${m.note}</p>` : ''}
+    </div>`;
+  }
+  if (m.status === 'unknown') {
+    return `<div>
+      <span class="text-xs text-red-400 italic flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Not identified — click to assign
+      </span>
+      ${m.note ? `<p class="text-xs text-red-400 mt-0.5 ml-5 opacity-75">${m.note}</p>` : ''}
+    </div>`;
+  }
+  if (m.status === 'review') {
+    return `<div>
+      <span class="text-xs text-amber-700 font-medium flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        ${m.gf} — please verify
+      </span>
+      ${m.note ? `<p class="text-xs text-amber-600 mt-0.5 ml-5 opacity-75">${m.note}</p>` : ''}
+    </div>`;
+  }
+  // confirmed
+  return `<span class="text-xs text-gray-700 font-medium flex items-center gap-1.5">
+    <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    ${m.gf}
+  </span>`;
+}
+
+function confidenceBadge(m) {
+  if (m.status === 'unknown') return `<span class="text-xs text-red-400">—</span>`;
+  if (m.status === 'blank')   return `<span class="text-xs text-gray-400">—</span>`;
+  const color = m.confidence >= 90 ? 'text-green-600' : m.confidence >= 60 ? 'text-amber-600' : 'text-red-500';
+  return `<span class="text-xs font-medium ${color}">${m.confidence}%</span>`;
+}
+
+// ─── Mapping Editor ───────────────────────────────────────────────────────────
+function openMappingEditor(idx, event) {
+  editingRowIdx = idx;
+  const m = mappings[idx];
+
+  document.getElementById('editor-field-name').textContent = m.field;
+
+  const sel = document.getElementById('editor-select');
+  sel.innerHTML = GF_FIELDS.map(f =>
+    `<option value="${f}" ${f === m.gf ? 'selected' : ''}>${f}</option>`
+  ).join('');
+
+  const editor = document.getElementById('mapping-editor');
+  const rect = event.currentTarget.getBoundingClientRect();
+  const top = Math.min(rect.bottom + 4, window.innerHeight - 240);
+  const left = Math.min(event.clientX - 20, window.innerWidth - 320);
+  editor.style.top = top + 'px';
+  editor.style.left = left + 'px';
+
+  document.getElementById('mapping-overlay').classList.remove('hidden');
+  editor.classList.remove('hidden');
+}
+
+function closeMappingEditor() {
+  document.getElementById('mapping-overlay').classList.add('hidden');
+  document.getElementById('mapping-editor').classList.add('hidden');
+  editingRowIdx = null;
+}
+
+function confirmMappingEdit() {
+  if (editingRowIdx === null) return;
+  const newVal = document.getElementById('editor-select').value;
+  mappings[editingRowIdx].gf = newVal;
+  mappings[editingRowIdx].status = 'confirmed';
+  mappings[editingRowIdx].confidence = 100;
+  mappings[editingRowIdx].note = null;
+  closeMappingEditor();
+  renderMappingTable();
+  updateSummary();
+}
+
+function leaveBlankMapping() {
+  if (editingRowIdx === null) return;
+  mappings[editingRowIdx].gf = '';
+  mappings[editingRowIdx].status = 'blank';
+  mappings[editingRowIdx].confidence = 100;
+  mappings[editingRowIdx].note = null;
+  closeMappingEditor();
+  renderMappingTable();
+  updateSummary();
+}
+
+// ─── Summary ──────────────────────────────────────────────────────────────────
+function updateSummary() {
+  const confirmed = mappings.filter(m => m.status === 'confirmed').length;
+  const blank     = mappings.filter(m => m.status === 'blank').length;
+  const review    = mappings.filter(m => m.status === 'review').length;
+  const unknown   = mappings.filter(m => m.status === 'unknown').length;
+  const unresolved = review + unknown;
+
+  // Top bar counts
+  document.getElementById('confirm-count').textContent = `${confirmed} confirmed`;
+  document.getElementById('review-count').textContent  = `${review} need review`;
+  document.getElementById('unknown-count').textContent = `${unknown} unidentified`;
+
+  const blankEl = document.getElementById('blank-count');
+  if (blank > 0) {
+    blankEl.textContent = `${blank} left blank`;
+    blankEl.classList.remove('hidden');
+    // hide separator before blank count if needed
+  } else {
+    blankEl.classList.add('hidden');
+  }
+
+  // Top bar state
+  const topBar = document.getElementById('top-bar');
+  if (unresolved === 0) {
+    topBar.className = 'border-b px-5 py-2.5 flex items-center gap-3 flex-shrink-0 bg-green-50 border-green-200';
+    document.getElementById('top-bar-icon').className = 'w-4 h-4 flex-shrink-0 text-green-500';
+    document.getElementById('top-bar-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+    document.getElementById('top-bar-text').className = 'text-xs text-green-800';
+  } else {
+    topBar.className = 'border-b px-5 py-2.5 flex items-center gap-3 flex-shrink-0 bg-amber-50 border-amber-200';
+    document.getElementById('top-bar-icon').className = 'w-4 h-4 flex-shrink-0 text-amber-500';
+    document.getElementById('top-bar-icon').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+    document.getElementById('top-bar-text').className = 'text-xs text-amber-800';
+  }
+
+  // Bottom summary
+  let parts = [`<strong class="text-green-700">${confirmed}</strong> fields mapped`];
+  if (blank   > 0) parts.push(`<strong class="text-gray-500">${blank} left blank</strong>`);
+  if (review  > 0) parts.push(`<strong class="text-amber-600">${review} to verify</strong>`);
+  if (unknown > 0) parts.push(`<strong class="text-red-500">${unknown} unidentified</strong>`);
+  if (unresolved === 0) parts.push(`<span class="text-green-600">All fields resolved ✓</span>`);
+  document.getElementById('bottom-summary').innerHTML = parts.join(' · ');
+
+  // Unresolved warning near Generate button
+  const warn = document.getElementById('unresolved-warning');
+  if (unresolved > 0) {
+    warn.classList.remove('hidden');
+    document.getElementById('unresolved-text').textContent =
+      `${unresolved} field${unresolved > 1 ? 's' : ''} still need${unresolved === 1 ? 's' : ''} your input — you can still generate`;
+  } else {
+    warn.classList.add('hidden');
+  }
+}
+
+// ─── Radio buttons ────────────────────────────────────────────────────────────
+function selectRadio(el, group) {
+  const container = el.parentElement;
+  container.querySelectorAll('.radio-option').forEach(opt => {
+    opt.classList.remove('selected');
+    const dot = opt.querySelector('.radio-dot');
+    dot.classList.remove('border-blue-600');
+    dot.classList.add('border-gray-300');
+    const inner = dot.querySelector('div');
+    if (inner) inner.remove();
+  });
+  el.classList.add('selected');
+  const dot = el.querySelector('.radio-dot');
+  dot.classList.add('border-blue-600');
+  dot.classList.remove('border-gray-300');
+  if (!dot.querySelector('div')) {
+    const inner = document.createElement('div');
+    inner.className = 'w-1.5 h-1.5 rounded-full bg-blue-600';
+    dot.appendChild(inner);
+  }
+}
+
+// ─── Generate ─────────────────────────────────────────────────────────────────
+function generateTemplate() {
+  goTo('s-generating');
+  setTimeout(startPreview, 2000);
+}
+
+// ─── Preview ─────────────────────────────────────────────────────────────────
+const testData = [
+  {
+    blNo: 'ACMSHA240001',
+    shipper: 'SHANGHAI TRADE CO., LTD.\n123 Pudong Avenue, Pudong, Shanghai 200120, China\nTel: +86-21-5551-0000',
+    consignee: 'PACIFIC IMPORT LLC\n500 Harbor Blvd, Los Angeles\nCA 90001, USA',
+    notifyParty: 'SAME AS CONSIGNEE',
+    vessel: 'COSCO FORTUNE', voyage: '024E', flag: 'CHINA',
+    pol: 'SHANGHAI, CHINA', pod: 'LOS ANGELES, USA', delivery: 'LOS ANGELES, USA',
+    containers: [
+      { no: 'CSLU1234567', seal: 'SH991001', type: "20'GP", pkgs: '120 CTNS', gw: '2,400.00 KGS', cbm: '18.500 CBM' },
+      { no: 'CSLU2345678', seal: 'SH991002', type: "40'HQ", pkgs: '200 CTNS', gw: '4,100.00 KGS', cbm: '42.300 CBM' },
+      { no: 'CSLU3456789', seal: 'SH991003', type: "40'HQ", pkgs: '180 CTNS', gw: '3,800.00 KGS', cbm: '39.200 CBM' },
+    ],
+    desc: 'ELECTRONIC COMPONENTS\nAS PER PROFORMA INVOICE NO. PI-2024-001\nSHIPPER\'S LOAD, COUNT AND SEAL',
+    freight: 'AS ARRANGED',
+    issuePlace: 'SHANGHAI', issueDate: '15 MAR 2024', originals: 'THREE (3)',
+  },
+  {
+    blNo: 'ACMKHH240002',
+    shipper: 'TAIWAN EXPORT CO., LTD.\n88 Minsheng Rd, Kaohsiung 80000, Taiwan\nTel: +886-7-333-1000',
+    consignee: 'EAST COAST TRADING INC.\n200 42nd Street, New York\nNY 10036, USA',
+    notifyParty: 'SAME AS CONSIGNEE',
+    vessel: 'EVER GOLDEN', voyage: '0112N', flag: 'PANAMA',
+    pol: 'KAOHSIUNG, TAIWAN', pod: 'NEW YORK, USA', delivery: 'NEW YORK, USA',
+    containers: [
+      { no: 'EGHU4561234', seal: 'KH220011', type: "40'HQ", pkgs: '350 CTNS', gw: '6,200.00 KGS', cbm: '62.500 CBM' },
+    ],
+    desc: 'PLASTIC PARTS\nAS PER PROFORMA INVOICE NO. PI-2024-002\nFREIGHT PREPAID',
+    freight: 'AS ARRANGED',
+    issuePlace: 'KAOHSIUNG', issueDate: '20 MAR 2024', originals: 'THREE (3)',
+  },
+];
+
+let consigneeFontSize = '8.5px';
+
+function startPreview() {
+  goTo('s-preview');
+  renderHBL(0);
+  setTimeout(() => {
+    addPreviewMsg('ai',
+      '✅ Template generated successfully!\n\nThe preview on the right uses <strong>Shipment #1 (SHA → LAX)</strong> test data. Switch between test datasets to verify dynamic fields render correctly.\n\nIf anything looks off, just tell me what to adjust.'
+    );
+  }, 200);
+}
+
+function switchTestData() {
+  const idx = parseInt(document.getElementById('test-data-select').value);
+  renderHBL(idx);
+  addPreviewMsg('ai', `Switched to <strong>Shipment #${idx + 1}</strong> test data. Please verify all fields are pulling in correctly.`);
+}
+
+// Preview chat rules
+const previewRules = [
+  { kw: ['font','bigger','larger','字大','放大','too small'], action: 'fontBigger',  reply: 'Done — I\'ve increased the Consignee field font size. Check the preview on the right.' },
+  { kw: ['smaller','字小','縮小'],                            action: 'fontSmaller', reply: 'Done — Consignee font size reduced.' },
+  { kw: ['watermark','浮水印'],                               action: 'watermark',   reply: 'Added an ACME watermark to the bottom-right corner. Let me know if you\'d like to adjust the position or opacity.' },
+  { kw: ['save','儲存','done','完成'],                         action: 'save',        reply: '' },
+];
+
+function sendPreviewMsg() {
+  const inp = document.getElementById('preview-input');
+  const text = inp.value.trim(); if (!text) return;
+  inp.value = '';
+  addPreviewMsg('user', text);
+  const lower = text.toLowerCase();
+  const rule = previewRules.find(r => r.kw.some(k => lower.includes(k)));
+  const reply = rule?.reply ?? 'Got it — I\'ve updated the template based on your feedback. Check the preview and let me know if you need further adjustments.';
+  setTimeout(() => {
+    if (rule?.action === 'fontBigger')  { consigneeFontSize = '11px'; document.getElementById('consignee-val').style.fontSize = '11px'; }
+    if (rule?.action === 'fontSmaller') { consigneeFontSize = '7.5px'; document.getElementById('consignee-val').style.fontSize = '7.5px'; }
+    if (rule?.action === 'watermark')   { addWatermark(); }
+    if (rule?.action === 'save')        { saveTemplate(); return; }
+    if (reply) addPreviewMsg('ai', reply);
+  }, 650);
+}
+
+function addWatermark() {
+  const doc = document.getElementById('hbl-doc');
+  if (!document.getElementById('wm')) {
+    const wm = document.createElement('div');
+    wm.id = 'wm';
+    wm.style.cssText = 'position:absolute;bottom:40px;right:40px;font-size:24px;font-weight:900;color:rgba(0,0,0,0.06);transform:rotate(-20deg);letter-spacing:2px;pointer-events:none;';
+    wm.textContent = 'ACME LOGISTICS';
+    doc.style.position = 'relative';
+    doc.appendChild(wm);
+  }
+}
+
+function saveTemplate() {
+  const toast = document.getElementById('save-toast');
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+  const btn = document.getElementById('save-btn');
+  btn.textContent = '✓ Saved';
+  btn.className = 'bg-green-600 text-white text-xs px-4 py-1.5 rounded-lg font-medium cursor-default';
+}
+
+// ─── HBL Render ──────────────────────────────────────────────────────────────
+function renderHBL(idx) {
+  const d = testData[idx];
+  document.getElementById('hbl-doc').innerHTML = `
+    <table><tr><td colspan="3" style="border:none; padding:0 0 10px 0;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #111; padding-bottom:8px;">
+        <div>
+          <div style="font-size:15px; font-weight:900; letter-spacing:0.5px;">ACME LOGISTICS CO., LTD.</div>
+          <div style="font-size:7px; color:#666; margin-top:2px; letter-spacing:0.5px;">AS AGENT FOR THE CARRIER</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:7px; color:#666; text-transform:uppercase; letter-spacing:0.3px;">House Bill of Lading</div>
+          <div style="font-size:13px; font-weight:900; color:#1d4ed8; letter-spacing:0.5px;">${d.blNo}</div>
+          <div style="font-size:7px; color:#999; margin-top:1px;">NON-NEGOTIABLE UNLESS CONSIGNED TO ORDER</div>
+        </div>
+      </div>
+    </td></tr></table>
+    <table>
+      <tr>
+        <td style="width:55%"><span class="lbl">Shipper / Exporter</span><div class="val" style="white-space:pre-line; font-size:8px;">${d.shipper}</div></td>
+        <td>
+          <span class="lbl">Booking No.</span><div class="val">${d.blNo}</div>
+          <div style="margin-top:5px"><span class="lbl">Export Reference</span><div class="val">${d.blNo}</div></div>
+          <div style="margin-top:5px"><span class="lbl">Service Contract No.</span><div class="val">&nbsp;</div></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="lbl">Consignee</span><div class="val" id="consignee-val" style="white-space:pre-line; font-size:${consigneeFontSize}; transition:font-size .3s;">${d.consignee}</div></td>
+        <td><span class="lbl">Also Notify / Routing Instructions</span><div class="val" style="font-size:8px;">${d.notifyParty}</div></td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td style="width:25%"><span class="lbl">Pre-carriage by</span><div class="val">&nbsp;</div></td>
+        <td style="width:35%"><span class="lbl">Place of Receipt</span><div class="val">${d.pol}</div></td>
+        <td><span class="lbl">B/L Type</span><div class="val">Original</div></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div style="display:flex;">
+            <div style="flex:3; border-right:0.5px solid #333; padding-right:5px;"><span class="lbl">Ocean Vessel &amp; Voyage No.</span><div class="val" style="font-weight:700;">${d.vessel} / V.${d.voyage}</div></div>
+            <div style="flex:1; padding-left:5px;"><span class="lbl">Flag</span><div class="val">${d.flag}</div></div>
+          </div>
+        </td>
+        <td><span class="lbl">Port of Loading</span><div class="val" style="font-weight:700;">${d.pol}</div></td>
+      </tr>
+      <tr>
+        <td colspan="2"><span class="lbl">Port of Discharge</span><div class="val" style="font-weight:700;">${d.pod}</div></td>
+        <td><span class="lbl">Place of Delivery</span><div class="val" style="font-weight:700;">${d.delivery}</div></td>
+      </tr>
+    </table>
+    <table>
+      <thead>
+        <tr style="background:#f5f5f5;">
+          <th style="text-align:left; font-size:7px; font-weight:700; padding:3px 5px;">CONTAINER NO.</th>
+          <th style="text-align:left; font-size:7px; font-weight:700; padding:3px 5px;">SEAL NO.</th>
+          <th style="text-align:left; font-size:7px; font-weight:700; padding:3px 5px;">TYPE</th>
+          <th style="text-align:left; font-size:7px; font-weight:700; padding:3px 5px;">NO. OF PKGS</th>
+          <th style="text-align:right; font-size:7px; font-weight:700; padding:3px 5px;">GROSS WEIGHT</th>
+          <th style="text-align:right; font-size:7px; font-weight:700; padding:3px 5px;">MEASUREMENT</th>
+        </tr>
+      </thead>
+      <tbody>${d.containers.map(c => `
+        <tr>
+          <td style="font-family:monospace; font-size:8px;">${c.no}</td>
+          <td style="font-size:8px;">${c.seal}</td>
+          <td style="font-size:8px;">${c.type}</td>
+          <td style="font-size:8px;">${c.pkgs}</td>
+          <td style="font-size:8px; text-align:right;">${c.gw}</td>
+          <td style="font-size:8px; text-align:right;">${c.cbm}</td>
+        </tr>`).join('')}</tbody>
+    </table>
+    <table>
+      <tr>
+        <td style="width:28%"><span class="lbl">Marks &amp; Numbers</span><div class="val" style="font-size:8px;">AS PER INVOICE</div></td>
+        <td><span class="lbl">Description of Packages and Goods</span><div class="val" style="white-space:pre-line; font-size:8px;">${d.desc}</div></td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td style="width:50%"><span class="lbl">Freight &amp; Charges</span><div class="val" style="font-weight:700;">${d.freight}</div></td>
+        <td style="width:25%; text-align:center;"><span class="lbl">Prepaid</span><div class="val">&nbsp;</div></td>
+        <td style="width:25%; text-align:center;"><span class="lbl">Collect</span><div class="val">&nbsp;</div></td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td style="width:40%"><span class="lbl">Place and Date of Issue</span><div class="val">${d.issuePlace}, ${d.issueDate}</div></td>
+        <td style="width:30%"><span class="lbl">Number of Original B(s)/L</span><div class="val">${d.originals}</div></td>
+        <td style="text-align:center;"><span class="lbl" style="display:block; margin-bottom:22px;">Signed for the Carrier</span>
+          <div style="border-top:0.5px solid #333; padding-top:3px; font-size:7px; color:#666; text-align:center;">ACME LOGISTICS CO., LTD. — Authorized Signature</div>
+        </td>
+      </tr>
+    </table>`;
+}
+
+// ─── Preview Chat Helpers ─────────────────────────────────────────────────────
+function addPreviewMsg(role, text) {
+  const c = document.getElementById('preview-messages');
+  if (role === 'ai') {
+    showTyping(() => {
+      removeTyping();
+      const div = document.createElement('div');
+      div.className = 'flex gap-2 fade-in';
+      div.innerHTML = `
+        <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <span class="text-white font-bold leading-none" style="font-size:9px">AI</span>
+        </div>
+        <div class="flex-1 bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-3 py-2.5 text-xs text-gray-800 leading-relaxed shadow-sm" style="white-space:pre-line;">${text}</div>`;
+      c.appendChild(div); c.scrollTop = c.scrollHeight;
+    }, 700);
+  } else {
+    const div = document.createElement('div');
+    div.className = 'flex justify-end fade-in';
+    div.innerHTML = `<div class="max-w-xs bg-blue-600 text-white rounded-2xl rounded-tr-sm px-3 py-2 text-xs leading-relaxed">${text}</div>`;
+    c.appendChild(div); c.scrollTop = c.scrollHeight;
+  }
+}
+
+function showTyping(cb, delay) {
+  const c = document.getElementById('preview-messages');
+  const t = document.createElement('div');
+  t.id = 'typing'; t.className = 'flex gap-2 fade-in';
+  t.innerHTML = `
+    <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+      <span class="text-white font-bold leading-none" style="font-size:9px">AI</span>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-3 py-2.5 shadow-sm flex items-center gap-1">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>`;
+  c.appendChild(t); c.scrollTop = c.scrollHeight;
+  setTimeout(cb, delay);
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing');
+  if (el) el.remove();
+}
+</script>
+</body>
+</html>

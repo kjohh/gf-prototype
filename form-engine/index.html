@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Engine — HBL Template Setup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+
+    .screen { display: none; height: 100%; }
+    .screen.active { display: flex; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in { animation: fadeSlideIn 0.25s ease forwards; }
+
+    @keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+    .dot { width: 6px; height: 6px; background: #94a3b8; border-radius: 50%; display: inline-block; animation: blink 1.4s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin 0.9s linear infinite; }
+
+    .drop-zone { transition: all 0.2s; }
+    .drop-zone.over { border-color: #2563eb !important; background: #eff6ff !important; }
+
+    /* HBL Document */
+    #hbl-doc table { border-collapse: collapse; width: 100%; }
+    #hbl-doc td, #hbl-doc th { border: 0.5px solid #333; padding: 3px 5px; vertical-align: top; }
+    #hbl-doc .label { font-size: 7px; color: #666; text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 2px; }
+    #hbl-doc .val { font-size: 8.5px; font-weight: 500; }
+
+    .chat-input:focus { outline: none; box-shadow: 0 0 0 2px #3b82f6; border-color: transparent; }
+  </style>
+</head>
+<body class="bg-slate-100 overflow-hidden" style="height:100vh; display:flex; flex-direction:column;">
+
+  <!-- ── Nav ─────────────────────────────────────────────── -->
+  <header class="bg-white border-b border-gray-200 px-5 h-11 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+      <div class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+        <span class="text-white font-bold leading-none" style="font-size:10px">GF</span>
+      </div>
+      <span>Tenant Settings</span>
+      <span class="text-gray-300 mx-0.5">/</span>
+      <span>Documents</span>
+      <span class="text-gray-300 mx-0.5">/</span>
+      <span class="text-gray-800 font-medium">New Template</span>
+    </div>
+    <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">Prototype · ACME Logistics</span>
+  </header>
+
+  <main class="flex-1 overflow-hidden relative">
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN 1: UPLOAD                                   -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="s-upload" class="screen active flex-col items-center justify-center">
+      <div class="text-center mb-8 animate-in">
+        <h1 class="text-xl font-semibold text-gray-800 mb-1">建立 HBL 客製化 Template</h1>
+        <p class="text-sm text-gray-500">上傳客戶提供的 HBL 範本，AI 會引導你完成所有設定</p>
+      </div>
+
+      <div id="drop-zone" class="drop-zone w-96 border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center cursor-pointer bg-white hover:border-blue-400 hover:bg-blue-50 animate-in" style="animation-delay:.05s">
+        <div id="drop-idle">
+          <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <p class="text-sm font-medium text-gray-700 mb-1">拖曳檔案到這裡，或點擊上傳</p>
+          <p class="text-xs text-gray-400">支援 PDF、PNG、JPG</p>
+          <input type="file" id="file-input" class="hidden" accept=".pdf,.png,.jpg,.jpeg">
+        </div>
+        <div id="drop-loading" class="hidden">
+          <svg class="spin w-8 h-8 text-blue-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <p class="text-sm text-blue-600 font-medium">AI 分析中…</p>
+          <p class="text-xs text-gray-400 mt-1">正在識別 HBL 欄位結構</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-gray-400 mt-4 animate-in" style="animation-delay:.1s">
+        也可以使用
+        <button onclick="simulateUpload()" class="text-blue-500 underline underline-offset-2 hover:text-blue-700">範例 HBL</button>
+        快速體驗
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN 2: Q&A                                      -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="s-qa" class="screen">
+
+      <!-- Left: Chat -->
+      <div class="flex flex-col bg-white border-r border-gray-200" style="width:420px; flex-shrink:0;">
+        <!-- Progress -->
+        <div class="px-5 pt-4 pb-3 border-b border-gray-100">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-gray-500">設定進度</span>
+            <span id="qa-progress-text" class="text-xs text-blue-600 font-medium">0 / 6</span>
+          </div>
+          <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div id="qa-progress-bar" class="h-full bg-blue-500 rounded-full transition-all duration-500" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-3"></div>
+
+        <!-- Input -->
+        <div class="px-4 py-3 border-t border-gray-100 bg-gray-50">
+          <div class="flex gap-2">
+            <input id="chat-input" type="text" placeholder="直接輸入，或使用右側選項…"
+              class="chat-input flex-1 text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-800 placeholder-gray-400"
+              onkeydown="if(event.key==='Enter') sendUserTyped()" />
+            <button onclick="sendUserTyped()" class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Reference + Options -->
+      <div class="flex-1 flex flex-col bg-slate-50 overflow-hidden">
+        <!-- Reference doc -->
+        <div class="p-5 border-b border-gray-200 bg-white">
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2">上傳的參考文件</p>
+          <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-gray-200">
+            <div class="w-10 h-12 bg-red-50 border border-red-100 rounded flex items-center justify-center flex-shrink-0">
+              <span class="text-red-400 text-xs font-bold">PDF</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-700">ACME_HBL_sample.pdf</p>
+              <p class="text-xs text-gray-400 mt-0.5">House Bill of Lading · 1 頁</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Options area -->
+        <div class="flex-1 overflow-y-auto p-5">
+          <div id="options-area"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN 3: PREVIEW                                  -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div id="s-preview" class="screen">
+
+      <!-- Left: Chat continues -->
+      <div class="flex flex-col bg-white border-r border-gray-200" style="width:360px; flex-shrink:0;">
+        <div class="px-5 py-3 border-b border-gray-100 flex items-center gap-2">
+          <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+          <span class="text-sm font-medium text-gray-700">Template 已產出</span>
+          <span class="text-xs text-gray-400 ml-auto">HBL · A4</span>
+        </div>
+        <div id="preview-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-3"></div>
+        <div class="px-4 py-3 border-t border-gray-100 bg-gray-50">
+          <div class="flex gap-2">
+            <input id="preview-input" type="text" placeholder="告訴我需要調整什麼…"
+              class="chat-input flex-1 text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-800 placeholder-gray-400"
+              onkeydown="if(event.key==='Enter') sendPreviewMsg()" />
+            <button onclick="sendPreviewMsg()" class="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: PDF Preview -->
+      <div class="flex-1 flex flex-col overflow-hidden bg-gray-300">
+        <!-- Toolbar -->
+        <div class="bg-white border-b border-gray-200 px-5 py-2 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-gray-500">測試資料：</span>
+            <select id="test-data-select" onchange="switchTestData()"
+              class="text-xs border border-gray-200 rounded-md px-2 py-1 text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400">
+              <option value="0">Shipment #1 — SHA → LAX（3 containers）</option>
+              <option value="1">Shipment #2 — KHH → JFK（1 container）</option>
+            </select>
+          </div>
+          <button id="save-btn" onclick="saveTemplate()"
+            class="bg-blue-600 text-white text-xs px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            儲存 Template
+          </button>
+        </div>
+
+        <!-- PDF area -->
+        <div class="flex-1 overflow-auto flex justify-center py-8 px-6">
+          <div id="hbl-doc" class="bg-white shadow-xl"
+            style="width:595px; min-height:842px; padding:30px 32px; box-sizing:border-box; font-family:Arial,sans-serif; font-size:8.5px; line-height:1.35; color:#111;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Save toast -->
+  <div id="save-toast"
+    class="fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 opacity-0 pointer-events-none"
+    style="transition: opacity 0.3s;">
+    <svg class="w-4 h-4 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    </svg>
+    Template 已儲存，可在 Tenant 設定中 apply 給客戶
+  </div>
+
+<script>
+// ─── Test Data ───────────────────────────────────────────────────────────────
+const testData = [
+  {
+    blNo: 'ACMSHA240001',
+    shipper: 'SHANGHAI TRADE CO., LTD.\n123 Pudong Avenue, Pudong, Shanghai 200120, China\nTel: +86-21-5551-0000',
+    consignee: 'PACIFIC IMPORT LLC\n500 Harbor Blvd, Los Angeles\nCA 90001, USA',
+    notifyParty: 'SAME AS CONSIGNEE',
+    vessel: 'COSCO FORTUNE', voyage: '024E', flag: 'CHINA',
+    pol: 'SHANGHAI, CHINA', pod: 'LOS ANGELES, USA', delivery: 'LOS ANGELES, USA',
+    containers: [
+      { no: 'CSLU1234567', seal: 'SH991001', type: "20'GP", pkgs: '120 CTNS', gw: '2,400.00 KGS', cbm: '18.500 CBM' },
+      { no: 'CSLU2345678', seal: 'SH991002', type: "40'HQ", pkgs: '200 CTNS', gw: '4,100.00 KGS', cbm: '42.300 CBM' },
+      { no: 'CSLU3456789', seal: 'SH991003', type: "40'HQ", pkgs: '180 CTNS', gw: '3,800.00 KGS', cbm: '39.200 CBM' },
+    ],
+    desc: 'ELECTRONIC COMPONENTS\nAS PER PROFORMA INVOICE NO. PI-2024-001\nSHIPPER\'S LOAD, COUNT AND SEAL',
+    freight: 'AS ARRANGED',
+    issuePlace: 'SHANGHAI', issueDate: '15 MAR 2024', originals: 'THREE (3)',
+  },
+  {
+    blNo: 'ACMKHH240002',
+    shipper: 'TAIWAN EXPORT CO., LTD.\n88 Minsheng Rd, Kaohsiung 80000, Taiwan\nTel: +886-7-333-1000',
+    consignee: 'EAST COAST TRADING INC.\n200 42nd Street, New York\nNY 10036, USA',
+    notifyParty: 'SAME AS CONSIGNEE',
+    vessel: 'EVER GOLDEN', voyage: '0112N', flag: 'PANAMA',
+    pol: 'KAOHSIUNG, TAIWAN', pod: 'NEW YORK, USA', delivery: 'NEW YORK, USA',
+    containers: [
+      { no: 'EGHU4561234', seal: 'KH220011', type: "40'HQ", pkgs: '350 CTNS', gw: '6,200.00 KGS', cbm: '62.500 CBM' },
+    ],
+    desc: 'PLASTIC PARTS\nAS PER PROFORMA INVOICE NO. PI-2024-002\nFREIGHT PREPAID',
+    freight: 'AS ARRANGED',
+    issuePlace: 'KAOHSIUNG', issueDate: '20 MAR 2024', originals: 'THREE (3)',
+  },
+];
+
+// ─── Q&A Questions ────────────────────────────────────────────────────────────
+const questions = [
+  {
+    text: '請問底稿印刷方法為何？',
+    options: ['雷射印表機（印在白紙上）', '點陣式印表機（套印底稿）', '其他'],
+    ack: '✓ 了解，使用「{a}」。'
+  },
+  {
+    text: '請問印刷 / 紙張大小為何？',
+    options: ['A4', 'Letter', '其他'],
+    ack: '✓ 紙張大小設定為 {a}。'
+  },
+  {
+    text: 'Container Information 版型，是否使用預設版型？\n\n預設欄位順序：Container No. → Seal No. → Type → No. of PKGs → Gross Weight → Measurement',
+    options: ['使用預設版型', '需要客製化版型'],
+    ack: '✓ Container 版型確認完成。'
+  },
+  {
+    text: 'Freight Information 要怎麼呈現？',
+    options: ['寫死 "As Arranged"', '自動帶入 GoFreight 資料', '可編輯輸入欄'],
+    ack: '✓ Freight Information 設定完成。'
+  },
+  {
+    text: '是否需要套用公司浮水印？',
+    options: ['否，不需要', '是，套用浮水印'],
+    ack: '✓ 浮水印設定完成。'
+  },
+  {
+    text: '我在文件中找到一個欄位標示 <strong>"B/L No."</strong>。\n\n這個欄位要帶入 GoFreight 的 <strong>HBL No.</strong> 嗎？',
+    options: ['是，帶入 HBL No.', '否，請說明'],
+    ack: '✓ B/L No. 欄位對應確認。',
+    isMapping: true
+  },
+];
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let qIdx = 0;
+let consigneeFontSize = '8.5px';
+let currentDataIdx = 0;
+
+// ─── Screen helper ────────────────────────────────────────────────────────────
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.style.display = 'none'; s.classList.remove('active');
+  });
+  const el = document.getElementById(id);
+  el.style.display = 'flex'; el.classList.add('active');
+}
+
+// ─── Upload ───────────────────────────────────────────────────────────────────
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('over'); simulateUpload(); });
+fileInput.addEventListener('change', () => { if (fileInput.files.length) simulateUpload(); });
+
+function simulateUpload() {
+  document.getElementById('drop-idle').classList.add('hidden');
+  document.getElementById('drop-loading').classList.remove('hidden');
+  setTimeout(startQA, 2400);
+}
+
+// ─── Q&A ─────────────────────────────────────────────────────────────────────
+function startQA() {
+  goTo('s-qa');
+  setTimeout(() => {
+    addAI('chat-messages',
+      '我分析了你上傳的文件，這看起來是一份 <strong>HBL（House Bill of Lading）</strong>。\n\n我會逐步幫你確認欄位設定，通常只需要幾分鐘。',
+      () => setTimeout(() => askQ(0), 600)
+    );
+  }, 300);
+}
+
+function askQ(idx) {
+  if (idx >= questions.length) { finishQA(); return; }
+  qIdx = idx;
+  setProgress(idx, questions.length);
+  const q = questions[idx];
+  addAI('chat-messages', q.text, () => showOptions(q.options));
+}
+
+function setProgress(done, total) {
+  document.getElementById('qa-progress-bar').style.width = (done / total * 100) + '%';
+  document.getElementById('qa-progress-text').textContent = `${done} / ${total}`;
+}
+
+function showOptions(opts) {
+  document.getElementById('options-area').innerHTML = `
+    <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-3">請選擇</p>
+    <div class="space-y-2">
+      ${opts.map((o, i) => `
+        <button onclick="pickOption(this, '${o.replace(/'/g,"&#39;")}')"
+          class="w-full text-left px-4 py-3 rounded-xl border border-gray-200 bg-white hover:border-blue-400 hover:bg-blue-50 text-sm text-gray-700 font-medium transition-all animate-in"
+          style="animation-delay:${i * 0.06}s">
+          ${o}
+        </button>`).join('')}
+    </div>`;
+}
+
+function pickOption(btn, value) {
+  // Dim all buttons
+  btn.closest('.space-y-2').querySelectorAll('button').forEach(b => {
+    b.disabled = true;
+    b.classList.remove('hover:border-blue-400','hover:bg-blue-50');
+    b.classList.add('opacity-50');
+  });
+  btn.classList.remove('opacity-50');
+  btn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-700');
+
+  addUser('chat-messages', value);
+  const ack = questions[qIdx].ack.replace('{a}', value);
+  setTimeout(() => {
+    addAI('chat-messages', ack, () => {
+      setProgress(qIdx + 1, questions.length);
+      document.getElementById('options-area').innerHTML = '';
+      setTimeout(() => askQ(qIdx + 1), 400);
+    });
+  }, 500);
+}
+
+function sendUserTyped() {
+  const inp = document.getElementById('chat-input');
+  const val = inp.value.trim(); if (!val) return;
+  inp.value = '';
+  addUser('chat-messages', val);
+  const ack = questions[qIdx] ? questions[qIdx].ack.replace('{a}', val) : '✓ 了解。';
+  setTimeout(() => {
+    document.getElementById('options-area').innerHTML = '';
+    addAI('chat-messages', ack, () => {
+      setProgress(qIdx + 1, questions.length);
+      setTimeout(() => askQ(qIdx + 1), 400);
+    });
+  }, 500);
+}
+
+function finishQA() {
+  document.getElementById('options-area').innerHTML = '';
+  addAI('chat-messages', '設定都確認了，我來幫你產出 template。', () => {
+    showTyping('chat-messages', () => {
+      removeTyping('chat-messages');
+      addAI('chat-messages',
+        '✅ Template 已產出！右側可以查看以測試資料 render 的預覽結果。\n\n如果有需要調整的地方，直接告訴我。',
+        () => setTimeout(startPreview, 700)
+      );
+    }, 2200);
+  });
+}
+
+// ─── Preview ─────────────────────────────────────────────────────────────────
+function startPreview() {
+  goTo('s-preview');
+  renderHBL(0);
+  setTimeout(() => {
+    addPreviewMsg('ai',
+      '✅ Template 已產出！\n\n右側是根據 <strong>Shipment #1（SHA → LAX）</strong> render 的預覽，你可以切換測試資料確認動態欄位，或直接告訴我需要調整什麼。'
+    );
+  }, 200);
+}
+
+// Preview chat interactions
+const previewRules = [
+  {
+    kw: ['字大', '字體大', '放大', '太小', 'bigger', 'larger', 'font'],
+    reply: '好的，我已將 Consignee 欄位的字體放大，請在右側確認效果。',
+    action: () => { consigneeFontSize = '11px'; document.getElementById('consignee-val').style.fontSize = '11px'; }
+  },
+  {
+    kw: ['字小', '縮小', 'smaller'],
+    reply: '好的，已將 Consignee 字體縮小，請確認。',
+    action: () => { consigneeFontSize = '7.5px'; document.getElementById('consignee-val').style.fontSize = '7.5px'; }
+  },
+  {
+    kw: ['浮水印', 'watermark'],
+    reply: '已在頁面右下角加上 ACME 浮水印，如果需要調整位置或透明度，告訴我。',
+    action: () => {
+      const doc = document.getElementById('hbl-doc');
+      if (!document.getElementById('wm')) {
+        const wm = document.createElement('div');
+        wm.id = 'wm';
+        wm.style.cssText = 'position:absolute;bottom:40px;right:40px;font-size:28px;font-weight:900;color:rgba(0,0,0,0.07);transform:rotate(-20deg);letter-spacing:2px;pointer-events:none;';
+        wm.textContent = 'ACME LOGISTICS';
+        doc.style.position = 'relative';
+        doc.appendChild(wm);
+      }
+    }
+  },
+  {
+    kw: ['bl no', 'b/l', '提單號', 'bono'],
+    reply: '已確認 B/L No. 欄位，目前帶入的是 GoFreight HBL No.，格式為 ACMXXX240000。如需調整格式請說明。',
+    action: null
+  },
+  {
+    kw: ['consignee', '收貨人', '收件'],
+    reply: '已更新 Consignee 欄位設定，請在右側確認。',
+    action: null
+  },
+  {
+    kw: ['儲存', 'save', '完成', '存', 'done'],
+    reply: '',
+    action: () => saveTemplate()
+  },
+];
+
+function sendPreviewMsg() {
+  const inp = document.getElementById('preview-input');
+  const text = inp.value.trim(); if (!text) return;
+  inp.value = '';
+  addPreviewMsg('user', text);
+
+  const lower = text.toLowerCase();
+  const matched = previewRules.find(r => r.kw.some(k => lower.includes(k)));
+
+  const reply = matched
+    ? matched.reply
+    : `好的，我已根據你的要求更新 template，請在右側確認效果。如果還需要調整，繼續告訴我。`;
+
+  setTimeout(() => {
+    if (matched?.action) matched.action();
+    if (reply) addPreviewMsg('ai', reply);
+  }, 650);
+}
+
+function switchTestData() {
+  const idx = parseInt(document.getElementById('test-data-select').value);
+  currentDataIdx = idx;
+  renderHBL(idx);
+  addPreviewMsg('ai', `已切換至 <strong>Shipment #${idx + 1}</strong> 的測試資料，請確認欄位是否正確帶入。`);
+}
+
+function saveTemplate() {
+  const toast = document.getElementById('save-toast');
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+  const btn = document.getElementById('save-btn');
+  btn.textContent = '✓ 已儲存';
+  btn.className = 'bg-green-600 text-white text-xs px-4 py-1.5 rounded-lg font-medium cursor-default';
+}
+
+// ─── HBL Render ──────────────────────────────────────────────────────────────
+function renderHBL(idx) {
+  const d = testData[idx];
+  const doc = document.getElementById('hbl-doc');
+  doc.innerHTML = `
+    <!-- Header -->
+    <table>
+      <tr>
+        <td colspan="2" style="border:none; padding:0 0 10px 0;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom: 2px solid #111; padding-bottom:8px;">
+            <div>
+              <div style="font-size:15px; font-weight:900; letter-spacing:0.5px;">ACME LOGISTICS CO., LTD.</div>
+              <div style="font-size:7.5px; color:#555; margin-top:2px; letter-spacing:0.5px;">AS AGENT FOR THE CARRIER</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:7px; color:#666; text-transform:uppercase; letter-spacing:0.3px;">House Bill of Lading</div>
+              <div style="font-size:13px; font-weight:900; color:#1d4ed8; letter-spacing:0.5px;">${d.blNo}</div>
+              <div style="font-size:7px; color:#888; margin-top:1px;">NON-NEGOTIABLE UNLESS CONSIGNED TO ORDER</div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Shipper / Booking -->
+    <table>
+      <tr>
+        <td style="width:55%">
+          <span class="label">Shipper / Exporter</span>
+          <div class="val" style="white-space:pre-line;">${d.shipper}</div>
+        </td>
+        <td>
+          <span class="label">Booking No.</span>
+          <div class="val">${d.blNo}</div>
+          <div style="margin-top:5px">
+            <span class="label">Export Reference</span>
+            <div class="val">${d.blNo}</div>
+          </div>
+          <div style="margin-top:5px">
+            <span class="label">Service Contract No.</span>
+            <div class="val">&nbsp;</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="label">Consignee</span>
+          <div class="val" id="consignee-val" style="white-space:pre-line; font-size:${consigneeFontSize}; transition: font-size 0.3s;">${d.consignee}</div>
+        </td>
+        <td>
+          <span class="label">Also Notify / Routing Instructions</span>
+          <div class="val" style="font-size:8px; white-space:pre-line;">${d.notifyParty}</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Vessel info -->
+    <table>
+      <tr>
+        <td style="width:25%">
+          <span class="label">Pre-carriage by</span>
+          <div class="val">&nbsp;</div>
+        </td>
+        <td style="width:35%">
+          <span class="label">Place of Receipt</span>
+          <div class="val">${d.pol}</div>
+        </td>
+        <td>
+          <span class="label">B/L Type</span>
+          <div class="val">Original</div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div style="display:flex; gap:0;">
+            <div style="flex:3; border-right:0.5px solid #333; padding-right:5px;">
+              <span class="label">Ocean Vessel &amp; Voyage No.</span>
+              <div class="val" style="font-weight:700;">${d.vessel} / V.${d.voyage}</div>
+            </div>
+            <div style="flex:1; padding-left:5px;">
+              <span class="label">Flag</span>
+              <div class="val">${d.flag}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="label">Port of Loading</span>
+          <div class="val" style="font-weight:700;">${d.pol}</div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <span class="label">Port of Discharge</span>
+          <div class="val" style="font-weight:700;">${d.pod}</div>
+        </td>
+        <td>
+          <span class="label">Place of Delivery</span>
+          <div class="val" style="font-weight:700;">${d.delivery}</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Container table -->
+    <table>
+      <thead>
+        <tr style="background:#f5f5f5;">
+          <th style="text-align:left; font-size:7px; font-weight:700; padding:3px 5px;">CONTAINER NO.</th>
+          <th style="text-align:left; font-size:7px; font-weight:700; padding:3px 5px;">SEAL NO.</th>
+          <th style="text-align:left; font-size:7px; font-weight:700; padding:3px 5px;">TYPE</th>
+          <th style="text-align:left; font-size:7px; font-weight:700; padding:3px 5px;">NO. OF PKGS</th>
+          <th style="text-align:right; font-size:7px; font-weight:700; padding:3px 5px;">GROSS WEIGHT</th>
+          <th style="text-align:right; font-size:7px; font-weight:700; padding:3px 5px;">MEASUREMENT</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${d.containers.map(c => `
+          <tr>
+            <td style="font-family:monospace; font-size:8px;">${c.no}</td>
+            <td style="font-size:8px;">${c.seal}</td>
+            <td style="font-size:8px;">${c.type}</td>
+            <td style="font-size:8px;">${c.pkgs}</td>
+            <td style="font-size:8px; text-align:right;">${c.gw}</td>
+            <td style="font-size:8px; text-align:right;">${c.cbm}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+
+    <!-- Marks & Description -->
+    <table>
+      <tr>
+        <td style="width:28%">
+          <span class="label">Marks &amp; Numbers</span>
+          <div class="val" style="font-size:8px;">AS PER INVOICE</div>
+        </td>
+        <td>
+          <span class="label">Description of Packages and Goods</span>
+          <div class="val" style="white-space:pre-line; font-size:8px;">${d.desc}</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Freight -->
+    <table>
+      <tr>
+        <td style="width:50%">
+          <span class="label">Freight &amp; Charges</span>
+          <div class="val" style="font-weight:700;">${d.freight}</div>
+        </td>
+        <td style="width:25%; text-align:center;">
+          <span class="label">Prepaid</span>
+          <div class="val">&nbsp;</div>
+        </td>
+        <td style="width:25%; text-align:center;">
+          <span class="label">Collect</span>
+          <div class="val">&nbsp;</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Footer -->
+    <table>
+      <tr>
+        <td style="width:40%">
+          <span class="label">Place and Date of Issue</span>
+          <div class="val">${d.issuePlace}, ${d.issueDate}</div>
+        </td>
+        <td style="width:30%">
+          <span class="label">Number of Original B(s)/L</span>
+          <div class="val">${d.originals}</div>
+        </td>
+        <td style="text-align:center;">
+          <span class="label" style="display:block; margin-bottom:22px;">Signed for the Carrier</span>
+          <div style="border-top:0.5px solid #333; padding-top:3px; font-size:7px; color:#666; text-align:center;">ACME LOGISTICS CO., LTD. — Authorized Signature</div>
+        </td>
+      </tr>
+    </table>`;
+}
+
+// ─── Chat helpers ─────────────────────────────────────────────────────────────
+function addAI(containerId, text, cb, delay = 900) {
+  showTyping(containerId, () => {
+    removeTyping(containerId);
+    const el = bubble('ai', text);
+    document.getElementById(containerId).appendChild(el);
+    scrollBottom(containerId);
+    if (cb) setTimeout(cb, 200);
+  }, delay);
+}
+
+function addUser(containerId, text) {
+  document.getElementById(containerId).appendChild(bubble('user', text));
+  scrollBottom(containerId);
+}
+
+function addPreviewMsg(role, text) {
+  const container = document.getElementById('preview-messages');
+  if (role === 'ai') {
+    showTyping('preview-messages', () => {
+      removeTyping('preview-messages');
+      container.appendChild(previewBubble('ai', text));
+      scrollBottom('preview-messages');
+    }, 700);
+  } else {
+    container.appendChild(previewBubble('user', text));
+    scrollBottom('preview-messages');
+  }
+}
+
+function bubble(role, text) {
+  const div = document.createElement('div');
+  if (role === 'ai') {
+    div.className = 'flex gap-2.5 animate-in';
+    div.innerHTML = `
+      <div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <span class="text-white font-bold leading-none" style="font-size:10px">AI</span>
+      </div>
+      <div class="flex-1">
+        <div class="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-gray-800 leading-relaxed shadow-sm" style="white-space:pre-line;">${text}</div>
+      </div>`;
+  } else {
+    div.className = 'flex justify-end animate-in';
+    div.innerHTML = `<div class="max-w-xs bg-blue-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed">${text}</div>`;
+  }
+  return div;
+}
+
+function previewBubble(role, text) {
+  const div = document.createElement('div');
+  if (role === 'ai') {
+    div.className = 'flex gap-2 animate-in';
+    div.innerHTML = `
+      <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <span class="text-white font-bold leading-none" style="font-size:9px">AI</span>
+      </div>
+      <div class="flex-1 bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-3 py-2 text-xs text-gray-800 leading-relaxed shadow-sm" style="white-space:pre-line;">${text}</div>`;
+  } else {
+    div.className = 'flex justify-end animate-in';
+    div.innerHTML = `<div class="max-w-xs bg-blue-600 text-white rounded-2xl rounded-tr-sm px-3 py-2 text-xs leading-relaxed">${text}</div>`;
+  }
+  return div;
+}
+
+function showTyping(containerId, cb, delay) {
+  const c = document.getElementById(containerId);
+  const t = document.createElement('div');
+  t.id = 'typing-' + containerId;
+  t.className = 'flex gap-2.5 animate-in';
+  t.innerHTML = `
+    <div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+      <span class="text-white font-bold leading-none" style="font-size:10px">AI</span>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>`;
+  c.appendChild(t);
+  scrollBottom(containerId);
+  setTimeout(cb, delay || 900);
+}
+
+function removeTyping(containerId) {
+  const el = document.getElementById('typing-' + containerId);
+  if (el) el.remove();
+}
+
+function scrollBottom(id) {
+  const el = document.getElementById(id);
+  el.scrollTop = el.scrollHeight;
+}
+</script>
+</body>
+</html>
